@@ -1,28 +1,34 @@
-summary.grain <- function(object, type='std', ...){
-
+summary.gmInstance <- function(object, type='std', ...){
   type <- match.arg(type,c("std","cliques","rip","configurations"))
-    
-  cat("Independence network: Compiled:", object$isCompiled, "Propagated:", object$isPropagated, "\n")
 
-  if (length(object$finding))
-    getFinding(object)
+  cat("Nodes :", object$nodes,"\n")
+  isCompiled <- inherits(object, "compgmInstance")
+  isPropagated <- object$propagated
+  if (isCompiled){
+    cat("Status: Compiled\n")
+  } else {
+    cat("Status: Uncompiled\n")
+  }
+
   
-  cat(" Nodes :")
-  utils::str(nodeNames(object)) ## $universe$nodes)
   
-  if (object$isCompiled){
+  if (isCompiled){
+    cat("Model is propagated:", isPropagated, "\n") 
     rip <- object$rip
     cl  <- rip$clique
     se  <- rip$separators
     pa  <- rip$pa
     
+    cat("\n")
     cl2 <- sapply(object$rip$cliques,length)
-    cat(sprintf(" Number of cliques:              %4d \n",  length(cl2)))
-    cat(sprintf(" Maximal clique size:            %4d \n",  max(cl2)))
-    cat(sprintf(" Maximal state space in cliques: %4d \n",
-        max(unlistPrim(lapply(object$equilCQpot, length)))))
+    cat("Number of cliques:",
+        length(cl2),"\n")
+    cat("Maximal clique size:",
+        max(cl2),"\n")
+    cat("Maximal number of configurations in cliques:",
+        max(unlist(  sapply(object$potlist, "[", "ncells"))), "\n")
     
-    if(length(e<-getFinding(object))){
+    if(length(e<-evidence(object))){
       print(e)
     }
     
@@ -38,10 +44,12 @@ summary.grain <- function(object, type='std', ...){
            "configurations"={
              cat("\nConfigurations:\n")
              for (i in 1:length(cl)){
-               cat(" ", i, ":", object$equilCQpot[[i]]$ncells, "\n")
+               cat(" ", i, ":", object$potlist[[i]]$ncells, "\n")
              }
            })
+    
+    
+    return(invisible(object))
   }
-  return(invisible(object))
 }
 

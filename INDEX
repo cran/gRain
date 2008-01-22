@@ -1,0 +1,17 @@
+cpt                     Create conditional probability tables (CPTs)
+ctab                    Representation of and operations on
+                        multidimensional tables
+gmInstance-class        Class "gmInstance" (graphical model instance)
+gRain-package           Graphical Independence Networks
+graphsh-class           Class "graphsh"
+loadHuginNet            Load and save Hugin net files
+mcs                     Operations on undirected and directed acyclic
+                        graphs.
+newgmInstance           Graphical Independence Network
+newugsh                 Create undirected and directed graphs
+predict.compgmInstance
+                        Make predictions from a probabilistic network
+queryg                  Query a graph
+querygm                 Query an independence network
+simulate.compgmInstance
+                        Simulate from an independence network

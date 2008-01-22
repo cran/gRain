@@ -1,63 +1,69 @@
 ##
-## plot (gRain)
+## display (gRbayesnet)
 ##
 
-plot.grain <- function(x, type, ...){
-  #cat("plot.grain; type:", type, "\n")
-   if (!require("Rgraphviz")){
-     cat("The Rgraphviz package (from Bioconductor) must be installed to display the models\n")
-     return()
-   }
+"plot.cpt-gmInstance" <- function(x, ...){
+  .plot.graphsh(x$dag)
+}
 
-  if (missing(type)){
-    if (x$isCompiled){
-      plot(x$ug)
-    } else {
-      if ("pot-grain" %in% class(x)){
-        plot(x$ug)
-      } else {
-        plot(x$dag)
-      }
-    }
+"plot.dag-gmInstance" <- function(x, ...){
+  .plot.graphsh(x$dag)
+}
+
+"plot.ug-gmInstance" <- function(x, ...){
+  .plot.graphsh(x$ug)
+}
+
+plot.compgmInstance <- function(x, ...){
+  .plot.graphsh(x$rip$tug)
+}
+
+plot.ugsh <- function(x, ...){
+  .plot.graphsh(x)
+}
+
+plot.dagsh <- function(x, ...){
+  .plot.graphsh(x)
+}
+
+.plot.graphsh <- function(graph){
+
+  if (length(graph)==0)
+    return(NULL)
+
+
+  edges <- edges(graph)
+  nodes <- nodes(graph)
+
+  nAttrs <- list()
+  nodeColours        <- rep("yellow", length(nodes))
+  names(nodeColours) <- nodes
+  nAttrs$fillcolor   <- nodeColours
+  
+  edgeColours        <- rep("blue",length(edges))
+  names(edgeColours) <- sapply(edges, function(ee) {
+    estr <- paste(ee[1],"~",ee[2],sep='');
+    estr
+  })
+
+  eAttrs             <- list(color=edgeColours)
+
+
+  if (class(graph)[1]=="ugsh"){
+    G <- new("graphNEL", nodes=nodes,edgemode='undirected')
   } else {
-    zz <- x[[type]]
-    if (!is.null(zz))
-      plot(zz)
-    else
-      cat("Slot", type, "does not exist \n") 
+    G <- new("graphNEL", nodes=nodes,edgemode='directed')
   }
-}
 
-iplot.grain <- function(x,type, ...){
-  #.primiplot(x$dag)
-
-  if (missing(type)){
-    if (x$isCompiled){
-      .primiplot(x$ug)
-    } else {
-      if ("pot-grain" %in% class(x)){
-        .primiplot(x$ug)
-      } else {
-        .primiplot(x$dag)
-      }
+  if (length(edges)>0){
+    for (i in 1:length(edges)){
+      ee <- rev(edges[[i]]);  ##  cat("Adding edge:", paste(ee),"\n")
+      ##G <- addEdge(ee[1], ee[2] , G, weight=1)
+      G <- addEdge(ee[1], ee[2], G)
     }
-  } else {
-    zz <- x[[type]]
-    if (!is.null(zz))
-      .primiplot(zz)
-    else
-      cat("Slot", type, "does not exist \n") 
   }
+  plot(G, "neato", nodeAttrs = nAttrs, edgeAttrs = eAttrs)
+
+  return(invisible(graph))
 }
-
-.primiplot <- function(grp){
-  ig <- igraph.from.graphNEL(grp)
-  V(ig)$label <- V(ig)$name
-  V(ig)$size  <- 40
-  ig$cex   <-  4
-  ig$layout   <- layout.graphopt
-  plot(ig)
-}
-
-
 

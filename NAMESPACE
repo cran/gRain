@@ -1,6 +1,102 @@
+##
+## gRain
+##
 import(methods)
-exportPattern("^[^\\.]")
+importFrom(graph,nodes,edges)
 
-import(gRbase)
-import(graph)
-importFrom(igraph, igraph.from.graphNEL, V, "V<-", layout.graphopt)
+exportClasses(ugsh,dagsh,graphsh,gmInstance)
+exportMethods(edges,nodes,show)
+
+export(
+       "newugsh",
+       "newdagsh",
+       "newug",
+       "newdag",
+       "queryg",
+       "convertg",
+       "ancestralGraph",
+### Simple graph opertations
+       "plot.ugsh",
+       "plot.dagsh",
+       "plot.cpt-gmInstance",
+       "plot.dag-gmInstance",
+       "plot.ug-gmInstance",
+       "plot.compgmInstance",
+       "predict.compgmInstance",
+       "neigh",
+       "closure",
+       "subgraph",
+       "simplicialNodes",
+       "isComplete",
+### Advanced graph operations
+       "mcs",
+       "moralize",
+       "triangulate",
+       "ripOrder",
+       "mcwhSH"
+       ,
+### Table operations
+       "print.ctab",
+       "ctab",
+       "ctabdiv",
+       "ctabmarg",
+       "ctabmult",
+       "ctabop",
+       "varNames.ctab",
+       "nLevels.ctab",
+       "valueLabels.ctab"
+       ,
+### Bayesian Networks
+       "compilegm",
+       "compilegm.dag-gmInstance",
+       "compilegm.ug-gmInstance",
+       "compilegm.cpt-gmInstance",
+       "propagate",
+       "propagate.compgmInstance", 
+       "cpt",
+       "as.data.frame.ctab",
+       "as.double.ctab",
+       "as.ctab.numeric",
+       "enterEvidence",
+       "retractEvidence",
+       "evidence",
+       "print.gmInstance",
+       "print.bnevidence",
+       "querygm",
+       "querygm.gmInstance",       
+       "pevidence",
+       "propagate",
+       "vpav",
+       "dag2cptspec",
+       "cpt",
+       "summary.gmInstance",
+       ##"as.probnet",
+       "as.gmInstance",
+       "as.gmInstance.huginNet",
+       "as.cumcounts",
+       "as.cumcounts.data.frame",
+       
+       "cptspec",
+       "loadHuginNet",
+       "saveHuginNet",
+       "printlist",
+       "printlist.numeric",
+       "printlist.list",
+       "print.huginNet",
+       "splitVec",
+       "splitVec.numeric",
+       "splitVec.list",
+       "nodeNames",
+       "nodeNames.gmInstance",
+       "nodeStates",
+       "nodeStates.gmInstance",
+       "simulate.compgmInstance",
+       "getSlot",
+       "print.cptspec",
+       "newgmInstance",
+       "newgmInstance.cptspec",
+       "newgmInstance.dagsh",
+       "newgmInstance.ugsh"
+       )
+
+

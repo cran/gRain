@@ -1,108 +1,111 @@
 
+propagate <- function(object, trace=object$trace) {
+  UseMethod("propagate")
+}
 
-propagate.grain <- function(object, details=object$details, ...){
+propagate.compgmInstance <- function(object, trace=object$trace){
 
   t0 <- proc.time()
-  ## propagate.grain: equilCQpot is updated after propagation on tempCQpot
-  ## such that equilCQpot will contain the updated potentials.
-  object$equilCQpot <- propagateLS(object$tempCQpot,
-                                   rip=object$rip, initialize=TRUE, details=details)
-
-  object$isInitialized <- TRUE
-  object$isPropagated  <- TRUE
-
-  if (!is.null(getFinding(object))){
-    ev <- getFinding(object)
-    attr(ev, "pFinding") <- pFinding(object)
-    object$finding <- ev
+  object$potlist <- .propagate(object$potlistwork, object$rip,
+                               initialize=TRUE, trace=trace)
+  object$initialized <- TRUE
+  object$propagated  <- TRUE
+  
+  if (!is.null(evidence(object))){
+    ev <- evidence(object)
+    attr(ev,"pevidence")<- pevidence(object)
+    object$evidence <- ev    
   }
-  .timing(" Time: propagation:", object$control, t0)
-
+  if (object$control$timing){
+    cat("Time: propagation", proc.time()-t0, "\n")
+  }
   return(object)
 }
 
-## Lauritzen Spiegelhalter propagation
-##
 
-propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
+.propagate <- function(potlist, rip, initialize=FALSE, trace=0){
+  if (trace>=1) cat(".Propagating BN: [.propagate]\n")
 
-    ##  details=1
-  .infoPrint(details, 1, cat(".Propagating BN: [propagateLS]\n"))
+  cli   <- rip$cliques
+  seps  <- rip$separators
+  pa    <- rip$pa
+  len   <- length(cli)
 
-  ## FIXME: Don't remember the idea behind the 'initialize' argument; should always be true
-
-  cliq       <- rip$cliques
-  seps       <- rip$separators
-  pa         <- rip$parent
-  childList  <- rip$childList
-  ncliq      <- length(cliq)
-
-  ## This assignment is needed because RIP now returns 0 as the
-  ## parent index for the first clique
-  pa[pa==0]<-NA
-
-  ## Backward propagation (collect evidence) towards root of junction tree
-  ##
-  .infoPrint(details,2, cat("..BACKWARD:\n"))
+  if(trace>=2) cat("..BACKWARD:\n")
   t0 <- proc.time()
-  if (ncliq>1){
-    for (ii in ncliq:2){
-      cq       <- cliq[[ii]]
-      sp   <- seps[[ii]]
-      .infoPrint2(details, 2, "Clique %d: {%s}\n", ii, .colstr( cq ))
-      cq.pot   <- APlist[[ii]]
-      pa.pot   <- APlist[[pa[ii]]]
+  if (len>1){
+    for (i in len:2){      
+      if(trace>=2) cat("..Current clique:",i,"             {",cli[[i]],"}", "\n")      
+      cpot  <- potlist[[i]];      
+      csep  <- seps[[i]]
+      cpa   <- potlist[[pa[i]]]
 
-      ##cat(sprintf("......is.na: cq.pot=%i, pa.pot=%i\n", any(is.na(cq.pot)), any(is.na(pa.pot))))
+      if (length(csep)>=1 && !is.na(csep)){
+        if(trace>=2) cat("..Marginalize onto separator :", "  {", csep,"}", "\n")
+        
+        septab   <- ctabmarg(cpot, csep)
+        cpotnew  <- ctabdiv (cpot, septab)             
+        potlist[[i]]     <- cpotnew        
+        potlist[[pa[i]]] <- ctabmult(cpa, septab) 
 
-      if (length(sp)>=1 && !is.na(sp)){
-        .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(sp))
-        sp.pot           <- tableMargin(cq.pot, sp)
-        ##cat(sprintf("......is.na: sp.pot=%i\n", any(is.na(sp.pot))))
-        ## str(list(cliq.no=ii, cliq.pa.no=pa[ii],
-        ##                  cq=cq, sp=sp,
-        ##                  cq.pot=cq.pot, pa.pot=pa.pot, sp.pot=sp.pot))
+        if(trace>=4) {
+          cat("....Dividing by marginal\n")
+          print (septab); print (cpot); print(cpotnew)
+          cat("....Parent potential\n"); print(cpa);
+        }
 
-        APlist[[ii]]     <- tableOp2(cq.pot, sp.pot, `/`)
-        APlist[[pa[ii]]] <- tableOp2(pa.pot, sp.pot, `*`)
-      } else{
-        zzz              <- sum(cq.pot)
-        APlist[[1]]      <- APlist[[1]] * zzz
-        APlist[[ii]]     <- cq.pot / zzz
+      } else{        
+        potlist[[1]]$values <- potlist[[1]]$values * sum(cpot$values)        
+        cpot$values  <- cpot$values / sum(cpot$values)        
+        potlist[[i]] <- cpot
       }
     }
   }
 
-  ## print(sapply(APlist, function(x) any(is.na(x))))
-  ## cat("propagateLS\n"); print(as.data.frame.table(APlist[[1]]))
-  normConst <- sum(APlist[[1]])
+  nc <- sum(potlist[[1]]$values)  
+  if (nc==0){
+    stop("Propagation of inconsistent evidence has been attempted...\n",call.=FALSE)
+  }
 
-  APlist[[1]] <- APlist[[1]]/normConst
+  if (initialize){
+    potlist[[1]]$values <- potlist[[1]]$values/nc
+  }
+  
+  if (trace>=4) {
+    cat("..BACKWARD done - potlist - After backward propagation:\n"); print(potlist)
+    cat("....Normalizing constant:\n");  print(nc)
+  }
 
-  ## Forward propagation (distribute evidence) away from root of junction tree
-  ##
-  .infoPrint(details,2,cat("..FORWARD:\n"))
+  if(trace>=2)cat("..FORWARD:\n")
+
   t0 <- proc.time()
-  for (ii in 1:ncliq){
-    .infoPrint2(details, 2, "Clique %d: {%s}\n", ii, .colstr(cliq[[ii]]))
-    ##     ch <- which(pa[-1]==ii)+1
-    ##     cat(sprintf("ii=%3d, ch=%s\n", ii, toString(ch)))
-    ch <- childList[[ii]]
+  for (i in 1:len){
+    
+    if(trace>=2) cat("..Current clique:",i,"             {",cli[[i]],"}", "\n")      
+    ##if(trace>=2) cat("..Current clique:",i,cli[[i]],"\n")
+
+    ch <- which(pa[-1]==i)+1
+
     if (length(ch)>0){
-      .infoPrint2(details,2, "..Children: %s\n", .colstr(ch))
-      for (jj in 1:length(ch)){
-        if (length(seps[[ch[jj]]])>0){
-          .infoPrint2(details, 2, "Marg onto sep %i: {%s}\n", ch[jj], .colstr(seps[[ch[jj]]]))
-          sp.pot            <- tableMargin(APlist[[ii]], seps[[ch[jj]]])
-          ##cat(sprintf("......is.na: sp.pot=%i\n", any(is.na(sp.pot))))
-          APlist[[ch[jj]]]  <- tableOp2(APlist[[ch[jj]]], sp.pot, `*`)
-          .infoPrint(details, 4, { cat("Marginal:\n"); print (sp.pot) })
+      if (trace>=2) cat("..Children:", ch, "\n")
+      for (j in 1:length(ch)){
+
+        if (length(seps[[ch[j]]])>0){
+          if(trace>=2) cat("..Marginalize onto separator", ch[j],
+               ": {", seps[[ch[j]]]," }\n")
+
+          septab <- ctabmarg(potlist[[i]], seps[[ch[j]]])
+
+          if(trace>=4) {cat("Marginal:\n"); print (septab)}
+          potlist[[ch[j]]] <- ctabmult(potlist[[ch[j]]], septab) ##newpot
         }
       }
     }
   }
 
-
-  attr(APlist, "pFinding") <- normConst
-  APlist
+  attr(potlist, "pevidence") <- nc
+  if (trace>=4) {
+    cat("....FORWARD done - potlist - After forward propagation:\n");    print(potlist)
+  }
+  potlist
 }

@@ -1,16 +1,16 @@
-\name{simulate.grain}
-\alias{simulate.grain}
+\name{simulate.compgmInstance}
+\alias{simulate.compgmInstance}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Simulate from an independence network}
 \description{
   Simulate data from an independence network.
 }
 \usage{
-\method{simulate}{grain}(object, nsim = 1, seed = NULL, ...)
+\method{simulate}{compgmInstance}(object, nsim = 1, seed = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{An inpendence network}
+  \item{object}{A bayesnet object}
   \item{nsim}{Number of cases to simulate}
   \item{seed}{An optional integer controlling the random number generatation}
   \item{\dots}{Not used...}
@@ -21,13 +21,8 @@
 \value{
   A data frame
 }
-\references{
-  Søren Højsgaard (2012). Graphical Independence Networks with the
-  gRain Package for R. Journal of Statistical Software, 46(10), 1-26.
-  \url{http://www.jstatsoft.org/v46/i10/}.
-}
-
-\author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
+%\references{ ~put references to the literature/web site here ~ }
+\author{Søren Højsgaard, sorenh@agrsci.dk}
 %\note{ ~~further notes~~ 
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
@@ -38,11 +33,12 @@
 \dontrun{
 
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
-chest <- loadHuginNet(tf, details=1)
+chestf <- loadHuginNet(tf, trace=1)
+chest <- as.gmInstance(chestf)
 
 simulate(chest,n=10)
 
-chest2 <- setFinding(chest, c("VisitToAsia", "Dyspnoea"),
+chest2 <- enterEvidence(chest, c("VisitToAsia", "Dyspnoea"),
 c("yes","yes"))
 
 simulate(chest2,n=10)
