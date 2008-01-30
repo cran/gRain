@@ -90,7 +90,7 @@ export(
        "nodeNames.gmInstance",
        "nodeStates",
        "nodeStates.gmInstance",
-       "simulate.compgmInstance",
+       "simulate.gmInstance",
        "getSlot",
        "print.cptspec",
        "newgmInstance",
