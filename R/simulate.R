@@ -100,7 +100,7 @@
 
 
 
-simulate.compgmInstance <- function(object, nsim=1, seed=NULL, ...){
+simulate.gmInstance <- function(object, nsim=1, seed=NULL, ...){
 
   ## cptlist needs to be available. That is not the case if model
   ## is built directly from graph.
@@ -108,6 +108,11 @@ simulate.compgmInstance <- function(object, nsim=1, seed=NULL, ...){
   #if (!inherits(object, c("dag-gmInstance","cpt-gmInstance"))){
   #  cat("Can not simulate from model...\n"); return(NULL)
   #}
+
+  if (!inherits(object, "compgmInstance"))
+    object <- compilegm(object)
+
+
   
   if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) 
     runif(1)

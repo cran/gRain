@@ -1,12 +1,12 @@
-\name{simulate.compgmInstance}
-\alias{simulate.compgmInstance}
+\name{simulate.gmInstance}
+\alias{simulate.gmInstance}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Simulate from an independence network}
 \description{
   Simulate data from an independence network.
 }
 \usage{
-\method{simulate}{compgmInstance}(object, nsim = 1, seed = NULL, ...)
+\method{simulate}{gmInstance}(object, nsim = 1, seed = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

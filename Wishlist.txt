@@ -1,3 +1,43 @@
+ Wishlist for the gRain package
+====================================
+
+* For a node which is a discretization of a continuous distribution or
+  similar, it could make sense to calculate a posterior mean and
+  variance based on the conditional probabilities and the class
+  labels.
+
+* Implement IPS on triangulated graph using something like Jirouseks 
+  "On the effective implementation of the iterative proportional
+  fitting procedure". Use this for fitting graphical models
+  where the graph is not decomposable.
+
+* If the network is compiled at the time of a query, then in some
+  cases only a smaller network needs to be compiled. 
+
+* When evidence is entered into a potential, the dimension of the
+  potential can be reduced. 
+
+* Implement junction tree propagation as alternative to LS
+
+* Implement max-propagation
+
+* Implement triangulation algorithm in C
+
+* Create update function
+
+* Describe the control-list
+
+* Graphs: 
+  hg(): hypergraph
+  separates: Distinguish between LWF/AMP
+  as.matrix(ug); as.matrix(dag)
+  as.nel(ug); as.nel(dag)....
+  Embed mcs in queryg
+  Display dag edges with directions
+  vpav should display a|bc...
+  Markov blanket = parents + children + parents of children = boundary in moral graph
+  Ancestral graph for undirected
+
 - There is a fragile construction in cpt2. 
 
 - demo() ends in a strange way
@@ -20,5 +60,5 @@
 - Simulate in cliques; gives MC propagation as an alternative
   propagation scheme
 
-
+- Improve simulate function (it is way too slow)
 

@@ -1,5 +1,11 @@
+2008-01-30 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* simulate now works on uncompile objects
+
+	* Version 0.1.1 of gRain uploaded to CRAN
+
 2008-01-22 Søren Højsgaard <sorenh@agrsci.dk>	
 
-	* Version 0.0.1 of gRain uploaded to CRAN
+	* Version 0.1.0 of gRain uploaded to CRAN
 
 
