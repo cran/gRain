@@ -1,8 +1,20 @@
+2008-02-27 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* ctab slot-names have been modified
+
+	* C code for graph triangulation incorporated; 
+
+	* Numerous small alterations
+
+	* Various docs (pdfs) included
+	
+
 2008-01-30 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* simulate now works on uncompile objects
 
 	* Version 0.1.1 of gRain uploaded to CRAN
+
 
 2008-01-22 Søren Højsgaard <sorenh@agrsci.dk>	
 

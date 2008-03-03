@@ -346,9 +346,6 @@ splitVec.numeric <- function(val, lev){
 
 
 saveHuginNet <- function(bn, file, trace=0){
-
-  
-
   
   gmd     <- bn$gmData
   cptlist <- bn$cptlist
@@ -396,11 +393,11 @@ saveHuginNet <- function(bn, file, trace=0){
 
     cpot <- cptlist[[ii]]
     
-    nam <- cpot$names
+    nam <- cpot$varNames
     lev <- cpot$levels
     val <- cpot$values
     
-    v <- nam[1]
+    v  <- nam[1]
     pa <- nam[-1]
     
     lev   <- rev(lev[-1])

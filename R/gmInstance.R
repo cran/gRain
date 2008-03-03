@@ -21,13 +21,12 @@ newgmInstance <- function(x, gmData, description="ProbNet",  control=list(),
 newgmInstance.cptspec <- function(x, gmData, description="ProbNet", control=list(),
                                   trace=0,...){
 
-  
   con <- .defaultControl()
   con[(namc <- names(control))] <- control
   control <- con
   
   if(trace>=1) cat(".Creating DAG from cptlist\n")
-
+  
   t0 <- proc.time()
 
   vn  <- lapply(x, varNames)
@@ -44,7 +43,6 @@ newgmInstance.cptspec <- function(x, gmData, description="ProbNet", control=list
 
   if (!is.null(control$timing) && control$timing)
     cat("Time: Create dag and gmData:", proc.time()-t0,"\n")
-
   
   ans  <- list(cptlist     = x,
                gmData      = gmData,
@@ -97,39 +95,39 @@ newgmInstance.ugsh <- function(x, gmData, description="ProbNet", control=list(),
 ##
 
 compilegm <-
-  function(x, method=c("mcwh","robust"), propagate=FALSE, root=NULL, smooth=0,
+  function(x, method="standard", propagate=FALSE, root=NULL, smooth=0,
             control=x$control,
            trace=0){
   UseMethod("compilegm")
 }
 
 "compilegm.dag-gmInstance" <-
-  function(x, method=c("mcwh","robust"), propagate=FALSE, root=NULL, smooth=0,
+  function(x, method="standard", propagate=FALSE, root=NULL, smooth=0,
            control=x$control,
            trace=0){
     
     cptlist <- dag2cptspec(x$dag,x$gmData,smooth=smooth)
     x$cptlist <- cptlist
     "compilegm.cpt-gmInstance"(x, method=method, propagate=propagate,
-                             root=root, smooth=smooth, trace=trace)
+                               root=root, smooth=smooth, trace=trace)
   }
 
 
 "compilegm.cpt-gmInstance" <-
-  function(x, method=c("mcwh","robust"), propagate=FALSE, root=NULL, smooth=0,
+  function(x, method="standard", propagate=FALSE, root=NULL, smooth=0,
            control=x$control,
            trace=0){
 
-    method <- match.arg(method,c("mcwh","robust"))
-
+    trimethod <- c("standard","mcwh","r")
+    method <- match.arg(tolower(method),trimethod)
+    
     t00 <- t0 <- proc.time()
     elorder    <- eliminationOrder(x$dag)
     if (!is.null(control$timing) && control$timing)
       cat("Time: elimination order:", proc.time()-t0,"\n")
-
-    ### UPS - dette virker ikke.... Hvorfor...
-    ##x$cptlist  <- cptspec(x$cptlist[elorder])
-
+    
+                                        # UPS - dette virker ikke.... Hvorfor...
+                                        #x$cptlist  <- cptspec(x$cptlist[elorder])
 
     t0 <- proc.time()
     mdag       <- moralize(x$dag)
@@ -145,11 +143,7 @@ compilegm <-
     nLev <- x$gmData$nLevels[match(vn,x$gmData$varNames)]
 
     t0 <- proc.time()
-
-
-    rip <- junctionTree(mdag, method=method, vn=vn, nLevels=nLev,  control=control)
-    ##rip <<- rip
-    ##print(rip)
+    rip <- jTree(mdag, method=method, vn=vn, nLevels=nLev,  control=control)
     
     if (!is.null(control$timing) && control$timing)
       cat("Time: triangulate:", proc.time()-t0,"\n")
@@ -194,11 +188,11 @@ compilegm <-
 
 
 "compilegm.ug-gmInstance" <-
-  function(x, method=c("mcwh","robust"), propagate=FALSE, root=NULL, smooth=0,
-           control=x$control,
-           trace=0){
+  function(x, method="standard", propagate=FALSE, root=NULL, smooth=0,
+           control=x$control, trace=0){
 
-    method <- match.arg(method,c("mcwh","robust"))
+    trimethod <- c("standard","mcwh","r")
+    method <- match.arg(tolower(method),trimethod)
     if (is.null(mcs(x$ug))){
       cat("Undirected graph is not triangulated...\n"); return(NULL)
     }
@@ -207,13 +201,11 @@ compilegm <-
       cat("Specifying 'root' has no effect on models defined from an undirected graph\n")
      }
 
-
-    t0 <- proc.time()
+    t0   <- proc.time()
     vn   <- nodes(x$ug)
     nLev <- x$gmData$nLevels[match(vn,x$gmData$varNames)]
-    rip  <- junctionTree(x$ug, method, vn, nLev, control)
-    rip <<- rip
-
+    rip  <- jTree(x$ug, method=method, vn=vn, nLevels=nLev,  control=control)
+    
     if (!is.null(control$timing) && control$timing)
       cat("Time: triangulate:", proc.time()-t0,"\n")
 
@@ -241,6 +233,18 @@ compilegm <-
     }
     return(ans)
   }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Printing gmInstance

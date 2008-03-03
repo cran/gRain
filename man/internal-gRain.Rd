@@ -28,6 +28,8 @@
 \alias{print.gmInstance}
 \alias{print.cptspec}
 \alias{print.bnevidence}
+\alias{print.ripOrder}
+
 \alias{is.subset}
 \alias{is.subsetList}
 \alias{names2pairs}

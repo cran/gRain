@@ -20,7 +20,7 @@
 
 
 \usage{
-ctab(names, levels, values = 1, normalize = c("none", "first", "all"), smooth = 0)
+ctab(varNames, nLevels, values = 1, normalize = c("none", "first", "all"), smooth = 0)
 ctabop(t1, t2, op="*")
 ctabdiv(t1, t2)
 ctabmult(t1, t2)
@@ -32,8 +32,8 @@ ctabmarg(t1, marg, normalize=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{names}{Names of variables defining table}
-  \item{levels}{Levels of variables}
+  \item{varNames}{Names of variables defining table}
+  \item{nLevels}{Levels of variables}
   \item{values}{Table values}
   \item{t1,t2,x}{Objects of class "ctab"}
   \item{op}{Operation to perform. Either "*" or "/" (where 0/0=0)}
