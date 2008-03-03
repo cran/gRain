@@ -111,8 +111,6 @@ simulate.gmInstance <- function(object, nsim=1, seed=NULL, ...){
 
   if (!inherits(object, "compgmInstance"))
     object <- compilegm(object)
-
-
   
   if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) 
     runif(1)
@@ -139,10 +137,9 @@ simulate.gmInstance <- function(object, nsim=1, seed=NULL, ...){
   for (j in 1:length(vpa)){
     cvpa <- vpa[[j]]
     i    <- which(sapply(potnames, function(x) subsetof(cvpa, x)))[1]
-    cpot <- potlist[[i]]
-    
-    t1 <- ctabmarg(cpot, cvpa)
-    t1 <- permctab(t1, cvpa)
+    cpot <- potlist[[i]]    
+    t1   <- ctabmarg(cpot, cvpa)
+    t1   <- permctab(t1, cvpa)
     cptlist[[j]] <- t1
   }
   

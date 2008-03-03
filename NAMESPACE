@@ -29,10 +29,12 @@ export(
        "simplicialNodes",
        "isComplete",
 ### Advanced graph operations
+       "jTree",
        "mcs",
        "moralize",
        "triangulate",
        "ripOrder",
+       "print.ripOrder",       
        "mcwhSH"
        ,
 ### Table operations
@@ -70,7 +72,6 @@ export(
        "dag2cptspec",
        "cpt",
        "summary.gmInstance",
-       ##"as.probnet",
        "as.gmInstance",
        "as.gmInstance.huginNet",
        "as.cumcounts",

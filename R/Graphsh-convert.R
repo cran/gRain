@@ -25,12 +25,12 @@ convertg <- function(gg, to=c("NEL","graphsh","matrix")) {
 }
 
 .graphsh2adjmat <- function(gg){
-  adjmat(gg)
+  as.adjmat(gg)
 }
 
 .convert2matrix <- function(gg){
   if (inherits(gg,"ugsh") | inherits(gg,"dagsh")){
-    adjmat(gg)
+    as.adjmat(gg)
   } else {
     if (inherits(gg,"graphNEL")){
       .graphsh2adjmat(.convert2graphsh(gg))
@@ -50,12 +50,12 @@ convertg <- function(gg, to=c("NEL","graphsh","matrix")) {
   } else {
     edgemode <- "directed"  
   }
-  amat <- adjmat(gg)
+  amat <- as.adjmat(gg)
   V    <- colnames(amat)
   edL <- vector("list", length = length(V))
   names(edL) <- V
   for (i in 1:length(V)){
-    edL[[i]] <- list(edges=which(amat[i,]))
+    edL[[i]] <- list(edges=(which(amat[i,]>0)))
   }
   gR <- new("graphNEL", nodes = V, edgeL = edL,edgemode = edgemode)
   gR

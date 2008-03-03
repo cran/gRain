@@ -9,19 +9,19 @@ ctabdiv <- function(t1,t2){
   ctabop(t1,t2,"/")
 }
 
+# ctabop <- function(t1, t2, op="*"){
+#   ctabopx(t1,t2,op)
+# }
+
 ctabop <- function(t1, t2, op="*"){
-  ctabopx(t1,t2,op)
-}
 
-ctabopx <- function(t1, t2, op="*"){
-
-  nam1    <- t1$names
-  levn1   <- t1$levn
+  nam1    <- t1$varNames
+  levn1   <- t1$nLevels
   pot1    <- t1$values
   levels1 <- t1$levels
   
-  nam2    <- t2$names
-  levn2   <- t2$levn
+  nam2    <- t2$varNames
+  levn2   <- t2$nLevels
   pot2    <- t2$values
   levels2 <- t2$levels
   
@@ -58,12 +58,11 @@ ctabopx <- function(t1, t2, op="*"){
            pot1  <- pot1 / pot2
            dim(pot1) <- NULL
            pot1[!is.finite(pot1)] <- 0
-         } )
-
-
-
-  ##t3  <- ctab(nam1[permidx],levels1[permidx],pot1)
+         }
+         )
+  
   t3  <- ctabFRAGILE(nam1[permidx],levels1[permidx],pot1)
+  t3
 }
 
 
@@ -71,15 +70,12 @@ ctabopx <- function(t1, t2, op="*"){
 ## (which must be in the potentials domain)
 ##
 ctabmarg <- function(t1,marg,normalize=FALSE){
-  ctabmargxx(t1,marg,normalize)
-}
 
-ctabmargxx <- function(t1,marg,normalize=FALSE){
   if (length(marg)==1 && is.na(marg)){
     return(sum(t1$values))
   }
 
-  perm <- c(setdiff(t1$names, marg),marg)
+  perm <- c(setdiff(t1$varNames, marg),marg)
   t1 <- permctab(t1,perm)
   nc <- prod(sapply(t1$levels[marg],length))
   mat  <- matrix(t1$values, nc=nc)
@@ -98,7 +94,7 @@ ctabmargxx <- function(t1,marg,normalize=FALSE){
 ##
 permctab <- function(tab, perm){
   permidx <- match(perm, varNames(tab))
-  a <- array(tab$values, tab$levn)
+  a <- array(tab$values, tab$nLevels)
   #print(a); print(perm); print(varNames(tab)); print(permidx)
   a <- aperm(a, permidx)
   dim(a) <- NULL

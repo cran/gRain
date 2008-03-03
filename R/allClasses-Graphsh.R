@@ -71,7 +71,7 @@ newugsh <- function(x=NULL, ..., short=FALSE){
   })
   
   x   <- lapply(x, sort)
-  x   <- unlist(lapply(x, names2pairs, sort=FALSE), recursive=FALSE)
+  x   <- unlist(lapply(x, names2pairs, sort=TRUE), recursive=FALSE)
   x   <- unique(x)
   nodes   <- unique(unlist(x))
   xLength <- sapply(x,length)

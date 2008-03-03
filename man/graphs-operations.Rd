@@ -1,9 +1,11 @@
 \name{graphsh-operations}
 
+
+\alias{moralize}
 \alias{mcs}
 \alias{triangulate}
-\alias{moralize}
 \alias{ripOrder}
+\alias{jTree}
 
 \alias{edges-methods}
 \alias{nodes-methods}
@@ -33,24 +35,45 @@
 }
 
 \usage{
-triangulate(ug,root=NULL)
-mcs(ug,root=NULL)
 moralize(dag)
+mcs(ug,amat=as.adjmat(ug), vn=colnames(amat), root=NULL, index=FALSE)
+triangulate(ug,method="standard", nLevels, matrix=FALSE)
 ripOrder(ug,root=NULL,nLevels=NULL)
+jTree(ug, method="standard", vn=nodes(ug),nLevels, control=list())
+
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{ug}{An undirected graph (of class "ugsh")}
   \item{dag}{A directed graph (of class "dagsh")}
+  
+  \item{ug}{An undirected graph (of class "ugsh")}
+  \item{method}{The triangulation method, \code{"standard"} is a C
+    implementation of a minimum clique weight heuristic,
+    \code{"mcwh"} is a Fortran implementation of the same (kindly
+    provided by Peter Green) and \code{"R"} is a corresponding R
+    implementation. }
+  \item{matrix}{Should the triangulated graph be returned as an
+    adjacency matrix}
+  \item{amat}{The graph represented as an adjancecy matrix}
+  \item{vn}{The node names as they appear in the adjancecy matrix}
   \item{root}{Variables which must be in the first clique in the rip-ordering}
   \item{nLevels}{Number of levels of the nodes in the graph}
+  \item{index}{If TRUE, then a permutation is returned}
+  \item{control}{Currently not used}
   \item{\dots}{Currently not used.}
 }
-%\details{
-%  ~~ If necessary, more details than the description above ~~
-%}
+\details{
+  The jTree (for "junction tree") is just a wrapper for a call of
+  \code{triangulate} followed by a call of \code{ripOrder}.
+}
 \value{
-  Objects of class "graphsh".
+  \code{moralize} and   \code{triangulate} returns objects of class
+  "graphsh".
+
+  \code{mcs} returns a vector or NULL.
+
+  \code{ripOrder} returns a list with cliques, separators etc.
 }
 %\references{ ~put references to the literature/web site here ~ }
 \author{Søren Højsgaard, sorenh@agrsci.dk}

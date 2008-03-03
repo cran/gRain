@@ -54,14 +54,14 @@ queryg <-function(gg, type, set=NULL, set2=NULL, set3=NULL){
            c(set, unlist(adj(gg, set)))
          },
          "pa"={
-           x <- adjmat(gg)[,set,drop=FALSE]
-           x <- rep(rownames(x), ncol(x))[which(x)]
+           x <- as.adjmat(gg)[,set,drop=FALSE]
+           x <- rep(rownames(x), ncol(x))[which(x>0)]
            x <- setdiff(unique(x),set)
            if (length(x))x else NULL
          },
          "ch"={
-           x <- adjmat(gg)[set,,drop=FALSE]
-           x <- rep(colnames(x), each=nrow(x))[which(x)]
+           x <- as.adjmat(gg)[set,,drop=FALSE]
+           x <- rep(colnames(x), each=nrow(x))[which(x>0)]
            x <- setdiff(unique(x),set)
            if (length(x))x else NULL           
          },
@@ -74,7 +74,7 @@ queryg <-function(gg, type, set=NULL, set2=NULL, set3=NULL){
          "an"={
            set <-  c("ve","al")
            An <- set
-           x <- adjmat(gg)
+           x <- as.adjmat(gg)
            x <- x[-match(set, rownames(x)),]
            
            repeat{
@@ -125,7 +125,7 @@ ancestralGraph <- function(dag, set){
   }
 
 .ancestralSet <- function(dag, set){
-  amat <- adjmat(dag)
+  amat <- as.adjmat(dag)
   vn <- colnames(amat)
   an <- rep(0, length(vn))
   names(an) <- vn

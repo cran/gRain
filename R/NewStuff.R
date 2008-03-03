@@ -1,17 +1,3 @@
-print.ripOrder <- function(x, ...){
-  idx <- 1:length(x$cliques)
-  cat("Cliques\n")
-  mapply(function(xx,ii) cat(" ",ii,paste(xx, collapse=' '),"\n"), x$cliques, idx)
-  
-  cat("Separators\n")
-  mapply(function(xx,ii) cat(" ",ii,paste(xx, collapse=' '),"\n"), x$separators, idx)
-  
-  cat("Parents\n")
-  mapply(function(xx,ii) cat(" ",ii,paste(xx, collapse=' '),"\n"), x$pa, idx)
-  
-#  cat("Children\n")
-#  mapply(function(xx,ii) cat(" ",ii,paste(xx, collapse=' '),"\n"), x$ch, idx)
-}
 
 
 
@@ -70,7 +56,7 @@ eliminationOrder <- function(dag){
 
 eliminationOrder <- function(gg){
   is.acyc <- TRUE
-  amat <- adjmat(gg)
+  amat <- as.adjmat(gg)
   elorder <- NULL
 
   repeat{

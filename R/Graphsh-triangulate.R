@@ -1,26 +1,53 @@
 
-triangulate <- function(ug, root=NULL){
-  if (!is.null(root)){
-    if (length(root)>1)
-      ug <- updateugsh(ug, root)
-  }
-  tris(ug)
+triangulate <- function(ug, method="standard",
+                        nLevels=rep(2,length(nodes(ug))), matrix=FALSE){
+
+  trimethod <- c("standard","mcwh","r")
+  method <- match.arg(tolower(method),trimethod)
+  switch(method,
+         "mcwh"={ ## Peter Greens code
+           ans <- triangPG(ug,nLevels=nLevels)
+           if (matrix)
+             ans <- as.adjmat(ans)
+         },
+         "r"={ ## Pure R implementations
+           ans <- triangR(ug,nLevels=nLevels)
+           if (matrix)
+             ans <- as.adjmat(ans)
+         },
+         "standard"={
+           A  <- as.adjmat(ug)
+           Av <- as.numeric(A)
+           nc <- ncol(A)
+           vn <- colnames(A)
+           ##print(nLevels)
+           i  <-.C("triangmcwh", Av=as.integer(Av), nc, vn,
+                   as.integer(nLevels), ans=integer(1), PACKAGE="gRain")$Av
+           ans  <-matrix(i, nc=nc,nr=nc)
+           dimnames(ans)<-dimnames(A)
+           if (!matrix)
+             ans <- as.graphsh(ans)           
+         }
+         )
+  return(ans)
 }
 
-## Peters triangulation
+
+## Triangulation based on Peter Greens code
 ##
-trip <- function(ug){
-  jt <- junctionTree(ug)
-  cq <- jt$cliques
+
+triangPG <- function(ug,nLevels=rep(2,length(nodes(ug)))){
+  jt  <- jTree(ug, method="mcwh", nLevels=nLevels)
+  cq  <- jt$cliques
   tug <- newugsh(cq)
   return(tug)
 }
 
 ## Sørens triangulation
 ##
-tris <- function(ug, vn=nodes(ug), nLevels=rep(2, length(vn))){
+triangR <- function(ug, vn=nodes(ug), nLevels=rep(2, length(vn))){
   
-  amat    <- amat2 <- adjmat(ug)
+  amat    <- amat2 <- as.adjmat(ug)
   anodes  <- vn 
   names(nLevels) <- vn
 
@@ -30,37 +57,37 @@ tris <- function(ug, vn=nodes(ug), nLevels=rep(2, length(vn))){
   wgt   <- rep(NA,length(vn))
   names(wgt) <- vn
   repeat{
-    #cat("RUN\n")
-    #cat("activeList:", paste(vn[activeList==1], collapse=' '),"\n")
-    #print(activeList)
-    #print(gnodes)
+                                        #cat("RUN\n")
+                                        #cat("activeList:", paste(vn[activeList==1], collapse=' '),"\n")
+                                        #print(activeList)
+                                        #print(gnodes)
     for (ii in 1:length(anodes)){
       cn <- anodes[ii]
       if (activeList[cn]==1){
-        #nb <-  intersect(anodes, names(which(amat[cn,]==1)))
-        #print(as.numeric(amat[cn,]))
-        #print(as.numeric(amat[cn,])* gnodes)
-        #print((as.numeric(amat[cn,])* gnodes)==1)
+                                        #nb <-  intersect(anodes, names(which(amat[cn,]==1)))
+                                        #print(as.numeric(amat[cn,]))
+                                        #print(as.numeric(amat[cn,])* gnodes)
+                                        #print((as.numeric(amat[cn,])* gnodes)==1)
         nb <- (vn[(as.numeric(amat[cn,])* gnodes)==1])
-        #nb <-  names((as.numeric(amat[cn,]) * gnodes)==1)
+                                        #nb <-  names((as.numeric(amat[cn,]) * gnodes)==1)
         w  <-  prod(nLevels[c(cn,nb)])
         wgt[cn] <- w 
-     #   cat("cn:", cn, "nb:", paste(nb, collapse=' '), "wgt:", w, "\n")
+                                        #   cat("cn:", cn, "nb:", paste(nb, collapse=' '), "wgt:", w, "\n")
         activeList[cn] <- 0
       }
     }
-#    print(wgt)
+                                        #    print(wgt)
     id    <- which.min(wgt)
     wgt[id] <- Inf
-
-#    print(id)
+    
+                                        #    print(id)
     cn <- vn[id]
     nb <- (vn[(as.numeric(amat[cn,])* gnodes)==1])
-   # nb <- intersect(anodes, names(which(amat[cn,]==1)))
+                                        # nb <- intersect(anodes, names(which(amat[cn,]==1)))
     activeList[cn] <- -1
     activeList[nb] <-  1
     
- #   cat("completing bd for node:", cn, "nb:", paste(nb, collapse=' '), "\n")
+                                        #   cat("completing bd for node:", cn, "nb:", paste(nb, collapse=' '), "\n")
     
     if (length(nb)>1){
       for (i in 1:(length(nb)-1)){
@@ -76,9 +103,8 @@ tris <- function(ug, vn=nodes(ug), nLevels=rep(2, length(vn))){
     anodes <- setdiff(anodes,cn)
     if (length(anodes)==1) 
       break()
-#    amat   <- amat[anodes, anodes]
+                                        #    amat   <- amat[anodes, anodes]
   }
-
   
   amat2[lower.tri(amat2)] <- FALSE
   edmat <- edmat2 <- which(amat2, arr.ind=TRUE)
@@ -91,6 +117,36 @@ tris <- function(ug, vn=nodes(ug), nLevels=rep(2, length(vn))){
   ##print("DONE")
   return(tug)
 }
+
+
+
+
+jTree <- function(ug,
+                         method  = "standard",
+                         vn      = nodes(ug),
+                         nLevels = rep(2,length(vn)),
+                         control = list()){
+  trimethod <- c("standard","mcwh","r")
+  method <- match.arg(tolower(method),trimethod)
+
+  switch(method,
+         "standard"=,
+         "r"={
+           tug        <- triangulate(ug, method=method,nLevels=nLevels)
+           val        <- ripOrder(tug,nLevels=nLevels)
+           val$tug    <- tug
+           return(val)
+         },
+         "mcwh"={
+           val         <- ripOrderGreen(ug,vn,nLevels,control)
+           val$nLevels <- nLevels
+           val$tug     <- newugsh(val$cliques)
+           return(val)           
+         }
+         
+         )
+}
+
 
 
 
