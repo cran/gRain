@@ -7,7 +7,11 @@ c     integer size,totsize
       dimension nvals(nv),nn(nv),nbr(nv,nv),wt(nv),
      &     next(nv),iel(nv),cnbr(nc),le(nv),nne(nv),
      &     nbre(nc)
-      
+
+c     nbr: array with neighbours: nbr(i,..) has nbs of node i
+c     wt: vector with weights for each node
+c     iel: something with elimination (elimination order?)
+ 
       ip = 0
       do i = 1,nv
          do j = 1,nn(i)
