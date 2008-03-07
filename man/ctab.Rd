@@ -1,14 +1,22 @@
 \name{ctab}
 
+
+\alias{ptab}
+\alias{arrayop}
+\alias{arraymarg}
+\alias{subarray}
+
 \alias{ctab}
-\alias{varNames.ctab}
-\alias{nLevels.ctab}
-\alias{valueLabels.ctab}
+\alias{varNames.ptab}
+\alias{nLevels.ptab}
+\alias{valueLabels.ptab}
 \alias{ctab}
 \alias{ctabop}
-\alias{ctabdiv}
-\alias{ctabmult}
+%\alias{ctabdiv}
+%\alias{ctabmult}
 \alias{ctabmarg}
+
+
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Representation of and operations on multidimensional tables}
@@ -22,20 +30,20 @@
 \usage{
 ctab(varNames, nLevels, values = 1, normalize = c("none", "first", "all"), smooth = 0)
 ctabop(t1, t2, op="*")
-ctabdiv(t1, t2)
-ctabmult(t1, t2)
+%ctabdiv(t1, t2)
+%ctabmult(t1, t2)
 ctabmarg(t1, marg, normalize=FALSE)
 
-\method{varNames}{ctab}(x)
-\method{nLevels}{ctab}(x)
-\method{valueLabels}{ctab}(x)
+\method{varNames}{ptab}(x)
+\method{nLevels}{ptab}(x)
+\method{valueLabels}{ptab}(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{varNames}{Names of variables defining table}
   \item{nLevels}{Levels of variables}
   \item{values}{Table values}
-  \item{t1,t2,x}{Objects of class "ctab"}
+  \item{t1,t2,x}{Objects of class "ptab"}
   \item{op}{Operation to perform. Either "*" or "/" (where 0/0=0)}
   \item{marg}{Set of nodes to marginalize onto}
   \item{normalize}{Should result be normalized, see 'Details' below.}
@@ -70,20 +78,20 @@ ctabmarg(t1, marg, normalize=FALSE)
 
 \examples{
 t1 <- ctab(c("gender","answer"),list(c('male','female'),c('yes','no')), values=1:4)
-t2 <- ctab(c("answer","category"), list(c('yes','no'),2), values=1:4+10)
+t2 <- ctab(c("answer","category"), list(c('yes','no'),c(1,2)), values=1:4+10)
 t3 <- ctab(c("category","foo"), c(2,2), values=1:4+100)
 
 varNames(t1)
 nLevels(t1)
 valueLabels(t1)
 
-ctabmult(t1,t2)
-ctabdiv(t1,t2)
+ctabop(t1,t2, "*")
+ctabop(t1,t2, "/")
 
 tgender <- ctabmarg(t1, "gender")
 t1
 tgender
-ctabdiv(t1,tgender)
+ctabop(t1,tgender,"/")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
