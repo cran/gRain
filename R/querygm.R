@@ -1,18 +1,25 @@
 querygm <- function(object,nodes=nodeNames(object), normalize=TRUE,
-                    type=c("marginal","joint","conditional"), trace=0)
+                    type=c("marginal","joint","conditional"),
+                    return="array",
+                    trace=0)
 {
   UseMethod("querygm")
 }
 
 querygm.gmInstance <- function(object, nodes=nodeNames(object), normalize=TRUE,
-                    type=c("marginal","joint","conditional"), trace=0){
+                               type=c("marginal","joint","conditional"),
+                               return="array",
+                               trace=0){
 
+  return <- match.arg(return, c("array","data.frame"))
   t0 <- proc.time()
   if (!inherits(object, "compgmInstance")){
     #cat("Compiling model...\n")
     object <- compilegm(object)
   }
-    
+
+
+  
   if (!object$initialized){
     #cat("Propagating model...\n")
     object <- propagate(object)
@@ -26,17 +33,24 @@ querygm.gmInstance <- function(object, nodes=nodeNames(object), normalize=TRUE,
          "marginal"={
            ans <- nodeMarginal(object, nodes, trace)
            ans <- ans[nodes]
-           ans <- lapply(ans, as.numeric)
+           if (return=="data.frame")
+             ans <- lapply(ans, as.data.frame.table)
          },
          "joint"={
            ans<-nodeJoint(object, nodes, normalize, trace)
-           ans <- as.data.frame(ans)
+           ## ans <- as.data.frame(ans)
+           if (return=="data.frame")
+             ans <- as.data.frame.table(ans) ## BRIS
          },
          "conditional"={
-           qobject <- querygm(object, nodes, type="joint")
+           qobject <- querygm(object, nodes, type="joint", return="data.frame")
            nst     <- nodeStates(object)[nodes]
-           ans     <- ctab(nodes, nst, values=qobject$values, normalize="first")
-           ans <- as.data.frame(ans)
+           ##ans     <- ctab(nodes, nst, values=qobject$values, normalize="first")
+           ans     <- ctab(nodes, nst, values=qobject$Freq, normalize="first") ## BRIS
+           
+           ##ans <- as.data.frame(ans)
+           if (return=="data.frame")
+             ans <- as.data.frame.table(ans) ## BRIS
          })
   if (object$control$timing)
     cat("Time: query", proc.time()-t0, "\n")
@@ -64,17 +78,16 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=0){
   } else {
     vl    <- valueLabels(bn$gmData)[set]
     value <- ctab(names(vl),vl)
-
-    levs  <- as.data.frame(value)[,1:length(vl), drop=FALSE]
+    levs  <- as.data.frame.table(value)[,1:length(vl), drop=FALSE] ## BRIS
     levs2 <- do.call("cbind",lapply(levs, as.character))
     p<-sapply(1:nrow(levs2), function(i)
-                pevidence(enterEvidence(bn, nodes=set, states=levs2[i,]))
-                )
+              pevidence(enterEvidence(bn, nodes=set, states=levs2[i,]))
+              )
     if (normalize)
       p <- p / sum(p)
-    value$values <- p
+    attributes(p) <- attributes(value)
+    value <- p
   }
-  
   return(value)
 }  
 

@@ -38,10 +38,10 @@
     }
     if (trace>=4){
       cat("....Before:\n");   print(potlist[[j]])
-      cat("....After:\n");    print(ctabmult(potlist[[j]], cptc))
+      cat("....After:\n");    print(ctabop(potlist[[j]], cptc, "*"))
     }
     
-    potlist[[j]] <- ctabmult(potlist[[j]], cptc)    
+    potlist[[j]] <- ctabop(potlist[[j]], cptc, "*")    
   }
   if (trace>=4){cat("....potlist (after insertion):\n"); print(potlist) }
   potlist

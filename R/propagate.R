@@ -44,9 +44,9 @@ propagate.compgmInstance <- function(object, trace=object$trace){
         if(trace>=2) cat("..Marginalize onto separator :", "  {", csep,"}", "\n")
         
         septab   <- ctabmarg(cpot, csep)
-        cpotnew  <- ctabdiv (cpot, septab)             
+        cpotnew  <- ctabop (cpot, septab, "/")             
         potlist[[i]]     <- cpotnew        
-        potlist[[pa[i]]] <- ctabmult(cpa, septab) 
+        potlist[[pa[i]]] <- ctabop(cpa, septab, "*") 
 
         if(trace>=4) {
           cat("....Dividing by marginal\n")
@@ -55,20 +55,26 @@ propagate.compgmInstance <- function(object, trace=object$trace){
         }
 
       } else{        
-        potlist[[1]]$values <- potlist[[1]]$values * sum(cpot$values)        
-        cpot$values  <- cpot$values / sum(cpot$values)        
+        ##potlist[[1]]$values <- potlist[[1]]$values * sum(cpot$values)
+        potlist[[1]] <- potlist[[1]] * sum(cpot)  # BRIS
+        ##cpot$values  <- cpot$values / sum(cpot$values)
+        cpot  <- cpot / sum(cpot) # BRIS        
         potlist[[i]] <- cpot
       }
     }
   }
 
-  nc <- sum(potlist[[1]]$values)  
+  ##nc <- sum(potlist[[1]]$values)
+  nc <- sum(potlist[[1]])  # BRIS
+
+  ##print(nc)
   if (nc==0){
     stop("Propagation of inconsistent evidence has been attempted...\n",call.=FALSE)
   }
 
   if (initialize){
-    potlist[[1]]$values <- potlist[[1]]$values/nc
+    ##potlist[[1]]$values <- potlist[[1]]$values/nc
+    potlist[[1]] <- potlist[[1]]/nc ## BRIS
   }
   
   if (trace>=4) {
@@ -97,7 +103,7 @@ propagate.compgmInstance <- function(object, trace=object$trace){
           septab <- ctabmarg(potlist[[i]], seps[[ch[j]]])
 
           if(trace>=4) {cat("Marginal:\n"); print (septab)}
-          potlist[[ch[j]]] <- ctabmult(potlist[[ch[j]]], septab) ##newpot
+          potlist[[ch[j]]] <- ctabop(potlist[[ch[j]]], septab, "*") ##newpot
         }
       }
     }

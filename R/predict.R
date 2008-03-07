@@ -19,7 +19,8 @@ predict.compgmInstance <- function(object, response, predictors,
     p.e       <- pevidence(objecttmp1)
     p.evec[i] <- p.e
     for (j in 1:length(response)){
-      pj   <- nodeMarginal(objecttmp1, response[j])[[1]]$values
+      ##pj   <- nodeMarginal(objecttmp1, response[j])[[1]]$values
+      pj   <- nodeMarginal(objecttmp1, response[j])[[1]] ## BRIS
       ans[[j]][i,] <- pj
     }
   } 

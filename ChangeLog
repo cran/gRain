@@ -1,3 +1,19 @@
+2008-03-06 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* ctab objects changed to ptab objects (essentially arrays but
+	modified such that dimension attributes are preserved). 
+
+	* Reimplemntation of table operations
+
+	* A much faster implementation of simulate
+
+	* Documents are updated
+
+	* Various minor changes
+
+	* Version 0.2.0 uploaded
+
+
 2008-02-27 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* ctab slot-names have been modified
@@ -7,7 +23,8 @@
 	* Numerous small alterations
 
 	* Various docs (pdfs) included
-	
+
+	* Version 0.1.2 uploaded
 
 2008-01-30 Søren Højsgaard <sorenh@agrsci.dk>	
 

@@ -2,7 +2,9 @@
 dag2cptspec <- function(dag, gmData, smooth=0){
   vpavlist <- vpav(dag)
   ##ans      <- lapply(vpavlist, cpt2, gmData=gmData, smooth=smooth, normalize=TRUE)
+  ##cat("dag2cptspec:", smooth, "\n")
   ans      <- lapply(vpavlist, cpt2, gmData=gmData, smooth=smooth, normalize='first')
+
   cptspec(ans)
 }
 
@@ -22,9 +24,10 @@ ug2potspec <- function(ug, gmData, rip, smooth=0){
 
     if (!all(is.na(currs))){
       mtab <- ctabmarg(currtab, currs)
-      currtab <- ctabdiv(currtab, mtab)
+      currtab <- ctabop(currtab, mtab, "/")
     } else {
-      currtab$values <- currtab$values/sum(currtab$values)
+      ##currtab$values <- currtab$values/sum(currtab$values)
+      currtab <- currtab/sum(currtab) ## BRIS
     }
     ans[[i]] <- currtab
    }  

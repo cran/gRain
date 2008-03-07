@@ -88,26 +88,50 @@ summary(bn)
 plot(bn)
 
 
+## Asia (chest clinique) example - without using a gmData object
+##
+yn <- c("yes","no")
+a    <- cpt(~asia, values=c(1,99),levels=yn)
+t.a  <- cpt(~tub+asia, values=c(5,95,1,99),levels=yn)
+s    <- cpt(~smoke, values=c(5,5), levels=yn)
+l.s  <- cpt(~lung+smoke, values=c(1,9,1,99), levels=yn)
+b.s  <- cpt(~bronc+smoke, values=c(6,4,3,7), levels=yn)
+e.lt <- cpt(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
+x.e  <- cpt(~xray+either, values=c(98,2,5,95), levels=yn)
+d.be <- cpt(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+
+plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+pn <- newgmInstance(plist)
+pn
 
 
+summary(pn)
+plot(pn)
 
 
-## Create network from gmData and graph specification. There are two ways:
+## Create network from gmData (with data) and graph specification.
+## There are different ways:
 ##
 data(HairEyeColor)
 d   <- as.gmData(HairEyeColor)
 dag <- newdagsh(list(~Hair, ~Eye+Hair, ~Sex+Hair))
 class(dag)
+ug <- newugsh(list(~Eye+Hair, ~Sex+Hair))
+class(ug)
 
 ## 1) Create directly from dag
-#b1  <- as.probnet(dag,d)
-#class(b1)
+b1  <- newgmInstance(dag,d)
+class(b1)
 
 ## 2) Extract cpt's for dag from gmData and build network from cpt's
-#x<-dag2cptspec(dag,d)
-#class(x)
-#b2 <- as.probnet(x,d)
-#class(b2)
+x<-dag2cptspec(dag,d)
+class(x)
+b2 <- newgmInstance(x,d)
+class(b2)
+
+## 3) Build model from undirected (decomposable) graph
+b3  <- newgmInstance(ug,d)
+class(b3)
 
 
 }

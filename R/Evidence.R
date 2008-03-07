@@ -104,9 +104,11 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
     for (j in idx){            
       cpot <- potlist[[j]]
       ##cat("Current clique:", paste(varNames(cpot), sep=' '),"\n")
-      lev    <- cpot$levels[[currn]]
+      ##lev    <- cpot$levels[[currn]]
+      lev    <- valueLabels(cpot)[[currn]] ## BRIS
+      
       evTab  <- evidenceTable(currn, currs, lev)
-      potlist[[j]]  <- ctabmult(cpot, evTab)
+      potlist[[j]]  <- ctabop(cpot, evTab, "*")
     }
   }
   potlist

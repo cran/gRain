@@ -14,7 +14,7 @@
 }
 \usage{
 querygm(object, nodes = nodeNames(object), normalize = TRUE, type =
-c("marginal", "joint", "conditional"), trace = 0)
+c("marginal", "joint", "conditional"), return="array", trace = 0)
 
 enterEvidence(object, nodes=NULL, states=NULL, evlist=NULL, propagate=TRUE)
 retractEvidence(object, nodes=NULL, propagate=TRUE)
@@ -31,6 +31,8 @@ pevidence(object)
   \item{normalize}{Should the results be normalized to sum to one.}
   \item{type}{Should marginals (for each node), the joint for all nodes,
   or the conditional of the first node given the rest be returned.}
+  \item{return}{If "data.frame" the result is returned as a data frame
+    (or possibly as a list of dataframes).}
   \item{trace}{Debugging information}
 
 }

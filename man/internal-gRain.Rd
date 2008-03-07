@@ -14,7 +14,7 @@
 \alias{as.ctab.numeric}
 \alias{print.ugsh}
 \alias{print.dagsh}
-\alias{print.ctab}
+\alias{print.ptab}
 
 \alias{convertg}
 \alias{ancestralGraph}
@@ -61,14 +61,14 @@
 \alias{ug2dag}
 \alias{summary.gmInstance}
 \alias{printlist}
-\alias{printlist.numeric}
+\alias{printlist.default}
 \alias{printlist.list}
 \alias{splitVec}
-\alias{splitVec.numeric}
+\alias{splitVec.default}
 \alias{splitVec.list}
 
 \alias{getSlot}
-%\alias{}
+\alias{updateugsh}
 %\alias{}
 
 \title{Internal functions for the gRbayesnet package}
