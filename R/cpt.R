@@ -15,19 +15,21 @@ cpt <- function(v, pa=NULL, values=NULL, gmData=NULL,
   
   vpa <- c(formula2character(v),formula2character(pa))
   
-  if (!is.null(gmData)){
-    
+  if (!is.null(gmData)){    
     uuu <- match(vpa, varNames(gmData))
     if (any(is.na(uuu)))
       stop("Nodes {",paste(vpa[is.na(uuu)],collapse=','), "} do not exist in gmData\n")
     levels <- valueLabels(gmData)[vpa]
-    ans    <- ctab (vpa, levels, values, normalize=norm, smooth=smooth)  
+    ans    <- ctab(vpa, levels, values, normalize=norm, smooth=smooth)  
   } else {
     ans <- list(vpa=vpa, levels=levels, values=values, normalize=norm, smooth=smooth)
     class(ans)<-"cptTemplate"
   }  
   return(ans)  
 }
+
+
+
 
 print.cptTemplate <- function(x, ...){
   cat("v        :", x$vpa[1], "\n")
@@ -46,13 +48,13 @@ cptspec <- function(x){
     stop("Items in x must be of same class...\n")
   }
   switch(xclass,
-         "ctab"={
-           ##cat("Using ctab...\n")
-           vn <- sapply(lapply(x, varNames),"[[", 1)
-           vl <- lapply(lapply(x, "[[", "levels"), "[[", 1)           
+         "ptab"={
+           ## cat("Using ctab...\n")
+           vn <- sapply(lapply(x, varNames),    "[[", 1)
+           vl <- lapply(lapply(x, valueLabels), "[[", 1)
          },
          "cptTemplate"={
-           ## cat("Using cptTemplate...\n")
+           ##cat("Using cptTemplate...\n")
            vn <- sapply(lapply(x, "[[", "vpa"),"[[",1)
            vl <- lapply(x, "[[", "levels")
            names(vl)<-vn
@@ -142,5 +144,104 @@ cpt2 <- function(v, pa=NULL, values=NULL, gmData, smooth=0,
       values <- 1
     }
   }
+  
   ctab (c(v,pa), lev, values, normalize=normalize, smooth=smooth)
 }
+
+
+
+getcpt <- function(bn, v=NULL, pa=NULL){
+  if (is.null(v)){
+    vpavlist  <- vpav(getSlot(bn,"dag"))
+    xx        <- lapply(vpavlist, function(v){ getcpt(bn, v)})
+    names(xx) <- sapply(vpavlist, function(d)d[1])
+    xx
+  } else {
+    vvv <- c(v,pa);  #print(vvv)
+    qbn <- querygm(bn, vvv, type="joint")
+    nst <- nodeStates(bn)[vvv]
+    #print(qbn)    #print(nst)
+    ctab(vvv, nst, values=qbn$values, normalize="first")
+  }
+}
+
+eliminationOrder <- function(gg){
+  is.acyc <- TRUE
+  amat <- as.adjmat(gg)
+  elorder <- NULL
+
+  repeat{
+    idx <- which(rowSums(amat)==0)
+    if (!length(idx)){
+      return(NULL)
+    }
+    elorder <- c(elorder, idx)
+    amat <- amat[-idx,-idx]
+  
+    if(all(c(0,0)==dim(amat))){
+      break()
+    }
+  }
+  names(rev(elorder))
+}
+
+
+getSlot <- function(x, slot=NULL){
+  if (is.null(slot))
+    return(x)
+  return(x[[slot]])
+}
+
+vpav <- function(dag){
+  vert <- nodes(dag)
+  dagxx  <- c(vert, edges(dag))
+  vpalist <- as.list(rep(NA, length(vert)))
+  names(vpalist) <- vert
+  for (i in 1:length(vert)){
+    currv <- vert[i]
+    vv<-lapply(dagxx, function(x){
+      if (identical(x[1], currv)) x
+    })
+    vpa <- unlist(vv)
+    pa  <- setdiff(vpa, currv)
+    vpalist[[i]]<-c(currv, pa)
+  }
+  return(vpalist)
+}
+
+
+
+
+
+# eliminationOrder <- function(dag){
+
+#   elorder  <- NULL
+#   is.acyc  <- TRUE
+#   vpavlist <- vpav(dag)
+
+#   repeat{
+#     v   <-lapply(vpavlist, function(d) d[1])
+#     pav <- lapply(vpavlist, function(d) d[-1])
+    
+#     vs    <- unlist(v)
+#     pavs  <- unique(unlist(pav))
+    
+#     sdiff<-setdiff(vs,pavs)
+#     if (length(sdiff)==0){
+#       is.acyc <- FALSE
+#       break()
+#     }
+
+#     elorder <- c(elorder, sdiff[1])    
+#     idx<-match(sdiff,v)
+#     vpavlist <- vpavlist[-idx[1]]
+    
+#     if (length(vpavlist)==0)
+#       break()  
+#   }
+#   if (is.acyc)
+#     return(rev(elorder))
+#   else
+#     return(NULL)
+# }
+

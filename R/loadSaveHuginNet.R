@@ -3,12 +3,37 @@
 ##
 
 
-getLine   <- function(con) {
-  readLines(con, n=1)
+printlist <- function(x,d=0) UseMethod("printlist")
+
+##printlist.numeric <- function(x,d=0){
+printlist.default <- function(x,d=0){
+  paste("(", paste(x,collapse=' '),")",sep='')
+}
+printlist.list <- function(x,d=0){
+  tmp     <- unlist(lapply(x, printlist, d+2),recursive=FALSE)
+  prefix  <- as.list(c("(",rep(" ",length(tmp)-1)))
+  posfix  <- as.list(c(rep(" ",length(tmp)-1),")"))
+  as.list(mapply(function(l,x,r) {paste(l,x,r,sep='')}, prefix, tmp, posfix))
 }
 
-hasToken  <- function(token, cline) {
-  if (length(grep(token, cline))) TRUE else FALSE
+splitVec <- function(val, lev) UseMethod("splitVec")
+
+splitVec.list <- function(val, lev){
+  lapply(val, splitVec, lev)
+}
+
+##splitVec.numeric <- function(val, lev){
+splitVec.default <- function(val, lev){
+  m    <- matrix(val,nc=lev)
+  cval <- unlist(apply(m,2,list),recursive=FALSE)
+  cval
+}
+
+
+
+
+getLine   <- function(con) {
+  readLines(con, n=1)
 }
 
 hasToken  <- function(token, cline) {
@@ -320,30 +345,6 @@ transformHuginNet2internal <- function(x){
 }
 
 
-printlist <- function(x,d=0) UseMethod("printlist")
-
-printlist.numeric <- function(x,d=0){
-  paste("(", paste(x,collapse=' '),")",sep='')
-}
-printlist.list <- function(x,d=0){
-  tmp     <- unlist(lapply(x, printlist, d+2),recursive=FALSE)
-  prefix  <- as.list(c("(",rep(" ",length(tmp)-1)))
-  posfix  <- as.list(c(rep(" ",length(tmp)-1),")"))
-  as.list(mapply(function(l,x,r) {paste(l,x,r,sep='')}, prefix, tmp, posfix))
-}
-
-splitVec <- function(val, lev) UseMethod("splitVec")
-
-splitVec.list <- function(val, lev){
-  lapply(val, splitVec, lev)
-}
-splitVec.numeric <- function(val, lev){
-  m    <- matrix(val,nc=lev)
-  cval <- unlist(apply(m,2,list),recursive=FALSE)
-  cval
-}
-
-
 
 saveHuginNet <- function(bn, file, trace=0){
   
@@ -393,9 +394,13 @@ saveHuginNet <- function(bn, file, trace=0){
 
     cpot <- cptlist[[ii]]
     
-    nam <- cpot$varNames
-    lev <- cpot$levels
-    val <- cpot$values
+    ##nam <- cpot$varNames
+    ##lev <- cpot$levels
+    ##val <- cpot$values
+
+    nam <- varNames(cpot)    ## BRIS
+    lev <- valueLabels(cpot) ## BRIS
+    val <- cpot              ## BRIS
     
     v  <- nam[1]
     pa <- nam[-1]
@@ -404,9 +409,11 @@ saveHuginNet <- function(bn, file, trace=0){
     wval  <- val
     if (length(lev)>0){
       for (i in 1:length(lev)){
+        print("splitVec:"); print(wval); print(class(wval))
         wval<-splitVec(wval,length(lev[[i]]))
       }
     }
+    ##print(wval); print(class(wval))
     plx <- printlist(wval)
     
     if (length(pa)){

@@ -105,9 +105,13 @@ compilegm <-
   function(x, method="standard", propagate=FALSE, root=NULL, smooth=0,
            control=x$control,
            trace=0){
-    
-    cptlist <- dag2cptspec(x$dag,x$gmData,smooth=smooth)
+
+    ##cat("compile", smooth, "\n")
+    cptlist   <- dag2cptspec(x$dag,x$gmData,smooth=smooth)
     x$cptlist <- cptlist
+
+    ## print.default(cptlist)
+    
     "compilegm.cpt-gmInstance"(x, method=method, propagate=propagate,
                                root=root, smooth=smooth, trace=trace)
   }
@@ -150,13 +154,16 @@ compilegm <-
 
     t0 <- proc.time()
 
+    ##cat("HJHHHHHHHHHHHHHH\n")
     dummypotlist <- .createPotentialList(rip,x$gmData)
     if (!is.null(control$timing) && control$timing)
       cat("Time: Create potentials:", proc.time()-t0,"\n")
 
-
+    
     t0 <- proc.time()
     potlist     <-  .insertCpt(x$cptlist, dummypotlist, rip, trace)
+
+
     potlistwork <- potlistorig <- potlist 
     if (!is.null(control$timing) && control$timing)
       cat("Time: Insert cpt into potentials:", proc.time()-t0,"\n") 
@@ -173,7 +180,10 @@ compilegm <-
     
     ans        <- c(x, ans)
     class(ans) <- c('compgmInstance', class(x))
-    
+
+    ##print(potlist[[2]])
+    ##print(ans$potlist[[2]])
+
     if (propagate){
       if (trace>=1) cat (".Initializing network\n")
       ans             <- propagate(ans)
@@ -251,7 +261,7 @@ compilegm <-
 ##
 
 print.gmInstance <- function(x,...){
-  cat("Probabilistic network:", x$description, " ")
+  cat("Independence network: ") #", x$description, " ")
 
   isCompiled <- inherits(x, "compgmInstance")
   isPropagated <- x$propagated
