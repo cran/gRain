@@ -22,7 +22,7 @@
   lencli <- length(cli)
 
   ## Note: perhaps create amat globally 
-  amat <- cliquemat(cli=cli,vn=rip$nodes)
+  amat <- as.setmat(cli,vn=rip$nodes)
   
   for (i in 1:length(cptlist)){
     cptc <- cptlist[[i]]

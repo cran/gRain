@@ -1,4 +1,4 @@
-\name{graphsh}
+\name{grash}
  
 \alias{newugsh}
 \alias{newug}
@@ -49,11 +49,19 @@ newdag(..., short=FALSE)
 
 \seealso{\code{\link{queryg}}}
 \examples{
+
+ug <- newug(~me:ve,~me:al,~ve:al,~al:an,~al:st,~an:st)
+
+ug <- newug(~me:ve:al,~al:an:st)
+
 ug <- newug(c("me","ve"),c("me","al"),c("ve","al"),c("al","an"),c("al","st"),c("an","st"))
-ug <- newug(~me+ve,~me+al,~ve+al,~al+an,~al+st,~an+st)
+
+ug <- newug(~me:ve:al, c("me","ve"),c("me","al"),c("ve","al"),c("al","an"),c("al","st"),c("an","st"))
 
 dag <- newdag(c("me","ve"),c("me","al"),c("ve","al"),c("al","an"),c("al","st"),c("an","st"))
-dag <- newdag(~me+ve,~me+al,~ve+al,~al+an,~al+st,~an+st)
+dag <- newdag(~me:ve,~me:al,~ve:al,~al:an,~al:st,~an:st)
+
+dag2 <- newdag(~me:ve:al,~ve:al:an)
 
 edges(ug)
 nodes(ug)

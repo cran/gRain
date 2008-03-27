@@ -1,7 +1,11 @@
-predict.compgmInstance <- function(object, response, predictors,
+predict.gmInstance <- function(object, response, predictors,
                                    newdata, type="class", ...){
 
-   
+
+  if (!inherits(object, "compgmInstance"))
+    object <- compilegm(object, propagate=TRUE)
+
+  
   type <- match.arg(type, c("class","distribution"))
   nstate <- nodeStates(object,response)
   if (missing(predictors))

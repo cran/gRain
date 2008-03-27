@@ -37,7 +37,8 @@ as.probnet <- function(x,
                        trace = 0,
                        ...){
   if (inherits(x, "huginNet")){
-    newgmInstance(x$cptlist, x$gmData, description=description, control=control, trace=trace )
+    newgmInstance(x$cptlist, x$gmData,
+                  description=description, control=control, trace=trace )
   } else {
     newgmInstance(x, gmData, description=description, control=control, trace=trace)
   }

@@ -1,82 +1,82 @@
-queryg <-function(gg, type, set=NULL, set2=NULL, set3=NULL){
-  type=match.arg(type, 
-    choices=c(
-      "maxClique","cliques", 
-      "connectedComp","concomp",
-      "separates",
-      "nodes",
-      "edges",
-      "adj",
-      "cl",
-      "pa",
-      "ch",
-      "ne",
-      "an",
-      "is.complete",
-      "simplicialNodes",
-      "is.simplicial",
-      "ancestralSet",
-      "ancestralGraph",
-      "is.triangulated",
-      "subgraph"
-      ))
-  is.graphsh <- inherits(gg,"ugsh") || inherits(gg,"dagsh")
+queryg <-function(object, type, set=NULL, set2=NULL, set3=NULL){
+
+  if (!inherits(object,c("ugsh","dagsh")))
+    stop("queryg needs an ugsh-graph or a dagsh-graph\n")
+  
+  type=match.arg(type,  choices=c( 
+                          ## From graph package
+                          ##
+                          "maxClique","cliques", 
+                          "connectedComp","concomp",
+                          "separates",
+                          "adj",
+                          "cl",
+                          "ne",
+                          "is.triangulated",
+                          "subgraph",
+                          ## SHD functions
+                          ##
+                          "an",
+                          "pa",
+                          "ch",
+                          "nodes",
+                          "edges",                          
+                          "is.complete",
+                          "simplicialNodes",
+                          "is.simplicial",
+                          "ancestralSet",
+                          "ancestralGraph"
+
+                          ))
+  
+  nelobject <- .grash2nel(object)
+
   switch(type,
+         ## Functions from graph package here.
+         ##
+
          "maxClique"=,"cliques"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           maxClique(gg)$maxCliques
+           maxClique(nelobject)$maxCliques
          },
+
          "connectedComp"=,"concomp"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           connectedComp(gg)
+           connectedComp(nelobject)
          },
+
          "separates"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           separates(set, set2, set3, gg)
+           separates(set, set2, set3, nelobject)
          },
-         "nodes"={
-           nodes(gg)
-         },
-         "edges"={
-           edges(gg)
-         },
+
          "adj"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           adj(gg, set)
+           adj(nelobject, set)
          },
+
          "cl"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           c(set, unlist(adj(gg, set)))
+           unique(c(set, unlist(adj(nelobject, set))))
          },
-         "pa"={
-           x <- as.adjmat(gg)[,set,drop=FALSE]
-           x <- rep(rownames(x), ncol(x))[which(x>0)]
-           x <- setdiff(unique(x),set)
-           if (length(x))x else NULL
-         },
-         "ch"={
-           x <- as.adjmat(gg)[set,,drop=FALSE]
-           x <- rep(colnames(x), each=nrow(x))[which(x>0)]
-           x <- setdiff(unique(x),set)
-           if (length(x))x else NULL           
-         },
+
          "ne"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           x   <-  adj(gg, set)
+           x   <-  adj(nelobject, set)
            setdiff(unique(unlist(x)),set)
          },
+                  
+         "is.triangulated"={
+           is.triangulated(nelobject)
+         },
+         
+         "subgraph"={
+           .nel2grash(subGraph(set, nelobject))
+         },         
+         ## !!
+
+         
+         ## SHD graph functions here
          "an"={
-           set <-  c("ve","al")
+           setorig <- set
            An <- set
-           x <- as.adjmat(gg)
+           x <- .grash2adjmat(object)
            x <- x[-match(set, rownames(x)),]
-           
+
            repeat{
              set2 <- rowSums(x[,set, drop=FALSE])
              set <- names(which(set2>0))
@@ -85,42 +85,55 @@ queryg <-function(gg, type, set=NULL, set2=NULL, set3=NULL){
              An <- c(An, set)
              x <- x[set2 == 0,,drop=FALSE]
            }
-           An
+
+           setdiff(An, setorig)
+         },
+
+         "pa"={
+           x <- .grash2adjmat(object)[,set,drop=FALSE]
+           x <- rep(rownames(x), ncol(x))[which(x>0)]
+           x <- setdiff(unique(x),set)
+           if (length(x))x else NULL
+         },
+         
+         "ch"={
+           x <- as.adjmat(object)[set,,drop=FALSE]
+           x <- rep(colnames(x), each=nrow(x))[which(x>0)]
+           x <- setdiff(unique(x),set)
+           if (length(x))x else NULL           
+         },
+
+         "nodes"={
+           nodes(object)
+         },
+         "edges"={
+           edges(object)
          },
          "is.complete"={
-           isComplete(gg)
+           isComplete(object)
          },
          "simplicialNodes"={
-           simplicialNodes(gg)
+           simplicialNodes(object)
          },
          "is.simplicial"={
-           isSimplicial(gg, set)
+           isSimplicial(object, set)
          },
          "ancestralSet"={
-           .ancestralSet(gg, set)
+           .ancestralSet(object, set)
          },
          "ancestralGraph"={
-           ancestralGraph(gg, set)
-         },
-         "is.triangulated"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           is.triangulated(gg)
-         },
-         "subgraph"={
-           if (is.graphsh)
-             gg <- convertg(gg, "NEL")
-           convertg(subGraph(set, gg),to="graphsh")
-         }         
+           .ancestralGraph(object, set)
+         }
          )  
 }
 
 
-ancestralGraph <- function(dag, set){
-  A<-.ancestralSet(dag, set)
-  g<-convertg(dag, "NEL")
-  sg<-subGraph(A,g) 
-  sg<-convertg(sg, "graphsh")
+.ancestralGraph <- function(dag, set){
+  A  <- .ancestralSet(dag, set)
+  ##g<-convertg(dag, "NEL")
+  g  <- .grash2nel(dag)
+  sg <- subGraph(A,g) 
+  sg <- .nel2grash(sg)
   sg
   }
 
