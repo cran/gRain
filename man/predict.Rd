@@ -1,5 +1,5 @@
-\name{predict.compgmInstance}
-\alias{predict.compgmInstance}
+\name{predict.gmInstance}
+\alias{predict.gmInstance}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Make predictions from a probabilistic network}
 \description{
@@ -8,7 +8,7 @@
   in an independence network.
 }
 \usage{
-\method{predict}{compgmInstance}(object, response, predictors, newdata, type = "class", ...)
+\method{predict}{gmInstance}(object, response, predictors, newdata, type = "class", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

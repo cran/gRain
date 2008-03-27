@@ -101,7 +101,6 @@ arrayop <- function(t1, t2, op = "*"){
     pot1[!is.finite(pot1)] <- 0
   }
   attributes(pot1) <- list(dim=lev1[perm], dimnames=levels1[perm], class="ptab")
-
   pot1
 }
 
@@ -121,9 +120,7 @@ arraymarg <- function(t1, marg, normalize=FALSE){
     x <- x/sum(x)
   att           <- attributes(t1)
   attributes(x) <- list(dim=att$dim[idx], dimnames=att$dimnames[idx], class="ptab")
-  ## print(as.data.frame.table(x))
-  ## class(x) <- c("ptab")
-  invisible(x)
+  x
 }
 
 ## Returns the subarray of x where the margin[i]'th index

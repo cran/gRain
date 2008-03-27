@@ -9,8 +9,7 @@ moralize                Operations on undirected and directed acyclic
                         graphs.
 newgmInstance           Graphical Independence Network
 newugsh                 Create undirected and directed graphs
-predict.compgmInstance
-                        Make predictions from a probabilistic network
+predict.gmInstance      Make predictions from a probabilistic network
 queryg                  Query a graph
 querygm                 Query an independence network
 simulate.gmInstance     Simulate from an independence network

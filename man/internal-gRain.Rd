@@ -1,7 +1,13 @@
 \name{internal-gRain}
 
+%% Graph conversion
+%%
+\alias{as.adjmat}
+\alias{as.graphNEL}
+\alias{as.grash}
 
-
+%% Simple graph operations. Should be removed at some point of time...
+%%
 \alias{neigh}
 \alias{closure}
 \alias{subgraph}
@@ -9,15 +15,18 @@
 \alias{isSimplicial}
 \alias{simplicialNodes}
 
+%% Additional graph operations
+
+\alias{print.ugsh}
+\alias{print.dagsh}
+
+
+
 \alias{as.data.frame.ctab}
 \alias{as.double.ctab}
 \alias{as.ctab.numeric}
-\alias{print.ugsh}
-\alias{print.dagsh}
 \alias{print.ptab}
 
-\alias{convertg}
-\alias{ancestralGraph}
 
 \alias{mcwhSH}
 
@@ -39,8 +48,6 @@
 \alias{compilegm.dag-gmInstance}
 \alias{compilegm.ug-gmInstance}
 
-
-
 \alias{propagate}
 \alias{propagate.compgmInstance}
 
@@ -48,8 +55,6 @@
 \alias{checkdag}
 \alias{ctabnames}
 
-
-\alias{maximalSet}
 \alias{nodeMarginal}
 \alias{nodeJoint}
 \alias{propagate}

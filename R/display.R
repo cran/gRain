@@ -1,5 +1,5 @@
 ##
-## display (gRain)
+## plot (gRain)
 ##
 
 "plot.cpt-gmInstance" <- function(x, ...){
@@ -28,66 +28,84 @@ plot.dagsh <- function(x, ...){
 
 
 .plot.graphsh <- function(graph){
-
-  if (length(graph)==0)
-    return(NULL)
-
-
-  edges <- edges(graph)
-  nodes <- nodes(graph)
-
-  nAttrs <- list()
-  nodeColours        <- rep("yellow", length(nodes))
-  names(nodeColours) <- nodes
-  nAttrs$fillcolor   <- nodeColours
-  
-  edgeColours        <- rep("blue",length(edges))
-  names(edgeColours) <- sapply(edges, function(ee) {
-    estr <- paste(ee[1],"~",ee[2],sep='');
-    estr
-  })
-
-  eAttrs             <- list(color=edgeColours)
-
-  V   <- nodes
-
-  edL <- vector("list", length=length(V))
-  names(edL) <- V
-  nv <- 1:length(V)
-  names(nv) <- V    
-  ed <- edges
-
-  if (class(graph)[1]=="ugsh"){
-    for (i in 1:length(V)){
-      idx <- sapply(ed, function(x) is.element(V[i],x))
-      e   <- setdiff (unlist(ed[idx]),V[i])
-      edL[[V[i]]] <- list(edges=nv[e])
-    }
-    edL<- edL[sapply(edL,length)>0]
-    G <- new("graphNEL", nodes=V,edgeL=edL,edgemode='undirected')
-  } else {
-    ed <- do.call("rbind",ed)
-    ed<<-ed
-    for (i in 1:length(V)){
-      #print(V[i])
-      idx <- which((V[i] == ed[,2]))
-      #print(idx)
-      if (length(idx)){
-        e <- ed[idx,1]
-        edL[[V[i]]] <- list(edges=e)
-      } else {
-        edL[[V[i]]] <- list()
-      }
-    }
-    edL <<- edL
-    G <- new("graphNEL", nodes=V,edgeL=edL,edgemode='directed')
-  }
-
-  ##
-  plot(G, "neato", nodeAttrs = nAttrs, edgeAttrs = eAttrs)
-
+  plot(as.graphNEL(graph))
   return(invisible(graph))
 }
+
+########################################################################
+
+
+
+
+
+# .plot.graphsh <- function(graph){
+
+#   if (length(graph)==0)
+#     return(NULL)
+
+
+#   edges <- edges(graph)
+#   nodes <- nodes(graph)
+
+#   nAttrs <- list()
+#   nodeColours        <- rep("yellow", length(nodes))
+#   names(nodeColours) <- nodes
+#   nAttrs$fillcolor   <- nodeColours
+  
+#   edgeColours        <- rep("blue",length(edges))
+#   names(edgeColours) <- sapply(edges, function(ee) {
+#     estr <- paste(ee[1],"~",ee[2],sep='');
+#     estr
+#   })
+
+#   eAttrs             <- list(color=edgeColours)
+
+#   V   <- nodes
+
+#   edL <- vector("list", length=length(V))
+#   names(edL) <- V
+#   nv <- 1:length(V)
+#   names(nv) <- V    
+#   ed <- edges
+
+#   if (class(graph)[1]=="ugsh"){
+#     for (i in 1:length(V)){
+#       idx <- sapply(ed, function(x) is.element(V[i],x))
+#       e   <- setdiff (unlist(ed[idx]),V[i])
+#       edL[[V[i]]] <- list(edges=nv[e])
+#     }
+#     edL<- edL[sapply(edL,length)>0]
+#     G <- new("graphNEL", nodes=V,edgeL=edL,edgemode='undirected')
+#   } else {
+#     ed <- do.call("rbind",ed)
+    
+#     for (i in 1:length(V)){
+#       #print(V[i])
+#       idx <- which((V[i] == ed[,2]))
+#       #print(idx)
+#       if (length(idx)){
+#         e <- ed[idx,1]
+#         edL[[V[i]]] <- list(edges=e)
+#       } else {
+#         edL[[V[i]]] <- list()
+#       }
+#     }
+#     G <- new("graphNEL", nodes=V,edgeL=edL,edgemode='directed')
+#   }
+
+#   ##
+#   plot(G, "neato", nodeAttrs = nAttrs, edgeAttrs = eAttrs)
+
+#   return(invisible(graph))
+# }
+
+
+
+
+
+
+
+
 
 
 

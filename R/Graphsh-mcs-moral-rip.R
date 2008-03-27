@@ -88,8 +88,8 @@ mcs <- function(ug, amat=as.adjmat(ug), vn=colnames(amat), root=NULL, index=FALS
     is.perfect <- is.comp
     
     if (!is.perfect){
-      cat("NOT perfect\n")
-      print(cnode)
+      #cat("NOT perfect\n")
+      #print(cnode)
 
       break()
     }

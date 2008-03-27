@@ -1,4 +1,4 @@
-\name{graphsh-operations}
+\name{grash-operations}
 
 
 \alias{moralize}
