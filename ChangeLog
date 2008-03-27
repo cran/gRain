@@ -1,3 +1,14 @@
+2008-03-27 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* duplicate facilities (now moved to gRbase) are removed.
+	
+	* Debugging output in mcs removed
+
+	* Major cleanup in graph code
+	
+	* Version 0.3.0 uploaded
+
+
 2008-03-06 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* ctab objects changed to ptab objects (essentially arrays but

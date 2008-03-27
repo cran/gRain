@@ -7,18 +7,18 @@
   specifically graphs as created with \code{newug} and \code{newdag}.  
 }
 \usage{
-queryg(gg, type, set = NULL, set2 = NULL, set3 = NULL)
+queryg(object, type, set = NULL, set2 = NULL, set3 = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{gg}{A graph object}
+  \item{object}{A graph object; i.e. either an unidrected graph (ugsh)
+    or a directed acyclic graph (dagsh)}
   \item{type}{Query type, see 'details' below.}
   \item{set,set2,set3}{Possible arguments to a graph query of type \code{type}}
 }
 \details{
   The \code{type} can be:
   \itemize{
-    \item {sadasd:} 
     \item {adj:} Nodes adjacant to \code{set}
     \item {an:} Ancestors of \code{set}
     \item {ancestralGraph:} Ancestral graph induced by \code{set}

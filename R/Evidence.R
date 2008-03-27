@@ -90,7 +90,7 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
   cli <- rip$cliques
 
   ## Note: perhaps create amat globally 
-  amat <- cliquemat(cli=cli,vn=rip$nodes)
+  amat <- as.setmat(cli,vn=rip$nodes)
   
   for (i in 1:length(nodes)){
     currn <- nodes[i]

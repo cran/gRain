@@ -26,7 +26,7 @@ triangulate <- function(ug, method="standard",
            ans  <-matrix(i, nc=nc,nr=nc)
            dimnames(ans)<-dimnames(A)
            if (!matrix)
-             ans <- as.graphsh(ans)           
+             ans <- as.grash(ans)           
          }
          )
   return(ans)

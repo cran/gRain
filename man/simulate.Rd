@@ -10,7 +10,7 @@
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{A bayesnet object}
+  \item{object}{An inpendence network}
   \item{nsim}{Number of cases to simulate}
   \item{seed}{An optional integer controlling the random number generatation}
   \item{\dots}{Not used...}
