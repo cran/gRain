@@ -4,6 +4,8 @@ triangulate <- function(ug, method="standard",
 
   trimethod <- c("standard","mcwh","r")
   method <- match.arg(tolower(method),trimethod)
+
+
   switch(method,
          "mcwh"={ ## Peter Greens code
            ans <- triangPG(ug,nLevels=nLevels)
@@ -16,10 +18,14 @@ triangulate <- function(ug, method="standard",
              ans <- as.adjmat(ans)
          },
          "standard"={
+
            A  <- as.adjmat(ug)
+
            Av <- as.numeric(A)
+
            nc <- ncol(A)
            vn <- colnames(A)
+
            ##print(nLevels)
            i  <-.C("triangmcwh", Av=as.integer(Av), nc, vn,
                    as.integer(nLevels), ans=integer(1), PACKAGE="gRain")$Av
@@ -133,6 +139,7 @@ jTree <- function(ug,
          "standard"=,
          "r"={
            tug        <- triangulate(ug, method=method,nLevels=nLevels)
+
            val        <- ripOrder(tug,nLevels=nLevels)
            val$tug    <- tug
            return(val)

@@ -127,9 +127,9 @@ mcs <- function(ug, amat=as.adjmat(ug), vn=colnames(amat), root=NULL, index=FALS
 
 ripOrder <- function(ug, root=NULL,nLevels=NULL){
 
-  subsetof3 <- function(g1, g2){
-    all(.Internal(match( g1, g2, 0))>0)
-  }
+  #subsetof3 <- function(g1, g2){
+  #  all(.Internal(match( g1, g2, 0))>0)
+  #}
   
   t0 <- proc.time()
   amat <- as.adjmat(ug)
@@ -184,7 +184,7 @@ ripOrder <- function(ug, root=NULL,nLevels=NULL){
     sp[[ii]] <- isect  
     if (length(isect)){
       for (kk in (ii-1):1){  #print("----");print(kk); print(cq[[kk]]); print(isect)
-        if (subsetof3(isect,cq[[kk]])){
+        if (subsetof(isect,cq[[kk]])){
           pa[ii]   <- kk  
           break()    
         }

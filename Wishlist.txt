@@ -21,8 +21,6 @@
 
 * Implement max-propagation
 
-* Implement triangulation algorithm in C
-
 * Create update function
 
 * Describe the control-list
@@ -44,8 +42,6 @@
 
 - Look into discretization of variables; calculate mean/var when a variable is ordinal.
 
-- Use gRbase naming convention: varNames etc.
-
 - Create cpt from a dataframe/table...
 
 - Postpone triangulation until evidence E=e* and a set U of nodes of interest are specified.
@@ -57,8 +53,5 @@
   
 - Optimal triangulation: Lauritzen Sheehan, Statistical science, graphical models in genetics
 
-- Simulate in cliques; gives MC propagation as an alternative
-  propagation scheme
 
-- Improve simulate function (it is way too slow)
 
