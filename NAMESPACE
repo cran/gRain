@@ -42,6 +42,7 @@ export(
 ### Table operations
        "ctab",
        "ptab",
+       "as.ptab",
        "ctabmarg",
        "arraymarg",
        "arrayop",       

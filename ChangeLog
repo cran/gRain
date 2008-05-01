@@ -1,6 +1,16 @@
+2008-05-01 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* Coercion to ptab with as.ptab introduced.
+
+	* Minor bugs corrected
+
+	* Vignette added
+
+	* Version 0.3.1 uploaded
+	
 2008-03-27 Søren Højsgaard <sorenh@agrsci.dk>	
 
-	* duplicate facilities (now moved to gRbase) are removed.
+	* duplicated facilities (now moved to gRbase) are removed.
 	
 	* Debugging output in mcs removed
 

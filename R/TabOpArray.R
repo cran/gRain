@@ -55,6 +55,32 @@ makeDimNames <- function(varNames, nLevels,sep=''){
   mapply(function(n,v) paste(n,v,sep=sep), varNames, lev, SIMPLIFY=FALSE)
 }
 
+## Coercion
+##
+as.ptab  <- function(x, ...){
+  values <- x
+  if (!inherits(values, c("array","matrix","integer","double"))){
+    stop("arg must be array, matrix, integer or double\n")
+  }
+  if (is.null(dimnames(values))){
+    if (!is.null(dim(values)))
+      nLevels <- dim(values)
+    else 
+      nLevels <- length(values)
+    varNames <- paste("V", 1:length(nLevels),sep='')
+    dimnames <- makeDimNames(varNames, nLevels)
+    ans <- array(values, dim = nLevels, dimnames = dimnames)
+    class(ans) <- "ptab"
+  } else {
+    ans <- values
+    class(ans) <- "ptab"
+  }
+  return(ans)
+}  
+
+
+
+
 ## Find permutation of variables in set2 such that those in set1 are either
 ## to the far right or far left
 ##

@@ -26,6 +26,7 @@
 \alias{as.double.ctab}
 \alias{as.ctab.numeric}
 \alias{print.ptab}
+\alias{as.ptab}
 
 
 \alias{mcwhSH}
