@@ -133,6 +133,7 @@ compilegm <-
                                         # UPS - dette virker ikke.... Hvorfor...
                                         #x$cptlist  <- cptspec(x$cptlist[elorder])
 
+
     t0 <- proc.time()
     mdag       <- moralize(x$dag)
     if (!is.null(control$timing) && control$timing)
@@ -148,7 +149,7 @@ compilegm <-
 
     t0 <- proc.time()
     rip <- jTree(mdag, method=method, vn=vn, nLevels=nLev,  control=control)
-    
+
     if (!is.null(control$timing) && control$timing)
       cat("Time: triangulate:", proc.time()-t0,"\n")
 

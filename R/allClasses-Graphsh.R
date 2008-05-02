@@ -95,27 +95,28 @@ newugsh <- function(x=NULL, ..., short=FALSE){
 
 newdagsh <- function(x=NULL, ..., short=FALSE){
   isForm <-sapply(x, inherits, "formula")
-  
   flist <- x[isForm]
+
   ans <- lapply(flist, function(f){
     tt    <- terms(f)
     glist <- remove.redundant(strsplit(attr(tt,"term.labels"),":|\\*"))
     V     <- rownames(attr(tt,"factors"))
     list(glist=glist,V=V)
   }) 
-  
-  gset  <- unlist(lapply(ans, "[[", "glist"), recursive=FALSE)
+
+
+  gset  <-lapply(lapply(ans, "[[", "glist"), unlist)
   V     <- lapply(ans, "[[", "V")
   
   gset <- c(gset, x[!isForm])
   V    <- unique(unlist(c(V, x[!isForm])))
-
+  
   gset <- lapply(gset, function(xx) names2pairs(xx[1],xx[-1], sort=FALSE))
   gset <- unlist(gset,recursive=FALSE)
   gset <- unique(gset)
 
   ed   <- gset[sapply(gset,length)==2]
- 
+
   if (length(ed)==0)
     ed <- NULL
   value <- new("dagsh", gens=NULL, nodes=V, edges=ed,short=short)

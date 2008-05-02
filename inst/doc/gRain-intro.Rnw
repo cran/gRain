@@ -1,0 +1,232 @@
+% \VignetteIndexEntry{Short introduction to the gRain package}
+% \VignetteDepends{gRbase}
+% \VignetteKeyword{Graphical Models}
+% \VignetteKeyword{Probabilistic networks}
+
+\documentclass{article}
+
+%% For Danish letters. 
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+
+\usepackage{Sweave,amsmath,amsfonts,bm,url}
+\usepackage[authoryear,round]{natbib}
+\bibliographystyle{plainnat}
+
+
+\newcommand{\package}[1]{\textsf{\small{#1}}}
+\newcommand{\trans}{\ensuremath{^\prime}}
+\renewcommand{\vec}{\operatorname{vec}}
+
+\def\shd#1{\footnote{SHD #1}}
+\def\pkg#1{\texttt{#1}}
+
+\def\code#1{\texttt{#1}}
+
+\def\grain{\texttt{gRain}}
+\def\inet{\texttt{iNet}}
+
+\author{
+  S{\o}ren H{\o}jsgaard\\Aarhus University, Denmark
+}
+
+\title{A one--minute introduction to the \pkg{gRain} package} 
+
+\begin{document}
+
+\SweaveOpts{prefix.string=fig/graph} 
+
+\maketitle
+\tableofcontents
+\parindent0pt\parskip5pt
+
+\section{Introduction}
+
+
+The \grain\ package is accompanied by a larger manual which is also
+available from \url{http://gbi.agrsci.dk/~shd/public/gRainweb/}. This
+vignette is just an excerpt from this manual. 
+
+
+
+\section{A worked example: chest clinic} 
+\label{sec:chest}
+
+This section reviews the chest clinic example of \cite{lau/spieg:88}
+(illustrated in Figure~\ref{fig:chest-LS}) and shows one way of
+specifying the model in \grain{}.  \cite{lau/spieg:88} motivate the
+chest clinic example as follows:
+
+\begin{quote}
+  ``Shortness--of--breath (dyspnoea) may be due to tuberculosis, lung
+  cancer or bronchitis, or none of them, or more than one of them. A
+  recent visit to Asia increases the chances of tuberculosis, while
+  smoking is known to be a risk factor for both lung cancer and
+  bronchitis. The results of a single chest X--ray do not discriminate
+  between lung cancer and tuberculosis, as neither does the presence or
+  absence of dyspnoea.''
+\end{quote}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=3cm]{fig/chest-LS2}
+  \caption{Chest clinic example from LS.}
+  \label{fig:chest-LS}
+\end{figure}
+
+
+\subsection{Building a \inet}
+
+A Bayesian network is a special case of graphical independence
+networks. In this section we outline how to build a Bayesian network. 
+The starting point is a probability
+distribution factorising accoring to a DAG with nodes
+$V$. Each node $v\in V$ has a set $pa(v)$ of parents and each node
+$v\in V$ has a finite set of states. A joint distribution
+over the variables $V$ can be given as 
+\begin{equation}
+  \label{eq:dagfact1}
+  p(V) = \prod_{v\in V} p(v|pa(v))
+\end{equation}
+where $p(v|pa(v))$ is a function defined on $(v,pa(v))$. This function
+satisfies that $\sum_{v^*} p(v=v^*|pa(v))=1$, i.e.\ that
+for each configuration of the parents $pa(v)$, the sum
+over the levels of $v$ equals one. Hence $p(v|pa(v))$ becomes the
+conditional distribution of $v$ given $pa(v)$. 
+In practice $p(v|pa(v))$ is specified as a table called a conditional
+probability table or a CPT for short.  
+Thus, a Bayesian network can be regarded as a complex stochastic model built up by
+putting together simple components (conditional probability
+distributions). 
+
+Thus the DAG in
+Figure~\ref{fig:chest-LS} dictates a factorization of the joint
+probability function as
+\begin{equation}
+  \label{eq:chestfact1}
+  p(V) =
+  p(\alpha)p(\sigma)p(\tau|\alpha)p(\lambda|\sigma)p(\beta|\sigma)p(\epsilon|\tau,\lambda)
+  p(\delta|\epsilon, \beta)p(\xi|\epsilon).
+\end{equation}
+In (\ref{eq:chestfact1}) we have 
+$\alpha=\mbox{asia}$, 
+$\sigma=\mbox{smoker}$,
+$\tau=\mbox{tuberculosis}$,
+$\lambda=\mbox{lung cancer}$,
+$\beta=\mbox{bronchitis}$,
+$\epsilon=\mbox{either tuberculosis or lung cancer}$,
+$\delta=\mbox{dyspnoea}$ and
+$\xi=\mbox{xray}$. Note that $\epsilon$ is a logical variable which is
+true if either $\tau$ or $\lambda$ are true and false otherwise. 
+
+
+<<echo=F,results=hide>>=
+library(gRain)
+options("prompt"="> ","width"=85)
+@ 
+
+
+\subsection{Queries to \inet s}
+\label{sec:xxx}
+
+Suppose we are given evidence that a set of variables $E\subset V$
+have a specific value $e^*$. For example that a person has recently visited
+Asia and suffers from dyspnoea, i.e.\ $\alpha=\mbox{yes}$ and
+$\delta=\mbox{yes}$.
+
+With this  evidence, we are often interested in the
+conditional distribution $p(v|E=e^*)$ for some of the variables $v \in
+V \setminus E$ or in $p(U|E=e^*)$ for a set $U\subset V
+\setminus E$. 
+
+In the chest clinic example, interest might be in $p(\lambda|e^*)$, $p(\tau|e^*)$
+and  $p(\beta|e^*)$, or possibly in the joint (conditional) distribution
+$p(\lambda,\tau,\beta|e^*)$.
+
+Interest might also be in
+calculating the probability of a specific event, e.g.\ the probability
+of seeing a specific evidence, i.e.\ $p(E=e^*)$.
+
+
+\subsection{A one--minute version of  \grain{}}
+\label{sec:oneminute}
+
+A simple way of  specifying the model for the chest clinic
+example is as follows. 
+
+\begin{enumerate}
+\item Specify conditional probability tables (with values as given in
+  \cite{lau/spieg:88}):
+
+@ 
+<<>>=
+yn <- c("yes","no")
+a    <- cpt(~asia, values=c(1,99),levels=yn)
+t.a  <- cpt(~tub+asia, values=c(5,95,1,99),levels=yn)
+s    <- cpt(~smoke, values=c(5,5), levels=yn)
+l.s  <- cpt(~lung+smoke, values=c(1,9,1,99), levels=yn)
+b.s  <- cpt(~bronc+smoke, values=c(6,4,3,7), levels=yn)
+e.lt <- cpt(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
+x.e  <- cpt(~xray+either, values=c(98,2,5,95), levels=yn)
+d.be <- cpt(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+@ %def 
+
+\item Create the \inet\ from the conditional probability tables:
+
+@ 
+<<>>=
+plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+in1 <- newgmInstance(plist)
+in1
+@ %def 
+
+% Next, a number of initialisation steps are made:
+% @ 
+% <<print=T>>=
+% in1c <- compilegm(in1, propagate=TRUE)
+% @ %def 
+
+\item The \inet\ can be queried to give marginal probabilities:
+
+@ 
+<<>>=
+querygm(in1,nodes=c("lung","bronc"), type="marginal")
+@ %def 
+
+Likewise, a joint distribution can be obtained.
+
+@ 
+<<>>=
+querygm(in1,nodes=c("lung","bronc"), type="joint")
+@ %def 
+
+\item Evidence can be entered as:
+
+@ 
+<<>>=
+in12  <- enterEvidence(in1,nodes=c("asia","dysp"),states=c("yes","yes"))
+@ %def
+
+\item The \inet\ can be queried again:
+
+@ 
+<<>>=
+querygm(in12,nodes=c("lung","bronc"))
+querygm(in12,nodes=c("lung","bronc"), type="joint")
+@ %def 
+
+
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+\bibliography{gRain}
+
+\end{document}
+
