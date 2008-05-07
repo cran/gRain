@@ -1,3 +1,9 @@
+2008-05-07 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* Removal of functions which are in gRbase
+
+	* Version 0.3.2 uploaded
+
 2008-05-01 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* Coercion to ptab with as.ptab introduced.
