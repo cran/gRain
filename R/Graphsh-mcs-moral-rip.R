@@ -173,20 +173,23 @@ ripOrder <- function(ug, root=NULL,nLevels=NULL){
   cq <- rev(cq)
   cq <- lapply(cq, function(x) {names(x)<-NULL; x})
 
+  
   #cat("finding cliques", proc.time()-t0,"\n"); t0 <- proc.time()
   
   ncq <- length(cq)
   sp  <- as.list(rep(NA, ncq))
   pa  <- rep(NA, ncq)
-  for (ii in 2:ncq){
-    paset <- unlist(cq[1:(ii-1)])
-    isect <- intersect(cq[[ii]], paset)
-    sp[[ii]] <- isect  
-    if (length(isect)){
-      for (kk in (ii-1):1){  #print("----");print(kk); print(cq[[kk]]); print(isect)
-        if (subsetof(isect,cq[[kk]])){
-          pa[ii]   <- kk  
-          break()    
+  if (ncq>1){
+    for (ii in 2:ncq){
+      paset <- unlist(cq[1:(ii-1)])
+      isect <- intersect(cq[[ii]], paset)
+      sp[[ii]] <- isect  
+      if (length(isect)){
+        for (kk in (ii-1):1){  #print("----");print(kk); print(cq[[kk]]); print(isect)
+          if (subsetof(isect,cq[[kk]])){
+            pa[ii]   <- kk  
+            break()    
+          }
         }
       }
     }

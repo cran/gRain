@@ -5,7 +5,7 @@ triangulate <- function(ug, method="standard",
   trimethod <- c("standard","mcwh","r")
   method <- match.arg(tolower(method),trimethod)
 
-
+                                        #cat("method:", method,"\n")
   switch(method,
          "mcwh"={ ## Peter Greens code
            ans <- triangPG(ug,nLevels=nLevels)
@@ -20,21 +20,20 @@ triangulate <- function(ug, method="standard",
          "standard"={
 
            A  <- as.adjmat(ug)
-
            Av <- as.numeric(A)
-
            nc <- ncol(A)
            vn <- colnames(A)
-
            ##print(nLevels)
            i  <-.C("triangmcwh", Av=as.integer(Av), nc, vn,
                    as.integer(nLevels), ans=integer(1), PACKAGE="gRain")$Av
            ans  <-matrix(i, nc=nc,nr=nc)
+
            dimnames(ans)<-dimnames(A)
            if (!matrix)
              ans <- as.grash(ans)           
          }
          )
+
   return(ans)
 }
 
@@ -123,8 +122,6 @@ triangR <- function(ug, vn=nodes(ug), nLevels=rep(2, length(vn))){
   ##print("DONE")
   return(tug)
 }
-
-
 
 
 jTree <- function(ug,

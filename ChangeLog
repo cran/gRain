@@ -1,3 +1,10 @@
+2008-06-12 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* Bug fix: ripOrder did not work on networks with only one clique
+	in triangulated graph.
+
+	* Version 0.3.3 uploaded	
+
 2008-05-07 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* Removal of functions which are in gRbase

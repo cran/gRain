@@ -133,6 +133,17 @@ class(b2)
 b3  <- newgmInstance(ug,d)
 class(b3)
 
+## Simple example - one clique only in triangulated graph
+##
+plist <- cptspec(list(a, t.a))
+pn <- newgmInstance(plist)
+querygm(pn)
+
+## Simple example - disconnected network
+##
+plist <- cptspec(list(a, t.a, s))
+pn <- newgmInstance(plist)
+querygm(pn)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
