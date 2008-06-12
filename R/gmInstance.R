@@ -105,7 +105,7 @@ compilegm <-
   function(x, method="standard", propagate=FALSE, root=NULL, smooth=0,
            control=x$control,
            trace=0){
-
+    
     ##cat("compile", smooth, "\n")
     cptlist   <- dag2cptspec(x$dag,x$gmData,smooth=smooth)
     x$cptlist <- cptlist
@@ -124,7 +124,8 @@ compilegm <-
 
     trimethod <- c("standard","mcwh","r")
     method <- match.arg(tolower(method),trimethod)
-    
+
+
     t00 <- t0 <- proc.time()
     elorder    <- eliminationOrder(x$dag)
     if (!is.null(control$timing) && control$timing)
@@ -138,7 +139,7 @@ compilegm <-
     mdag       <- moralize(x$dag)
     if (!is.null(control$timing) && control$timing)
       cat("Time: moralize:", proc.time()-t0,"\n")
-    
+
     if (!is.null(root)){
       if (length(root)>1)
         mdag <- updateugsh(mdag, root)
@@ -148,14 +149,17 @@ compilegm <-
     nLev <- x$gmData$nLevels[match(vn,x$gmData$varNames)]
 
     t0 <- proc.time()
+
+
     rip <- jTree(mdag, method=method, vn=vn, nLevels=nLev,  control=control)
+
 
     if (!is.null(control$timing) && control$timing)
       cat("Time: triangulate:", proc.time()-t0,"\n")
 
     t0 <- proc.time()
 
-    ##cat("HJHHHHHHHHHHHHHH\n")
+
     dummypotlist <- .createPotentialList(rip,x$gmData)
     if (!is.null(control$timing) && control$timing)
       cat("Time: Create potentials:", proc.time()-t0,"\n")
