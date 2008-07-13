@@ -156,7 +156,7 @@ arraymarg <- function(t1, marg, normalize=FALSE){
 ##
 ## Based on code kindly provided by Peter Green
 ##
-subarray <- function (x, margin, index, impose) 
+.subarray <- function (x, margin, index, impose) 
 {
 
   if(is.null(margin)) return(x)
@@ -180,6 +180,59 @@ subarray <- function (x, margin, index, impose)
     return(array(as.vector(x)[z],dr, dimnames=newdn))
   }
 }
+
+
+subarray <- function (x, margin, level, impose) 
+{
+
+  if(is.null(margin)) return(x)
+
+  dn <-dimnames(x)
+  varnames <- names(dn)
+
+  margin2 <- rep(NA, length(margin))
+  level2  <- rep(NA, length(level))
+  for (kk in seq_along(margin)){
+    mtmp <- margin[kk]
+    ltmp <- level[kk]
+    if (is.character(mtmp)) 
+      mtmp <- match(mtmp, varnames)
+    if (is.character(ltmp)) 
+      ltmp <- match(ltmp, dn[[mtmp]])
+    margin2[kk] <- mtmp
+    level2[kk]  <- ltmp  
+  }
+
+  margin <- margin2
+  level  <- level2
+
+  d  <- dim(x)
+  ld <- length(d)
+  z  <- rep(TRUE,length(x))
+  a  <- cumprod(d)/d[1]
+  b  <- rev(a)
+  
+  for(i in 1:length(margin)) 
+    {
+      si<-margin[i]
+      z<-z & level[i]==rep(rep(1:d[si], rep(a[si],d[si]) ), b[si])
+    }
+  dr<-d[(1:ld)[-margin]]
+  if (!missing(impose) && is.numeric(impose)){
+    x[!z] <- impose
+    return(x)
+  } else {
+    newdn <- dimnames(x)[-margin]
+    return(array(as.vector(x)[z],dr, dimnames=newdn))
+  }
+}
+
+
+
+
+
+
+
 
 ## Simulate n observations from the array x conditional on
 ## the variables in margin (a vector of indices) takes values

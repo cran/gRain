@@ -1,6 +1,8 @@
  Wishlist for the gRain package
 ====================================
 
+* The .Rd files need re-organization
+
 * For a node which is a discretization of a continuous distribution or
   similar, it could make sense to calculate a posterior mean and
   variance based on the conditional probabilities and the class
