@@ -1,3 +1,10 @@
+2008-07-13 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* Rgraphviz is no longer required, but if it is installed then
+	plot() will produce graphs.
+
+	* Version 0.3.4 uploaded
+
 2008-06-12 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* Bug fix: ripOrder did not work on networks with only one clique

@@ -28,6 +28,12 @@ plot.dagsh <- function(x, ...){
 
 
 .plot.graphsh <- function(graph){
+
+  if (!require("Rgraphviz")){
+    cat("The Rgraphviz package (from Bioconductor) must be installed to display the models\n")
+    return()
+  }
+
   plot(as.graphNEL(graph))
   return(invisible(graph))
 }
