@@ -1,4 +1,0 @@
-
-
-setOldClass("ctab")
-

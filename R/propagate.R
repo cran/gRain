@@ -43,10 +43,10 @@ propagate.compgmInstance <- function(object, trace=object$trace){
       if (length(csep)>=1 && !is.na(csep)){
         if(trace>=2) cat("..Marginalize onto separator :", "  {", csep,"}", "\n")
         
-        septab   <- ctabmarg(cpot, csep)
-        cpotnew  <- ctabop (cpot, septab, "/")             
+        septab   <- tableMarginPrim(cpot, csep)
+        cpotnew  <- tableOp (cpot, septab, "/")             
         potlist[[i]]     <- cpotnew        
-        potlist[[pa[i]]] <- ctabop(cpa, septab, "*") 
+        potlist[[pa[i]]] <- tableOp(cpa, septab, "*") 
 
         if(trace>=4) {
           cat("....Dividing by marginal\n")
@@ -100,10 +100,10 @@ propagate.compgmInstance <- function(object, trace=object$trace){
           if(trace>=2) cat("..Marginalize onto separator", ch[j],
                ": {", seps[[ch[j]]]," }\n")
 
-          septab <- ctabmarg(potlist[[i]], seps[[ch[j]]])
+          septab <- tableMarginPrim(potlist[[i]], seps[[ch[j]]])
 
           if(trace>=4) {cat("Marginal:\n"); print (septab)}
-          potlist[[ch[j]]] <- ctabop(potlist[[ch[j]]], septab, "*") ##newpot
+          potlist[[ch[j]]] <- tableOp(potlist[[ch[j]]], septab, "*") ##newpot
         }
       }
     }

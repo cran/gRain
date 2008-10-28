@@ -2,8 +2,8 @@
 
 \alias{newgmInstance}
 \alias{newgmInstance.cptspec}
-\alias{newgmInstance.dagsh}
-\alias{newgmInstance.ugsh}
+\alias{newgmInstance.graphNEL}
+%\alias{newgmInstance.ugsh}
 
 %\alias{makebn}
 %\alias{resetbn}
@@ -15,6 +15,13 @@
 
 \alias{as.gmInstance}
 \alias{as.gmInstance.huginNet}
+
+\alias{plot.compgmInstance}
+\alias{plot.cpt-gmInstance}
+\alias{plot.dag-gmInstance}
+\alias{plot.ug-gmInstance}
+
+
 
 %% Remove this later
 %\alias{as.probnet}
@@ -59,7 +66,9 @@ newgmInstance(x, gmData, description="ProbNet",  control=list(), trace=0,...)
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{\code{\link{cpt}}, \code{\link{ctab}}, \code{\link[gRbase]{gmData}}}
+\seealso{\code{\link{cptable}},
+  %\code{\link{ctab}},
+  \code{\link[gRbase]{gmData}}}
 \examples{
 
 ## Asia (chest clinique) example - using a gmData object
@@ -68,14 +77,14 @@ chestNames <- c("asia", "smoke", "tub", "lung", "bronc", "either", "xray", "dysp
 gmd <- newgmData(chestNames,valueLabels=c("yes","no"))
 summary(gmd)
 
-p.a    <-cpt('asia', values=c(0.01,0.99),gmData=gmd)
-p.t.a  <-cpt('tub',pa='asia', values=c(0.05,0.95,0.01,0.99),gmData=gmd)
-p.s    <-cpt('smoke', values=c(0.5,0.5), gmData=gmd)
-p.l.s  <-cpt('lung',pa='smoke', values=c(0.1,0.9,0.01,0.99), gmData=gmd)
-p.b.s  <-cpt('bronc',pa='smoke', values=c(0.6,0.4,0.3,0.7), gmData=gmd)
-p.e.lt <-cpt('either',pa=c('lung','tub'),values=c(1,0,1,0,1,0,0,1),gmData=gmd)
-p.x.e  <-cpt('xray',pa='either', values=c(0.98,0.02,0.05,0.95), gmData=gmd)
-p.d.be <-cpt('dysp',pa=c('bronc','either'), values=c(0.9,0.1,0.7,0.3,0.8,0.2,0.1,0.9), gmData=gmd)
+p.a    <-cptable('asia', values=c(0.01,0.99),gmData=gmd)
+p.t.a  <-cptable('tub',pa='asia', values=c(0.05,0.95,0.01,0.99),gmData=gmd)
+p.s    <-cptable('smoke', values=c(0.5,0.5), gmData=gmd)
+p.l.s  <-cptable('lung',pa='smoke', values=c(0.1,0.9,0.01,0.99), gmData=gmd)
+p.b.s  <-cptable('bronc',pa='smoke', values=c(0.6,0.4,0.3,0.7), gmData=gmd)
+p.e.lt <-cptable('either',pa=c('lung','tub'),values=c(1,0,1,0,1,0,0,1),gmData=gmd)
+p.x.e  <-cptable('xray',pa='either', values=c(0.98,0.02,0.05,0.95), gmData=gmd)
+p.d.be <-cptable('dysp',pa=c('bronc','either'), values=c(0.9,0.1,0.7,0.3,0.8,0.2,0.1,0.9), gmData=gmd)
  
 cptlist <- list(p.a, p.t.a, p.s, p.l.s, p.b.s, p.e.lt, p.x.e, p.d.be)
 cptlist[[1]]
@@ -91,14 +100,14 @@ plot(bn)
 ## Asia (chest clinique) example - without using a gmData object
 ##
 yn <- c("yes","no")
-a    <- cpt(~asia, values=c(1,99),levels=yn)
-t.a  <- cpt(~tub+asia, values=c(5,95,1,99),levels=yn)
-s    <- cpt(~smoke, values=c(5,5), levels=yn)
-l.s  <- cpt(~lung+smoke, values=c(1,9,1,99), levels=yn)
-b.s  <- cpt(~bronc+smoke, values=c(6,4,3,7), levels=yn)
-e.lt <- cpt(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
-x.e  <- cpt(~xray+either, values=c(98,2,5,95), levels=yn)
-d.be <- cpt(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+a    <- cptable(~asia, values=c(1,99),levels=yn)
+t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
+s    <- cptable(~smoke, values=c(5,5), levels=yn)
+l.s  <- cptable(~lung+smoke, values=c(1,9,1,99), levels=yn)
+b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
+e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
+x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
+d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 
 plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 pn <- newgmInstance(plist)
@@ -114,9 +123,9 @@ plot(pn)
 ##
 data(HairEyeColor)
 d   <- as.gmData(HairEyeColor)
-dag <- newdagsh(list(~Hair, ~Eye+Hair, ~Sex+Hair))
+dag <- newDAGlist(list(~Hair, ~Eye+Hair, ~Sex+Hair))
 class(dag)
-ug <- newugsh(list(~Eye+Hair, ~Sex+Hair))
+ug <- newUGlist(list(~Eye+Hair, ~Sex+Hair))
 class(ug)
 
 ## 1) Create directly from dag
@@ -135,13 +144,13 @@ class(b3)
 
 ## Simple example - one clique only in triangulated graph
 ##
-plist <- cptspec(list(a, t.a))
+plist <- cptspec(list(p.a, p.t.a))
 pn <- newgmInstance(plist)
 querygm(pn)
 
 ## Simple example - disconnected network
 ##
-plist <- cptspec(list(a, t.a, s))
+plist <- cptspec(list(p.a, p.t.a, p.s))
 pn <- newgmInstance(plist)
 querygm(pn)
 
