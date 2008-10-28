@@ -1,35 +1,10 @@
 \name{internal-gRain}
 
-%% Graph conversion
-%%
-\alias{as.adjmat}
-\alias{as.graphNEL}
-\alias{as.grash}
-
-%% Simple graph operations. Should be removed at some point of time...
-%%
-\alias{neigh}
-\alias{closure}
-\alias{subgraph}
-\alias{isComplete}
-\alias{isSimplicial}
-\alias{simplicialNodes}
-
-%% Additional graph operations
-
-\alias{print.ugsh}
-\alias{print.dagsh}
-
-
 
 \alias{as.data.frame.ctab}
 \alias{as.double.ctab}
 \alias{as.ctab.numeric}
-\alias{print.ptab}
-\alias{as.ptab}
 
-
-\alias{mcwhSH}
 
 \alias{as.cumcounts}
 \alias{as.cumcounts.data.frame}

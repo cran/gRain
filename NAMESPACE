@@ -2,57 +2,64 @@
 ## gRain
 ##
 import(methods)
-importFrom(graph,nodes,edges)
+#importFrom(graph,nodes,edges)
 
-exportClasses(ugsh,dagsh,graphsh,gmInstance)
-exportMethods(edges,nodes,show)
+#exportClasses(ugsh,dagsh,graphsh,gmInstance)
+#exportClasses(gmInstance)
+#exportMethods(edges,nodes,show)
 
 export(
-       "newugsh",
-       "newdagsh",
-       "newug",
-       "newdag",
-       "queryg",
+                                        #       "newugsh",
+                                        #       "newdagsh",
+                                        #       "newug",
+                                        #       "newdag",
+                                        #       "queryg",
 ### Simple graph operations
-       "plot.ugsh",
-       "plot.dagsh",
+                                        #"plot.ugsh",
+                                        #"plot.dagsh",
        "plot.cpt-gmInstance",
        "plot.dag-gmInstance",
        "plot.ug-gmInstance",
        "plot.compgmInstance",
        "predict.gmInstance",
-       "neigh",
-       "closure",
-       "subgraph",
-       "simplicialNodes",
-       "isComplete",
-       "updateugsh",
-       "as.grash",
-       "as.adjmat",
-       "as.graphNEL",
+                                        #"neigh",
+                                        #"closure",
+                                        #"subgraph",
+                                        #"simplicialNodes",
+                                        #"isComplete",
+                                        #"updateugsh",
+                                        #"as.grash",
+                                        #"as.adjmat",
+                                        #"as.graphNEL",
 ### Advanced graph operations
-       "jTree",
-       "mcs",
-       "moralize",
-       "triangulate",
-       "ripOrder",
-       "print.ripOrder",       
-       "mcwhSH"
-       ,
+                                        #"jTree",
+                                        #"mcs",
+                                        #"moralize",
+                                        #"triangulate",
+                                        #"ripOrder",
+                                        #"print.ripOrder",       
+                                        #"mcwhSH"
+                                        #,
 ### Table operations
-       "ctab",
-       "ptab",
-       "as.ptab",
-       "ctabmarg",
-       "arraymarg",
-       "arrayop",       
-       "subarray",
-       "ctabop",
-       "print.ptab",
-       "varNames.ptab",
-       "nLevels.ptab",
-       "valueLabels.ptab"
-       ,
+                                        #"ctab",
+                                        #"ctabop",
+                                        #"ctabmarg",
+       
+       #"ptable",
+       #"as.ptable",
+                                        #"arraymargin",
+       #"tableMarginPrim",
+       #"print.ptable",
+       #"varNames.ptable",
+       #"nLevels.ptable",
+       #"valueLabels.ptable",
+
+                                        #"tableOp",       
+                                        #"tableSlice",
+                                        #"tableMargin",
+                                        #"tablePerm",
+
+       
 ### Bayesian Networks
        "compilegm",
        "compilegm.dag-gmInstance",
@@ -60,7 +67,7 @@ export(
        "compilegm.cpt-gmInstance",
        "propagate",
        "propagate.compgmInstance", 
-       "cpt",
+       "cptable",
        "enterEvidence",
        "retractEvidence",
        "evidence",
@@ -72,7 +79,6 @@ export(
        "propagate",
        "vpav",
        "dag2cptspec",
-       "cpt",
        "summary.gmInstance",
        "as.gmInstance",
        "as.gmInstance.huginNet",
@@ -80,6 +86,8 @@ export(
        "as.cumcounts.data.frame",
        
        "cptspec",
+
+### HUGIN related
        "loadHuginNet",
        "saveHuginNet",
        "printlist",
@@ -89,6 +97,9 @@ export(
        "splitVec",
        "splitVec.default",
        "splitVec.list",
+### !!!
+
+
        "nodeNames",
        "nodeNames.gmInstance",
        "nodeStates",
@@ -98,8 +109,9 @@ export(
        "print.cptspec",
        "newgmInstance",
        "newgmInstance.cptspec",
-       "newgmInstance.dagsh",
-       "newgmInstance.ugsh"
+       "newgmInstance.graphNEL"
+       ##"newgmInstance.dagsh",
+       ##"newgmInstance.ugsh"
        )
 
 

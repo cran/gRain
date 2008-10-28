@@ -1,25 +1,3 @@
-
-setMethod("edges", signature(object = "compgmInstance"),
-          function(object, which) {
-            edges(object$tug)
-          })
-          
-setMethod("nodes", signature(object = "compgmInstance"),
-          function(object, which) {
-            nodes(object$tug)
-          })
-          
-setMethod("edges", signature(object = "cpt-gmInstance"),
-          function(object, which) {
-            edges(object$dag)
-          })
-          
-setMethod("nodes", signature(object = "cpt-gmInstance"),
-          function(object, which) {
-            nodes(object$dag)
-          })
-
-
 as.gmInstance <- function(x,control=list(),description="gmInstance", trace=0,...)
   UseMethod("as.gmInstance")
 
@@ -43,6 +21,35 @@ as.probnet <- function(x,
     newgmInstance(x, gmData, description=description, control=control, trace=trace)
   }
 }
+
+
+
+
+
+
+
+
+## setMethod("edges", signature(object = "compgmInstance"),
+##           function(object, which) {
+##             edges(object$tug)
+##           })
+          
+## setMethod("nodes", signature(object = "compgmInstance"),
+##           function(object, which) {
+##             nodes(object$tug)
+##           })
+          
+## setMethod("edges", signature(object = "cpt-gmInstance"),
+##           function(object, which) {
+##             edges(object$dag)
+##           })
+          
+## setMethod("nodes", signature(object = "cpt-gmInstance"),
+##           function(object, which) {
+##             nodes(object$dag)
+##           })
+
+
 
 
 

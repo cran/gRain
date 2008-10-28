@@ -1,5 +1,5 @@
 \name{cpt}
-\alias{cpt}
+\alias{cptable}
 \alias{print.cpt}
 \alias{cptspec}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -9,7 +9,7 @@
   Creates conditional probability tables of the form p(v|pa(v)). 
 }
 \usage{
-cpt(v, pa = NULL, values = NULL, gmData=NULL, normalize = TRUE, smooth = 0, levels=NULL)
+cptable(v, pa = NULL, values = NULL, gmData=NULL, normalize = TRUE, smooth = 0, levels=NULL)
 cptspec(x)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -51,13 +51,13 @@ cptspec(x)
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{\code{\link{ctab}}}
+%\seealso{\code{\link{ctab}}}
 \examples{
 g <- newgmData(letters[1:5],nLevels=2)
 
-t1 <- cpt("a",pa="b", gmData=g,values=1:4)
+t1 <- cptable("a",pa="b", gmData=g,values=1:4)
 
-t2 <- cpt("a",pa=c("b","c"), levels=c("y","n"),values=1:4)
+t2 <- cptable("a",pa=c("b","c"), levels=c("y","n"),values=1:4)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

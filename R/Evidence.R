@@ -20,6 +20,7 @@ print.bnevidence <- function(x, ...){
 
 enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagate=TRUE){
 
+##  cat("enterEvidence\n")
   if (inherits(object, "gmInstance") && !inherits(object, "compgmInstance"))
     object <- compilegm(object)
 
@@ -43,6 +44,8 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
     }
   }
 
+
+
   nodes  <- nodes[!is.na(states)]
   states <- states[!is.na(states)]
 
@@ -57,24 +60,32 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
   }
 
   ## print(nodes); print(states)
+
+
+
   
   if (length(nodes)>0){
     t0 <- proc.time()
-    
+
+
+
     object$potlistwork  <- .insertEv(nodes, states, object$potlistwork, object$rip)
     object$initialized  <- FALSE
-    
+
+
     if (!is.null(currev)){
       ev <- list(nodes=c(currev$nodes,nodes), states=c(currev$states,states))
     } else {
       ev <- list(nodes=nodes, states=states)
     }
 
+    
     class(ev)<-"bnevidence"
     object$evidence <- ev
 
     if (object$control$timing)
       cat("Time: enter evidence", proc.time()-t0, "\n")
+
 
     if (propagate)
       object<-propagate(object)
@@ -91,6 +102,8 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
 
   ## Note: perhaps create amat globally 
   amat <- as.setmat(cli,vn=rip$nodes)
+
+
   
   for (i in 1:length(nodes)){
     currn <- nodes[i]
@@ -102,13 +115,15 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
     
     ##cat("Host cliques:",paste(idx,sep=' '),"\n");
     for (j in idx){            
+
       cpot <- potlist[[j]]
+
+
       ##cat("Current clique:", paste(varNames(cpot), sep=' '),"\n")
-      ##lev    <- cpot$levels[[currn]]
-      lev    <- valueLabels(cpot)[[currn]] ## BRIS
-      
+
+      lev    <- valueLabels(cpot)[[currn]] ## BRIS      
       evTab  <- evidenceTable(currn, currs, lev)
-      potlist[[j]]  <- ctabop(cpot, evTab, "*")
+      potlist[[j]]  <- tableOp(cpot, evTab, "*")
     }
   }
   potlist
@@ -117,7 +132,7 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
 evidenceTable <- function(node, state, levels){
   pot   <- rep.int(0,length(levels))
   pot[match(state, levels)] <- 1
-  t2  <- ctab(node, list(levels), pot)
+  t2  <- ptable(node, list(levels), pot)
   t2
 }
 

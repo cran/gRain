@@ -294,13 +294,16 @@ hpot2cpt <- function(cpot,gmd){
   v   <- varNames(gmd)[match(cpot$nodeVar,shortNames(gmd))]
   pa  <- varNames(gmd)[match(cpot$parentVar,shortNames(gmd))]
   #cat("v:", v, "\n pa:", paste(pa, collapse=' '),"\n")
-  cpt(v=v, pa=pa, values=cpot$potential, gmData=gmd)
+  cptable(v=v, pa=pa, values=cpot$potential, gmData=gmd)
 }
 
 
 makeNodeNamesUnique <- function(nodeList2){
   nl<-t(sapply(nodeList2, function(d)unlist(d[1:2])))
   ##pl<-lapply(potentialList2, function(d)unlist(d[1:2]))
+
+  ## cat("makeNodeNamesUnique\n")
+##   nl <<- nl
   
   nonunique <- names(which(table(nl[,2])>1))
   
