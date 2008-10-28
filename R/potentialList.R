@@ -7,7 +7,7 @@
   for (i in 1:length(cli)){
     cc    <- cli[[i]]
     vlab  <- valueLabels(gmd)[cc]
-    potlist[[i]] <- ctab(cc, vlab)
+    potlist[[i]] <- ptable(cc, vlab)
     ##cat("cc:", paste(cc),"length:",length(potlist[[i]]$values), "\n")
   }
   potlist
@@ -18,7 +18,9 @@
 .insertCpt <- function(cptlist, potlist, rip, trace=0){
   if (trace>=1) cat(".Inserting cpt's in potential list [.insertCpt]\n")
 
-  cli <- rip$cliques
+  ##cptlist <<-cptlist
+  
+  cli    <- rip$cliques
   lencli <- length(cli)
 
   ## Note: perhaps create amat globally 
@@ -26,22 +28,27 @@
   
   for (i in 1:length(cptlist)){
     cptc <- cptlist[[i]]
+
+    ##cat("i:",i,"class:",class(cptc),"\n");print(cptc)
+    
     if(trace>=2) {cat("..Current cpt:",varNames(cptc),"\n"); }
     vert   <- varNames(cptc)
     #j      <- .findHostClique(vert, cli, lencli)
     #j      <- which(sapply(cli, function(d) subsetof(vert, d)))[1]
     j <- which(rowSums(amat[,vert,drop=FALSE])==length(vert))[1]
-    
+    ##amat<<-amat
+    ##plj <<- potlist[[j]]
     if (trace>=3){
-      cat("...Insert cpt", "{", vert, "}","    into potential", j,
-          "  with vertices", varNames(potlist[[j]]), "\n"); 
+      cat("...Insert cpt ", i,  "     {", vert, "}","\n    into potential", j,
+          " {", varNames(potlist[[j]]), "} \n"); 
     }
     if (trace>=4){
       cat("....Before:\n");   print(potlist[[j]])
-      cat("....After:\n");    print(ctabop(potlist[[j]], cptc, "*"))
+      cat("....After:\n");    print(tableOp(potlist[[j]], cptc, "*"))
     }
     
-    potlist[[j]] <- ctabop(potlist[[j]], cptc, "*")    
+    #cat("j:", j,"\n"); print(potlist[[j]])
+    potlist[[j]] <- tableOp(potlist[[j]], cptc, "*")    
   }
   if (trace>=4){cat("....potlist (after insertion):\n"); print(potlist) }
   potlist

@@ -19,9 +19,9 @@ systems (which includes Bayesian networks as a special case).
   \item The function \code{\link{querygm}} is used for querying
   independence networks. Functions \code{\link{simulate.gmInstance}} and
   \code{\link{predict.gmInstance}} are available.
-  \item The functions \code{\link{newug}} and \code{\link{newdag}}
-  create undirected and directed acyclic graphs. The function
-  \code{\link{queryg}} is used for querying graphs.
+%   \item The functions \code{\link{newUG}} and \code{\link{newDAG}}
+%   create undirected and directed acyclic graphs. The function
+%   \code{\link{queryg}} is used for querying graphs.
   
 }
 \author{

@@ -49,21 +49,21 @@ pevidence(object)
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 \seealso{
-  \code{\link{ctab}, \link{cpt}}
+  \code{\link{cptable}}
 }
 \examples{
 
 
-testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
-chest <- as.gmInstance(loadHuginNet(testfile, trace=1))
-print(class(chest))
+% testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
+% chest <- as.gmInstance(loadHuginNet(testfile, trace=1))
+% print(class(chest))
 
 
-qb <- querygm(chest)
-qb
+% qb <- querygm(chest)
+% qb
 
-lapply(qb, as.numeric) # Safe
-sapply(qb, as.numeric) # Risky
+% lapply(qb, as.numeric) # Safe
+% sapply(qb, as.numeric) # Risky
 
 
 }

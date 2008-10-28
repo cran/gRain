@@ -30,6 +30,7 @@ querygm(in1,nodes=c("lung","bronc"), type="joint")
 
 
 ### chunk number 6: 
+srcit()
 in12  <- enterEvidence(in1,nodes=c("asia","dysp"),states=c("yes","yes"))
 
 

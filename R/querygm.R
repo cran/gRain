@@ -46,7 +46,7 @@ querygm.gmInstance <- function(object, nodes=nodeNames(object), normalize=TRUE,
            qobject <- querygm(object, nodes, type="joint", return="data.frame")
            nst     <- nodeStates(object)[nodes]
            ##ans     <- ctab(nodes, nst, values=qobject$values, normalize="first")
-           ans     <- ctab(nodes, nst, values=qobject$Freq, normalize="first") ## BRIS
+           ans     <- ptable(nodes, nst, values=qobject$Freq, normalize="first") ## BRIS
            
            ##ans <- as.data.frame(ans)
            if (return=="data.frame")
@@ -71,13 +71,13 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=0){
   if (any(idxb)){
     if (trace>=1) cat(".Calculating directly from clique\n")
     tab <- bn$potlist[[which(idxb)[1]]]
-    value <- ctabmarg(tab, set)
+    value <- tableMarginPrim(tab, set)
     if (!normalize){
       value$values <- value$values * pevidence(bn)
     }
   } else {
     vl    <- valueLabels(bn$gmData)[set]
-    value <- ctab(names(vl),vl)
+    value <- ptable(names(vl),vl)
     levs  <- as.data.frame.table(value)[,1:length(vl), drop=FALSE] ## BRIS
     levs2 <- do.call("cbind",lapply(levs, as.character))
     p<-sapply(1:nrow(levs2), function(i)
@@ -119,7 +119,7 @@ nodeMarginal <- function(x, set=NULL,trace=0){
       idxall<-which(sapply(cli, function(x) subsetof(cvert,x)))
       idx <- idxall[1]
       cpot <- potlist[[idx]]
-      mtab <- ctabmarg(cpot, cvert,normalize=TRUE)
+      mtab <- tableMarginPrim(cpot, cvert,normalize=TRUE)
       mtablist[[i]] <- mtab
     }
     names(mtablist) <- nodes

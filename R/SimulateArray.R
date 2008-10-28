@@ -30,8 +30,8 @@ simulate.gmInstance <- function(object, nsim=1, seed=NULL, ...){
       ctab <- plist[[ii]]
       vn   <- names(dimnames(ctab)) # Safe
       s2   <- splist[[ii]]
-      mtab <- arraymarg(ctab,s2)
-      ctab <- arrayop(ctab, mtab, "/")        
+      mtab <- tableMarginPrim(ctab,s2)
+      ctab <- tableOp(ctab, mtab, "/")        
       r2   <- setdiff(vn, s2)
       ##cat("r:", r2, "s:", s2, "\n")    
       if (length(s2)){
