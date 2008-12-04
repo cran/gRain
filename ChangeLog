@@ -1,3 +1,10 @@
+2008-12-04 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* Small change on MCS call for consistency with current gRbase
+
+	* Version 0.4.1 uploaded
+	
+
 2008-08-08 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* General table operation functions moved to gRbase

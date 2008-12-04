@@ -200,7 +200,7 @@ compilegm <-
 
     method <- match.arg(tolower(method), c("mcwh","r"))
 
-    if (is.null(MCSMAT(as.adjMAT(x$ug)))){
+    if (length(MCSMAT(as.adjMAT(x$ug)))==0){
       cat("Undirected graph is not triangulated...\n"); return(NULL)
     }
 
