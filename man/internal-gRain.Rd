@@ -1,46 +1,23 @@
 \name{internal-gRain}
 
-
-\alias{as.data.frame.ctab}
-\alias{as.double.ctab}
-\alias{as.ctab.numeric}
-
-
 \alias{as.cumcounts}
 \alias{as.cumcounts.data.frame}
 
-
-\alias{print.gmInstance}
+\alias{print.grain}
 \alias{print.cptspec}
-\alias{print.bnevidence}
-\alias{print.ripOrder}
+\alias{print.grainFinding}
 
-\alias{is.subset}
-\alias{is.subsetList}
-\alias{names2pairs}
-
-\alias{compilegm}
-\alias{compilegm.cpt-gmInstance}
-\alias{compilegm.dag-gmInstance}
-\alias{compilegm.ug-gmInstance}
-
-\alias{propagate}
-\alias{propagate.compgmInstance}
-
-\alias{cardOrder}
 \alias{checkdag}
 \alias{ctabnames}
 
 \alias{nodeMarginal}
 \alias{nodeJoint}
-\alias{propagate}
 \alias{vpav}
 
 \alias{dag2cptspec}
 \alias{print.huginNet}
 
-\alias{ug2dag}
-\alias{summary.gmInstance}
+\alias{summary.grain}
 \alias{printlist}
 \alias{printlist.default}
 \alias{printlist.list}
@@ -48,8 +25,6 @@
 \alias{splitVec.default}
 \alias{splitVec.list}
 
-\alias{getSlot}
-\alias{updateugsh}
 %\alias{}
 
 \title{Internal functions for the gRbayesnet package}

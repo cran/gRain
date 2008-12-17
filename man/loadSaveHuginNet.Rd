@@ -33,13 +33,13 @@ saveHuginNet(bn, file, trace = 0)
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 
-\seealso{\code{\link{newgmInstance}} }
+\seealso{\code{\link{grain}} }
 \examples{
 
 ## Load HUGIN net file
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
 chestf <- loadHuginNet(tf, trace=1)
-chest <- as.gmInstance(chestf)
+chest <- as.grain(chestf)
 
 ## Save a copy
 td <- tempdir()
@@ -47,15 +47,15 @@ saveHuginNet(chest, paste(td,"/chest.net",sep=''))
 
 ## Load the copy
 chestf2 <- loadHuginNet(paste(td,"/chest.net",sep=''))
-chest2  <- as.gmInstance(chestf2)
+chest2  <- as.grain(chestf2)
 
 tf <- system.file("huginex", "golf.net", package = "gRain")
 golff <- loadHuginNet(tf, trace=1)
-golf <- as.gmInstance(golff)
+golf <- as.grain(golff)
 
 saveHuginNet(golf, paste(td,"/golf.net",sep=''))
 golff2 <- loadHuginNet(paste(td,"/golf.net",sep=''))
-golf2  <- as.gmInstance(golff2)
+golf2  <- as.grain(golff2)
 
 }
 \keyword{utilities}

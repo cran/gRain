@@ -1,8 +1,8 @@
-summary.gmInstance <- function(object, type='std', ...){
+summary.grain <- function(object, type='std', ...){
   type <- match.arg(type,c("std","cliques","rip","configurations"))
 
   cat("Nodes :", object$nodes,"\n")
-  isCompiled   <- inherits(object, "compgmInstance")
+  isCompiled   <- inherits(object, "compgrain")
   isPropagated <- object$propagated
   if (is.null(isPropagated))
     isPropagated <- FALSE
@@ -25,7 +25,7 @@ summary.gmInstance <- function(object, type='std', ...){
     cat(" Maximal number of configurations in cliques:",
         max(unlist(  sapply(object$potlist, "[", "ncells"))), "\n")
     
-    if(length(e<-evidence(object))){
+    if(length(e<-getFinding(object))){
       print(e)
     }
     

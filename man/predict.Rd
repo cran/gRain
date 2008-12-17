@@ -1,18 +1,18 @@
-\name{predict.gmInstance}
-\alias{predict.gmInstance}
+\name{predict.grain}
+\alias{predict.grain}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Make predictions from a probabilistic network}
 \description{
   Makes predictions (either as the most likely state or as the
-  conditional distributions) of variables conditional on evidence on other variables
+  conditional distributions) of variables conditional on finding (evidence) on other variables
   in an independence network.
 }
 \usage{
-\method{predict}{gmInstance}(object, response, predictors, newdata, type = "class", ...)
+\method{predict}{grain}(object, response, predictors, newdata, type = "class", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{A gmInstance object}
+  \item{object}{A grain object}
   \item{response}{A vector of response variables to make predictions on}
   \item{predictors}{A vector of predictor variables to make predictions
     from. Defaults to all variables that are note responses.}
@@ -27,7 +27,7 @@
 \value{
   A list with components
   \item{pred}{A list with the predictions}
-  \item{pevidence}{A vector with the probability of the evidence on
+  \item{pFinding}{A vector with the probability of the finding (evidence) on
     which the prediction is based}
 }
 %\references{ ~put references to the literature/web site here ~ }
@@ -36,7 +36,7 @@
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{\code{\link{newgmInstance}}}
+\seealso{\code{\link{grain}}}
 
 %\examples{
 %}
