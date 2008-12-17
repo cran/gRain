@@ -1,12 +1,12 @@
-\name{simulate.gmInstance}
-\alias{simulate.gmInstance}
+\name{simulate.grain}
+\alias{simulate.grain}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Simulate from an independence network}
 \description{
   Simulate data from an independence network.
 }
 \usage{
-\method{simulate}{gmInstance}(object, nsim = 1, seed = NULL, ...)
+\method{simulate}{grain}(object, nsim = 1, seed = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,11 +34,11 @@
 
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
 chestf <- loadHuginNet(tf, trace=1)
-chest <- as.gmInstance(chestf)
+chest <- as.grain(chestf)
 
 simulate(chest,n=10)
 
-chest2 <- enterEvidence(chest, c("VisitToAsia", "Dyspnoea"),
+chest2 <- setFinding(chest, c("VisitToAsia", "Dyspnoea"),
 c("yes","yes"))
 
 simulate(chest2,n=10)

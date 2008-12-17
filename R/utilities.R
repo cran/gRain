@@ -1,4 +1,8 @@
 
+.defaultControl <- function(){
+  list(timing=0)
+}
+
 .printList <- function(x){
   mapply(function(xx,ii) cat(" ",ii,paste(xx, collapse=' '),"\n"), x, 1:length(x))
   return()
@@ -61,7 +65,7 @@ ug2potspec <- function(ug, gmData, rip, smooth=0){
 
 
 
-formula2character <- function(x){
+.formula2character <- function(x){
   if (class(x)=="formula"){
     x2 <- deparse(x)
     x2 <- unlist(strsplit(x2,"[~\\+]"))
@@ -72,63 +76,35 @@ formula2character <- function(x){
   }
 }
 
-ug2dag <- function(ug){
-  m     <- MCS(ug)
-  #m     <- mcs(as.adjmat(ug))
-  if (is.null(m))
-    return(NULL)
+
+
+
+## ug2dag <- function(ug){
+##   m     <- MCS(ug)
+##   #m     <- mcs(as.adjmat(ug))
+##   if (is.null(m))
+##     return(NULL)
   
-  dired <- ed  <- edges(ug)
-  if (!is.null(ed)){
-    for (i in 1:length(ed)){
-      cedge <- ed[[i]]
-      dired[[i]] <- m[rev(sort(match(cedge,m)))]
-    }
-    dired <- c(m[1], dired)
-    #dag<-newdagsh(dired)
-    dag<-newDAGlist(dired)
-  } else {
-    #dag <- newdagsh(as.list(nodes(ug)))
-    dag <- newDAGlist(as.list(nodes(ug)))
-  }
+##   dired <- ed  <- edges(ug)
+##   if (!is.null(ed)){
+##     for (i in 1:length(ed)){
+##       cedge <- ed[[i]]
+##       dired[[i]] <- m[rev(sort(match(cedge,m)))]
+##     }
+##     dired <- c(m[1], dired)
+##     #dag<-newdagsh(dired)
+##     dag<-dagList(dired)
+##   } else {
+##     #dag <- newdagsh(as.list(nodes(ug)))
+##     dag <- dagList(as.list(nodes(ug)))
+##   }
   
-  return(dag)
-}
+##   return(dag)
+## }
 
 
 
 
-
-# ## If y is not NULL then x and y must be disjoint
-# ##
-# names2pairs <- function(x, y=NULL, sort=TRUE){
-#   lenx  <- length(x)
-#   leny  <- length(y)
-#   if (length(y)){
-#     val   <- as.list(rep(NA, lenx*leny))
-#     k <- 1
-#     for (i in 1:lenx){
-#       for (j in 1:leny){
-#         val[[k]] <- c(x[i], y[j])
-#         k <- k+1
-#       }
-#     }  
-#   } else {
-#     if (length(x)==1)
-#       return(list(x))
-#     val   <- as.list(rep(NA, lenx*(lenx-1)/2))
-#     k <- 1
-#     for (i in 1:(lenx-1)){
-#       for (j in (i+1):lenx){
-#         val[[k]] <- c(x[i], x[j])
-#         k <- k+1
-#       }
-#     }  
-#   }
-#   if (sort)
-#     val <- lapply(val, sort)
-#   val 
-# }
 
 
 

@@ -5,7 +5,7 @@ cptable <- function(v, pa=NULL, values=NULL,
                 levels=NULL
                 ){
 
-  vpa <- c(formula2character(v),formula2character(pa))
+  vpa <- c(.formula2character(v),.formula2character(pa))
   nvpa <- length(vpa)
 
   if (!is.null(gmData)){
@@ -143,12 +143,6 @@ eliminationOrder <- function(gg){
 }
 
 
-getSlot <- function(x, slot=NULL){
-  if (is.null(slot))
-    return(x)
-  return(x[[slot]])
-}
-
 vpav <- function(dag){
   amat <- as.adjMAT(dag)
   vn <- rownames(amat)
@@ -170,12 +164,11 @@ vpav <- function(dag){
 
 
 
-
-
-
-
-
-
+## getSlot <- function(x, slot=NULL){
+##   if (is.null(slot))
+##     return(x)
+##   return(x[[slot]])
+## }
 
 
 ## getcpt <- function(bn, v=NULL, pa=NULL){

@@ -6,16 +6,17 @@ querygm <- function(object,nodes=nodeNames(object), normalize=TRUE,
   UseMethod("querygm")
 }
 
-querygm.gmInstance <- function(object, nodes=nodeNames(object), normalize=TRUE,
+querygm.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
                                type=c("marginal","joint","conditional"),
                                return="array",
                                trace=0){
 
   return <- match.arg(return, c("array","data.frame"))
   t0 <- proc.time()
-  if (!inherits(object, "compgmInstance")){
+  if (!inherits(object, "compgrain")){
     #cat("Compiling model...\n")
-    object <- compilegm(object)
+    object <- compile(object)
+    ##object <- compilegm(object)
   }
 
 
@@ -73,7 +74,7 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=0){
     tab <- bn$potlist[[which(idxb)[1]]]
     value <- tableMarginPrim(tab, set)
     if (!normalize){
-      value$values <- value$values * pevidence(bn)
+      value$values <- value$values * pFinding(bn)
     }
   } else {
     vl    <- valueLabels(bn$gmData)[set]
@@ -81,7 +82,7 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=0){
     levs  <- as.data.frame.table(value)[,1:length(vl), drop=FALSE] ## BRIS
     levs2 <- do.call("cbind",lapply(levs, as.character))
     p<-sapply(1:nrow(levs2), function(i)
-              pevidence(enterEvidence(bn, nodes=set, states=levs2[i,]))
+              pFinding(setFinding(bn, nodes=set, states=levs2[i,]))
               )
     if (normalize)
       p <- p / sum(p)
@@ -109,7 +110,7 @@ nodeMarginal <- function(x, set=NULL,trace=0){
     nodes  <- set
 
   nodes <- intersect(netnodes, nodes)
-  nodes <- setdiff(nodes, evidence(x)$nodes)
+  nodes <- setdiff(nodes, getFinding(x)$nodes)
 
   if (length(nodes)>0){
     cli    <- rip$cliques

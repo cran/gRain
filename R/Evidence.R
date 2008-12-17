@@ -1,39 +1,41 @@
 
-pevidence <- function(object) attr(object$potlist,"pevidence")
+pFinding <- function(object)
+  attr(object$potlist,"pFinding")
 
 
-evidence <- function(object){
-  object$evidence
+getFinding <- function(object){
+  object$finding
 }
 
 
-print.bnevidence <- function(x, ...){
-    cat("Evidence: \n") 
+print.grainFinding <- function(x, ...){
+    cat("Finding: \n") 
     v<-do.call("cbind",x) 
     colnames(v) <- c("variable", "state")
     print(v, quote=FALSE)
-    if (!is.null(attr(x,"pevidence")))
-      cat("Pr(Evidence)=",attr(x,"pevidence"),"\n")
+    if (!is.null(attr(x,"pFinding")))
+      cat("Pr(Evidence)=",attr(x,"pFinding"),"\n")
     return(x)
     }
 
 
-enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagate=TRUE){
+setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE){
 
-##  cat("enterEvidence\n")
-  if (inherits(object, "gmInstance") && !inherits(object, "compgmInstance"))
-    object <- compilegm(object)
+##  cat("setFinding\n")
+  if (inherits(object, "grain") && !inherits(object, "compgrain"))
+    object <- compile(object)
+    ##object <- compilegm(object)
 
   
-  if (!is.null(evlist)){
-    evlist2 <- do.call("rbind",evlist)
-    nodes   <- evlist2[,1]
-    states  <- evlist2[,2]
+  if (!is.null(flist)){
+    flist2 <- do.call("rbind",flist)
+    nodes   <- flist2[,1]
+    states  <- flist2[,2]
   }
 
 
   bnnodes   <- object$nodes 
-  currev    <- evidence(object)
+  currev    <- getFinding(object)
   len       <- length(nodes)
 
   for (i in 1:len){
@@ -80,11 +82,11 @@ enterEvidence <- function(object, nodes=NULL, states=NULL, evlist=NULL, propagat
     }
 
     
-    class(ev)<-"bnevidence"
-    object$evidence <- ev
+    class(ev)<-"grainFinding"
+    object$finding <- ev
 
     if (object$control$timing)
-      cat("Time: enter evidence", proc.time()-t0, "\n")
+      cat("Time: enter finding", proc.time()-t0, "\n")
 
 
     if (propagate)
@@ -137,11 +139,11 @@ evidenceTable <- function(node, state, levels){
 }
 
 
-retractEvidence <- function(object, nodes=NULL, propagate=TRUE){
+retractFinding <- function(object, nodes=NULL, propagate=TRUE){
   if (is.null(nodes))
-    return(resetbn(object))
+    return(.resetgrain(object))
 
-  ev <- evidence(object)
+  ev <- getFinding(object)
   evnodes   <- ev$nodes
   evstates <- ev$states
   
@@ -149,8 +151,8 @@ retractEvidence <- function(object, nodes=NULL, propagate=TRUE){
   if (length(idx)>0){
     newevnodes  <- evnodes[-idx]
     newevstates <- evstates[-idx]
-    object <- resetbn(object)
-    object <- enterEvidence(object, nodes=newevnodes, states=newevstates, propagate=propagate)
+    object <- .resetgrain(object)
+    object <- setFinding(object, nodes=newevnodes, states=newevstates, propagate=propagate)
   }
   return(object)
 }      

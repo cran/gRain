@@ -4,10 +4,12 @@
 ####
 
 
-simulate.gmInstance <- function(object, nsim=1, seed=NULL, ...){
+simulate.grain <- function(object, nsim=1, seed=NULL, ...){
 
-  if (!inherits(object, "compgmInstance"))
-    object <- compilegm(object, propagate=TRUE)
+  if (!inherits(object, "compgrain"))
+    object <- compile(object, propagate=TRUE)
+
+  #object <- compilegm(object, propagate=TRUE)
 
   
   ### asarr <- function(x){x}

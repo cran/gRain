@@ -2,29 +2,30 @@
 ## plot (gRain)
 ##
 
-"plot.cpt-gmInstance" <- function(x, ...){
+"plot.cpt-grain" <- function(x, ...){
   .plot.graphsh(x$dag)
 }
 
-"plot.dag-gmInstance" <- function(x, ...){
+"plot.dag-grain" <- function(x, ...){
   .plot.graphsh(x$dag)
 }
 
-"plot.ug-gmInstance" <- function(x, ...){
+"plot.ug-grain" <- function(x, ...){
   .plot.graphsh(x$ug)
 }
 
-plot.compgmInstance <- function(x, ...){
-  .plot.graphsh(x$rip$tug)
+plot.compgrain <- function(x, type="ug", ...){
+  type <- match.arg(type, c("dag", "mdag", "ug"))
+  zz <- x[[type]]
+  if (!is.null(zz))
+    .plot.graphsh(zz)
+  else
+    cat("Slot", type, "does not exist \n") 
 }
 
-## plot.ugsh <- function(x, ...){
-##   .plot.graphsh(x)
-## }
 
-## plot.dagsh <- function(x, ...){
-##   .plot.graphsh(x)
-## }
+
+
 
 
 .plot.graphsh <- function(graph){
