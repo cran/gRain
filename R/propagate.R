@@ -1,9 +1,5 @@
 
-propagate <- function(object, trace=object$trace) {
-  UseMethod("propagate")
-}
-
-propagate.compgmInstance <- function(object, trace=object$trace){
+propagate.compgrain <- function(object, trace=object$trace, ...){
 
   t0 <- proc.time()
   object$potlist <- .propagate(object$potlistwork, object$rip,
@@ -11,10 +7,10 @@ propagate.compgmInstance <- function(object, trace=object$trace){
   object$initialized <- TRUE
   object$propagated  <- TRUE
   
-  if (!is.null(evidence(object))){
-    ev <- evidence(object)
-    attr(ev,"pevidence")<- pevidence(object)
-    object$evidence <- ev    
+  if (!is.null(getFinding(object))){
+    ev <- getFinding(object)
+    attr(ev,"pFinding")<- pFinding(object)
+    object$finding <- ev    
   }
   if (object$control$timing){
     cat("Time: propagation", proc.time()-t0, "\n")
@@ -69,7 +65,7 @@ propagate.compgmInstance <- function(object, trace=object$trace){
 
   ##print(nc)
   if (nc==0){
-    stop("Propagation of inconsistent evidence has been attempted...\n",call.=FALSE)
+    stop("Propagation of inconsistent finding has been attempted...\n",call.=FALSE)
   }
 
   if (initialize){
@@ -109,7 +105,7 @@ propagate.compgmInstance <- function(object, trace=object$trace){
     }
   }
 
-  attr(potlist, "pevidence") <- nc
+  attr(potlist, "pFinding") <- nc
   if (trace>=4) {
     cat("....FORWARD done - potlist - After forward propagation:\n");    print(potlist)
   }

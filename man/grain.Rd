@@ -1,43 +1,32 @@
-\name{gmInstance}
+\name{grain}
 
-\alias{newgmInstance}
-\alias{newgmInstance.cptspec}
-\alias{newgmInstance.graphNEL}
-%\alias{newgmInstance.ugsh}
+\alias{grain}
+\alias{grain.cptspec}
+\alias{grain.graphNEL}
 
-%\alias{makebn}
-%\alias{resetbn}
 \alias{nodeNames}
 \alias{nodeStates}
-\alias{nodeNames.gmInstance}
-\alias{nodeStates.gmInstance}
+\alias{nodeNames.grain}
+\alias{nodeStates.grain}
 
 
-\alias{as.gmInstance}
-\alias{as.gmInstance.huginNet}
+\alias{as.grain}
+\alias{as.grain.huginNet}
 
-\alias{plot.compgmInstance}
-\alias{plot.cpt-gmInstance}
-\alias{plot.dag-gmInstance}
-\alias{plot.ug-gmInstance}
-
-
-
-%% Remove this later
-%\alias{as.probnet}
-%\alias{as.probnet.cptspec}
-%\alias{as.probnet.dagsh}
-%\alias{as.probnet.huginNet}
+\alias{plot.compgrain}
+\alias{plot.cpt-grain}
+\alias{plot.dag-grain}
+\alias{plot.ug-grain}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Graphical Independence Network}
 \description{
-  The 'newgmInstance' builds a graphical independence network.
+  The 'grain' builds a graphical independence network.
 }
 \usage{
 %makebn(cptlist, gmData, description="ProbNet", root=NULL, propagate=FALSE, trace=0)
 %as.probnet(x, gmData, description="ProbNet",  control=list(),trace=0,...)
-newgmInstance(x, gmData, description="ProbNet",  control=list(), trace=0,...) 
+grain(x, gmData, description="grain",  control=list(), trace=0,...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -58,7 +47,7 @@ newgmInstance(x, gmData, description="ProbNet",  control=list(), trace=0,...)
   replaced by the value of 'smooth' - BEFORE any normalization takes place. 
 }
 \value{
-  An object of class "gmInstance"
+  An object of class "grain"
 }
 %\references{ ~put references to the literature/web site here ~ }
 \author{Søren Højsgaard, sorenh@agrsci.dk}
@@ -66,8 +55,12 @@ newgmInstance(x, gmData, description="ProbNet",  control=list(), trace=0,...)
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{\code{\link{cptable}},
-  %\code{\link{ctab}},
+\seealso{
+  \code{\link{cptable}},
+  \code{\link{setFinding}},
+  \code{\link{getFinding}},
+  \code{\link{pFinding}},
+  \code{\link{retractFinding}},
   \code{\link[gRbase]{gmData}}}
 \examples{
 
@@ -90,7 +83,7 @@ cptlist <- list(p.a, p.t.a, p.s, p.l.s, p.b.s, p.e.lt, p.x.e, p.d.be)
 cptlist[[1]]
 cptlist[[2]]
 
-bn <- newgmInstance(cptspec(cptlist), gmd)
+bn <- grain(cptspec(cptlist), gmd)
 bn
 
 summary(bn)
@@ -110,7 +103,7 @@ x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 
 plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-pn <- newgmInstance(plist)
+pn <- grain(plist)
 pn
 
 
@@ -123,35 +116,35 @@ plot(pn)
 ##
 data(HairEyeColor)
 d   <- as.gmData(HairEyeColor)
-dag <- newDAGlist(list(~Hair, ~Eye+Hair, ~Sex+Hair))
+dag <- dagList(list(~Hair, ~Eye+Hair, ~Sex+Hair))
 class(dag)
-ug <- newUGlist(list(~Eye+Hair, ~Sex+Hair))
+ug <- ugList(list(~Eye+Hair, ~Sex+Hair))
 class(ug)
 
 ## 1) Create directly from dag
-b1  <- newgmInstance(dag,d)
+b1  <- grain(dag,d)
 class(b1)
 
 ## 2) Extract cpt's for dag from gmData and build network from cpt's
 x<-dag2cptspec(dag,d)
 class(x)
-b2 <- newgmInstance(x,d)
+b2 <- grain(x,d)
 class(b2)
 
 ## 3) Build model from undirected (decomposable) graph
-b3  <- newgmInstance(ug,d)
+b3  <- grain(ug,d)
 class(b3)
 
 ## Simple example - one clique only in triangulated graph
 ##
 plist <- cptspec(list(p.a, p.t.a))
-pn <- newgmInstance(plist)
+pn <- grain(plist)
 querygm(pn)
 
 ## Simple example - disconnected network
 ##
 plist <- cptspec(list(p.a, p.t.a, p.s))
-pn <- newgmInstance(plist)
+pn <- grain(plist)
 querygm(pn)
 
 }

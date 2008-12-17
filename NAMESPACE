@@ -9,84 +9,54 @@ import(methods)
 #exportMethods(edges,nodes,show)
 
 export(
-                                        #       "newugsh",
-                                        #       "newdagsh",
-                                        #       "newug",
-                                        #       "newdag",
-                                        #       "queryg",
 ### Simple graph operations
-                                        #"plot.ugsh",
-                                        #"plot.dagsh",
-       "plot.cpt-gmInstance",
-       "plot.dag-gmInstance",
-       "plot.ug-gmInstance",
-       "plot.compgmInstance",
-       "predict.gmInstance",
-                                        #"neigh",
-                                        #"closure",
-                                        #"subgraph",
-                                        #"simplicialNodes",
-                                        #"isComplete",
-                                        #"updateugsh",
-                                        #"as.grash",
-                                        #"as.adjmat",
-                                        #"as.graphNEL",
-### Advanced graph operations
-                                        #"jTree",
-                                        #"mcs",
-                                        #"moralize",
-                                        #"triangulate",
-                                        #"ripOrder",
-                                        #"print.ripOrder",       
-                                        #"mcwhSH"
-                                        #,
-### Table operations
-                                        #"ctab",
-                                        #"ctabop",
-                                        #"ctabmarg",
-       
-       #"ptable",
-       #"as.ptable",
-                                        #"arraymargin",
-       #"tableMarginPrim",
-       #"print.ptable",
-       #"varNames.ptable",
-       #"nLevels.ptable",
-       #"valueLabels.ptable",
-
-                                        #"tableOp",       
-                                        #"tableSlice",
-                                        #"tableMargin",
-                                        #"tablePerm",
-
+       "plot.cpt-grain",
+       "plot.dag-grain",
+       "plot.ug-grain",
+       "plot.compgrain",
+       "predict.grain",
        
 ### Bayesian Networks
-       "compilegm",
-       "compilegm.dag-gmInstance",
-       "compilegm.ug-gmInstance",
-       "compilegm.cpt-gmInstance",
+
+       "compile",
+       "compile.grain",
        "propagate",
-       "propagate.compgmInstance", 
+       "propagate.compgrain", 
        "cptable",
-       "enterEvidence",
-       "retractEvidence",
-       "evidence",
-       "print.gmInstance",
-       "print.bnevidence",
+       "setFinding",
+       "getFinding",
+       "pFinding",
+       "retractFinding",
+
+       "print.grain",
+       "print.grainFinding",
        "querygm",
-       "querygm.gmInstance",       
-       "pevidence",
+       "querygm.grain",       
+
        "propagate",
        "vpav",
        "dag2cptspec",
-       "summary.gmInstance",
-       "as.gmInstance",
-       "as.gmInstance.huginNet",
+       "summary.grain",
+       "as.grain",
+       "as.grain.huginNet",
        "as.cumcounts",
        "as.cumcounts.data.frame",
        
        "cptspec",
 
+       "nodeNames",
+       "nodeNames.grain",
+       "nodeStates",
+       "nodeStates.grain",
+       "simulate.grain",
+       "print.cptspec",
+       "grain",
+       "grain.cptspec",
+       "grain.graphNEL",
+
+
+       
+       
 ### HUGIN related
        "loadHuginNet",
        "saveHuginNet",
@@ -96,22 +66,8 @@ export(
        "print.huginNet",
        "splitVec",
        "splitVec.default",
-       "splitVec.list",
+       "splitVec.list"
 ### !!!
-
-
-       "nodeNames",
-       "nodeNames.gmInstance",
-       "nodeStates",
-       "nodeStates.gmInstance",
-       "simulate.gmInstance",
-       "getSlot",
-       "print.cptspec",
-       "newgmInstance",
-       "newgmInstance.cptspec",
-       "newgmInstance.graphNEL"
-       ##"newgmInstance.dagsh",
-       ##"newgmInstance.ugsh"
        )
 
 

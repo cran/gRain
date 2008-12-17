@@ -176,7 +176,7 @@ d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 @ 
 <<>>=
 plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-in1 <- newgmInstance(plist)
+in1 <- grain(plist)
 in1
 @ %def 
 
@@ -204,7 +204,7 @@ querygm(in1,nodes=c("lung","bronc"), type="joint")
 
 @ 
 <<>>=
-in12  <- enterEvidence(in1,nodes=c("asia","dysp"),states=c("yes","yes"))
+in12  <- setFinding(in1,nodes=c("asia","dysp"),states=c("yes","yes"))
 @ %def
 
 \item The \inet\ can be queried again:

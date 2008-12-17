@@ -1,9 +1,11 @@
-predict.gmInstance <- function(object, response, predictors,
+predict.grain <- function(object, response, predictors,
                                    newdata, type="class", ...){
 
 
-  if (!inherits(object, "compgmInstance"))
-    object <- compilegm(object, propagate=TRUE)
+  if (!inherits(object, "compgrain"))
+    object <- compile(object, propagate=TRUE)
+
+  ##object <- compilegm(object, propagate=TRUE)
 
   
   type <- match.arg(type, c("class","distribution"))
@@ -19,8 +21,8 @@ predict.gmInstance <- function(object, response, predictors,
   
   for (i in 1:nrow(newdata)){
     case      <- newdata[i,predictors]
-    objecttmp1    <- enterEvidence(object,nodes=names(case), states=case)
-    p.e       <- pevidence(objecttmp1)
+    objecttmp1    <- setFinding(object,nodes=names(case), states=case)
+    p.e       <- pFinding(objecttmp1)
     p.evec[i] <- p.e
     for (j in 1:length(response)){
       ##pj   <- nodeMarginal(objecttmp1, response[j])[[1]]$values
@@ -38,6 +40,6 @@ predict.gmInstance <- function(object, response, predictors,
     }
   }
   
-  value <- list(pred=ans, pevidence=p.evec)
+  value <- list(pred=ans, pFinding=p.evec)
   return(value)
 }

@@ -15,10 +15,10 @@ systems (which includes Bayesian networks as a special case).
   \item This package implements graphical independence networks.
   \item The package is still at an experimental stage.
   \item The main function for building networks is
-  \code{\link{newgmInstance}}
+  \code{\link{grain}}
   \item The function \code{\link{querygm}} is used for querying
-  independence networks. Functions \code{\link{simulate.gmInstance}} and
-  \code{\link{predict.gmInstance}} are available.
+  independence networks. Functions \code{\link{simulate.grain}} and
+  \code{\link{predict.grain}} are available.
 %   \item The functions \code{\link{newUG}} and \code{\link{newDAG}}
 %   create undirected and directed acyclic graphs. The function
 %   \code{\link{queryg}} is used for querying graphs.
