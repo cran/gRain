@@ -1,4 +1,4 @@
-\name{compile.grain}
+\name{compile}
 \alias{compile}
 \alias{compile.grain}
 %- Also NEED an '\alias' for EACH other topic documented here.

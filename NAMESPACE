@@ -34,7 +34,6 @@ export(
        "querygm.grain",       
 
        "propagate",
-       "vpav",
        "dag2cptspec",
        "summary.grain",
        "as.grain",

@@ -75,6 +75,8 @@ compile.grain <- function(object,
   if (!is.null(control$timing) && control$timing)
     cat("Time: Insert cpt into potentials:", proc.time()-t0,"\n") 
 
+  
+  
   ## Collect results
   ##
   ans      <- list(
@@ -147,10 +149,20 @@ compile.grain <- function(object,
   if (!is.null(control$timing) && control$timing)
     cat("Time: create potentials:", proc.time()-t0,"\n")
 
+  ## Create dag and cpts
+  ##
+  dg <- ug2dag(x$ug)
+  cptlist <- dag2cptspec(dg, x$gmData, smooth=smooth)
+
+
+  
   ## Collect results
   ##  
-  ans <- list(rip         = rip,
-              ug          = x$ug,
+  ans <- list(dag         = dg,
+              mdag        = x$ug,
+              cptlist     = cptlist,
+              rip         = rip,
+                                        #ug          = x$ug,
               potlist     = potlist,
               potlistwork = potlistwork,
               potlistorig = potlistorig,

@@ -76,6 +76,26 @@ ug2potspec <- function(ug, gmData, rip, smooth=0){
   }
 }
 
+ug2dag <- function(ug){
+  m <- MCS(ug)
+  if (length(m)==0)
+    return(NULL)
+  adjList <- adj(ug, m)
+  vpavList <- vector("list",length(m))
+  names(vpavList) <- m
+  
+  ii <- 2
+  vpavList[[1]] <- m[1]
+  for (ii in 2:length(m)){
+    vpavList[[ii]] <- c(m[ii],intersectPrim(adjList[[ii]], m[1:ii]))
+  }
+  
+  dg <- dagList(vpavList)
+  dg
+}
+
+
+
 
 
 

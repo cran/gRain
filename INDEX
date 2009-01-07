@@ -1,10 +1,10 @@
-compile.grain           Compile a Bayesian network (aka a graphical
+compile                 Compile a Bayesian network (aka a graphical
                         independence network)
 cptable                 Create conditional probability tables (CPTs)
 grain                   Graphical Independence Network
-gRain-package           Graphical Independence Networks
+gRain-package           GRAphical Independence Networks
 loadHuginNet            Load and save Hugin net files
 predict.grain           Make predictions from a probabilistic network
-propagate.compgrain     Propagate a Bayesian network
+propagate               Propagate a Bayesian network
 querygm                 Query an independence network
 simulate.grain          Simulate from an independence network

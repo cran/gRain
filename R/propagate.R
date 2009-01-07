@@ -27,6 +27,11 @@ propagate.compgrain <- function(object, trace=object$trace, ...){
   pa    <- rip$pa
   len   <- length(cli)
 
+  ## FIXME: This is a hack introduced because RIP now returns 0 as the
+  ## parent index for the first clique
+  pa[pa==0]<-NA
+  
+  
   if(trace>=2) cat("..BACKWARD:\n")
   t0 <- proc.time()
   if (len>1){

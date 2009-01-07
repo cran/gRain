@@ -12,7 +12,7 @@
 
 \alias{nodeMarginal}
 \alias{nodeJoint}
-\alias{vpav}
+
 
 \alias{dag2cptspec}
 \alias{print.huginNet}
