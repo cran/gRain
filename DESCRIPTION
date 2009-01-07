@@ -1,5 +1,5 @@
 Package: gRain
-Version: 0.5.0
+Version: 0.5.3
 Title: Graphical Independence Networks
 Author: Søren Højsgaard <sorenh@agrsci.dk> 
 Maintainer: Søren Højsgaard <sorenh@agrsci.dk> 
@@ -10,4 +10,4 @@ Imports: graph
 Suggests: Rgraphviz
 URL: http://gbi.agrsci.dk/~shd/public/gRain/
 Encoding: latin1
-Packaged: Wed Dec 17 13:42:38 2008; SHD
+Packaged: Wed Jan  7 23:06:48 2009; shd

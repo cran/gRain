@@ -3,26 +3,29 @@
 \alias{gRain}
 \docType{package}
 \title{
-Graphical Independence Networks
-
+GRAphical Independence Networks
 }
 \description{
-A package for probability propagation in graphical
+Probability propagation in graphical
 independence networks, also known as probabilistic expert
 systems (which includes Bayesian networks as a special case).
 }
 \details{
-  \item This package implements graphical independence networks.
-  \item The package is still at an experimental stage.
-  \item The main function for building networks is
-  \code{\link{grain}}
-  \item The function \code{\link{querygm}} is used for querying
-  independence networks. Functions \code{\link{simulate.grain}} and
-  \code{\link{predict.grain}} are available.
-%   \item The functions \code{\link{newUG}} and \code{\link{newDAG}}
-%   create undirected and directed acyclic graphs. The function
-%   \code{\link{queryg}} is used for querying graphs.
+  This package implements graphical independence networks.
   
+  The package is still at an experimental stage.
+
+  The main function for building networks is \code{\link{grain}}.
+  
+  The function \code{\link{querygm}} is used for querying
+  independence networks.
+
+  Functions \code{\link{simulate.grain}} and
+  \code{\link{predict.grain}} are available.
+
+  There is a small vignette which illustrates the use of gRain.
+
+  A paper describing gRain is under preparation
 }
 \author{
 Søren Højsgaard <sorenh@agrsci.dk>

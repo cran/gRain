@@ -1,3 +1,11 @@
+2009-01-05 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* grain objects built from undirected graph and data now extended
+	so that they also contain the slots dag and cptlist (so that they
+	can be saved as a Hugin net file).
+
+	* Version 0.5.3 uploaded.
+
 2008-12-04 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* Small change on MCS call for consistency with current gRbase
