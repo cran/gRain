@@ -1,4 +1,4 @@
-\name{propagate.compgrain}
+\name{propagate}
 \alias{propagate}
 \alias{propagate.compgrain}
 %- Also NEED an '\alias' for EACH other topic documented here.

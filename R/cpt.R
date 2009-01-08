@@ -143,17 +143,6 @@ eliminationOrder <- function(gg){
 }
 
 
-vpav <- function(dag){
-  amat <- as.adjMAT(dag)
-  vn <- rownames(amat)
-  ans <- vector("list", length(vn))
-  for (ii in seq_along(vn)){
-    ans[[ii]] <- c(vn[ii], vn[amat[,ii]>0])
-  }
-  names(ans) <- vn
-  return(ans)
-}
-
 
 
 

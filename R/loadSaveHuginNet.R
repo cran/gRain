@@ -402,6 +402,9 @@ saveHuginNet <- function(bn, file, trace=0){
     ##val <- cpot$values
 
     nam <- varNames(cpot)    ## BRIS
+
+
+
     lev <- valueLabels(cpot) ## BRIS
     val <- cpot              ## BRIS
     
@@ -412,7 +415,7 @@ saveHuginNet <- function(bn, file, trace=0){
     wval  <- val
     if (length(lev)>0){
       for (i in 1:length(lev)){
-        print("splitVec:"); print(wval); print(class(wval))
+        ##print("splitVec:"); print(wval); print(class(wval))
         wval<-splitVec(wval,length(lev[[i]]))
       }
     }
