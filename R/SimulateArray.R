@@ -9,6 +9,7 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   if (!inherits(object, "compgrain"))
     object <- compile(object, propagate=TRUE)
 
+  
   #object <- compilegm(object, propagate=TRUE)
 
   
@@ -32,8 +33,11 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
       ctab <- plist[[ii]]
       vn   <- names(dimnames(ctab)) # Safe
       s2   <- splist[[ii]]
-      mtab <- tableMarginPrim(ctab,s2)
-      ctab <- tableOp(ctab, mtab, "/")        
+      ##mtab <- tableMarginPrim(ctab,s2)
+      mtab <- tableMargin(ctab,s2) ## FIXME: Check this
+      ##ctab <- tableOp(ctab, mtab, "/")
+      ctab <- .tableOp2(ctab, mtab, `/`) ## FIXME: Check this
+      
       r2   <- setdiff(vn, s2)
       ##cat("r:", r2, "s:", s2, "\n")    
       if (length(s2)){

@@ -23,22 +23,23 @@ as.setmat <- function(glist,vn=unique(unlist(glist))){
 
 
 dag2cptspec <- function(dag, gmData, smooth=0){
-  vpavlist <- vpav(dag)
-  ##ans      <- lapply(vpavlist, cpt2, gmData=gmData, smooth=smooth, normalize=TRUE)
+  vparlist <- vpar(dag)
+  ##ans      <- lapply(vparlist, cpt2, gmData=gmData, smooth=smooth, normalize=TRUE)
   ##cat("dag2cptspec:", smooth, "\n")
-  ans      <- lapply(vpavlist, cpt2, gmData=gmData, smooth=smooth, normalize='first')
+  ans      <- lapply(vparlist, cpt2, gmData=gmData, smooth=smooth, normalize='first')
 
   cptspec(ans)
 }
 
-ug2potspec <- function(ug, gmData, rip, smooth=0){
-  cl    <- rip$cliques
-  se    <- rip$separators
 
-  ans <- as.list(rep(NA, length(cl)))
-  for (i in 1:length(cl)){  
-    currc <- cl[[i]]
-    currs <- se[[i]]
+ug2potspec <- function(ug, gmData, rip, smooth=0){
+  cliq    <- rip$cliques
+  seps    <- rip$separators
+
+  ans <- as.list(rep(NA, length(cliq)))
+  for (i in 1:length(cliq)){  
+    currc <- cliq[[i]]
+    currs <- seps[[i]]
 
     #cat("currc:", paste(currc, sep=''),"\n")
     #cat("currs:", paste(currs, sep=''),"\n")
@@ -56,13 +57,55 @@ ug2potspec <- function(ug, gmData, rip, smooth=0){
    }  
 
   ##print("ug2potspec - DONE")
-  ##ans   <- lapply(cl, cpt2, gmData=gmData, smooth=0, normalize=TRUE)
-  #ans   <- lapply(cl, cpt2, gmData=gmData, smooth=0, normalize='none')
+  ##ans   <- lapply(cliq, cpt2, gmData=gmData, smooth=0, normalize=TRUE)
+  #ans   <- lapply(cliq, cpt2, gmData=gmData, smooth=0, normalize='none')
 
   ##print(ans)
   return(ans)
 }
 
+
+
+
+
+extractPotentials <- function(x, cliq, seps=NULL, smooth=0){
+  UseMethod("extractPotentials")
+
+}
+
+extractPotentials.table <- function(x, cliq, seps=NULL, smooth=0){
+  ans <- vector("list", length(cliq))
+  for (ii in seq_along(cliq)){
+    cq <- cliq[[ii]]
+    sp <- seps[[ii]]
+    t.cq <- tableMargin(x, cq) + smooth
+    names(dimnames(t.cq)) <- cq
+    if (!is.null(seps) && length(sp)>0){
+      t.sp <- tableMargin(t.cq, sp)
+      ans[[ii]] <- .tableOp2(t.cq, t.sp, op=`/`)
+    } else {
+      ans[[ii]] <- t.cq / sum(t.cq)
+    }
+  }
+  ans
+}
+
+extractPotentials.data.frame <- function(x, cliq, seps=NULL, smooth=0){
+  ans <- vector("list", length(cliq))
+  for (ii in seq_along(cliq)){
+    cq <- cliq[[ii]]
+    sp <- seps[[ii]]
+    t.cq <- table(x[,cq]) + smooth
+    names(dimnames(t.cq)) <- cq
+    if (!is.null(seps) && length(sp)>0){
+      t.sp <- tableMargin(t.cq, sp)
+      ans[[ii]] <- .tableOp2(t.cq, t.sp, op=`/`)
+    } else {
+      ans[[ii]] <- t.cq / sum(t.cq)
+    }
+  }
+  ans
+}
 
 
 .formula2character <- function(x){
@@ -77,20 +120,20 @@ ug2potspec <- function(ug, gmData, rip, smooth=0){
 }
 
 ug2dag <- function(ug){
-  m <- MCS(ug)
+  m <- mcs(ug)
   if (length(m)==0)
     return(NULL)
   adjList <- adj(ug, m)
-  vpavList <- vector("list",length(m))
-  names(vpavList) <- m
+  vparList <- vector("list",length(m))
+  names(vparList) <- m
   
   ii <- 2
-  vpavList[[1]] <- m[1]
+  vparList[[1]] <- m[1]
   for (ii in 2:length(m)){
-    vpavList[[ii]] <- c(m[ii],intersectPrim(adjList[[ii]], m[1:ii]))
+    vparList[[ii]] <- c(m[ii],intersectPrim(adjList[[ii]], m[1:ii]))
   }
   
-  dg <- dagList(vpavList)
+  dg <- dagList(vparList)
   dg
 }
 

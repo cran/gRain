@@ -11,16 +11,62 @@ compile.grain <- function(object,
   if (inherits(object, "cpt-grain")){
     .compileCPT(object, method=method, propagate=propagate, root=root, smooth=smooth, control=control, trace=trace)
   } else {
-    if (inherits(object, "dag-grain")){
-      object$cptlist   <- dag2cptspec(object$dag,object$gmData,smooth=smooth)
-      .compileCPT(object, method=method, propagate=propagate, root=root, smooth=smooth, control=control, trace=trace)      
-    } else {
-      ## UG
-      .compileUG(object, method=method, propagate=propagate, root=root, smooth=smooth, control=control, trace=trace)      
+    if (inherits(object, "list-grain")){
+      .compileLIST(object, method=method, propagate=propagate, root=root, smooth=smooth, control=control, trace=trace)
     }
-  }  
+    else {
+      if (inherits(object, "dag-grain")){
+        object$cptlist   <- dag2cptspec(object$dag,object$gmData,smooth=smooth)
+        .compileCPT(object, method=method, propagate=propagate, root=root, smooth=smooth, control=control, trace=trace)      
+      } else {
+        ## UG
+        .compileUG(object, method=method, propagate=propagate, root=root, smooth=smooth, control=control, trace=trace)      
+      }
+    }  
+  }
 }
-                          
+
+.compileLIST <-
+  function(x, method="mcwh", propagate=FALSE, root=NULL, smooth=0,
+           control=x$control, trace=0)
+{
+  t00 <-  proc.time()
+
+  ## Collect results
+  ##
+  ans      <- list(
+                   rip         = rip(x$ug),
+                   ug          = x$ug,
+                   potlist     = x$potlist,
+                   potlistwork = x$potlist,
+                   potlistorig = x$potlist, 
+                   mdag        = x$ug,
+                   elorder     = mcs(x$ug),
+                   trace       = trace,
+                   initialized = FALSE,
+                   propagated  = FALSE
+                   )
+  
+  ans        <- c(x, ans)
+  class(ans) <- c('compgrain', class(x))
+
+  ## Propagate if asked to
+  ##
+  if (propagate){
+    if (trace>=1) cat (".Initializing network\n")
+    ans             <- propagate(ans)
+  }
+
+  ## Total time
+  ##
+  if (!is.null(control$timing) && control$timing)
+    cat("Time: (total) compile:", proc.time()-t00,"\n")
+
+  ## Done
+  ##
+  return(ans)
+  
+}
 .compileCPT <- 
   function(x, method="mcwh", propagate=FALSE, root=NULL, smooth=0,
            control=x$control, trace=0)
@@ -57,7 +103,7 @@ compile.grain <- function(object,
   vn   <- nodes(mdag)
   nLev <- x$gmData$nLevels[match(vn,x$gmData$varNames)]
   ug   <- triangulate(mdag, method=method, nLevels=nLev)
-  rip  <- RIP(ug, nLevels = nLevels)
+  rip  <- rip(ug, nLevels = nLevels)
                                         #rip <- jTree(mdag, method=method, nLevels=nLev,  control=control)
   if (!is.null(control$timing) && control$timing)
     cat("Time: triangulate:", proc.time()-t0,"\n")
@@ -122,7 +168,7 @@ compile.grain <- function(object,
   
   ## Check if graph is triangulated
   ##
-  if (length(MCSMAT(as.adjMAT(x$ug)))==0){
+  if (length(mcsMAT(as.adjMAT(x$ug)))==0){
     cat("Undirected graph is not triangulated...\n"); return(NULL)
   }
 
@@ -136,7 +182,7 @@ compile.grain <- function(object,
   t0   <- proc.time()
   vn   <- nodes(x$ug)
   nLev <- x$gmData$nLevels[match(vn,x$gmData$varNames)]
-  rip  <- RIP(x$ug, nLevels = nLevels)
+  rip  <- rip(x$ug, nLevels = nLevels)
 
   #rip  <- jTree(x$ug, method=method, nLevels=nLev,  control=control)
   if (!is.null(control$timing) && control$timing)
@@ -145,7 +191,8 @@ compile.grain <- function(object,
   ## Extract clique potentials from data
   ##
   t0 <- proc.time()
-  potlist <- potlistwork <- potlistorig <- ug2potspec(x$ug, x$gmData, rip, smooth=smooth)
+  ##potlist <- potlistwork <- potlistorig <- ug2potspec(x$ug, x$gmData, rip, smooth=smooth)
+  potlist <- potlistwork <- potlistorig <- lapply(extractPotentials(observations(x$gmData), rip$cliq, rip$sepa, smooth=smooth), as.ptable) ## FIXME : Check at dette er rigtigt
   if (!is.null(control$timing) && control$timing)
     cat("Time: create potentials:", proc.time()-t0,"\n")
 
