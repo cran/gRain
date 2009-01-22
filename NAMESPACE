@@ -9,6 +9,10 @@ import(methods)
 #exportMethods(edges,nodes,show)
 
 export(
+
+       "cpt2",          ## FIXME: Dirty hack...
+       ".propagate",    ## FIXME: Dirty hack...
+
 ### Simple graph operations
        "plot.cpt-grain",
        "plot.dag-grain",
@@ -67,6 +71,9 @@ export(
        "splitVec.default",
        "splitVec.list"
 ### !!!
+
+
+
        )
 
 

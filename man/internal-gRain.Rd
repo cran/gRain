@@ -1,5 +1,8 @@
 \name{internal-gRain}
 
+\alias{cpt2} ## FIXME: CRAP NAME
+
+
 \alias{as.cumcounts}
 \alias{as.cumcounts.data.frame}
 

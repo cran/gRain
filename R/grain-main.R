@@ -85,6 +85,30 @@ grain.graphNEL <- function(x, gmData, description="grain", control=list(), trace
   return(ans)
 }
 
+
+grain.list <- function(x, description="grain", control=list(), trace=0,...){
+
+  con <- .defaultControl()
+  con[(namc <- names(control))] <- control
+  control <- con
+
+  cliq<-lapply(x, function(a) names(dimnames(a)))
+
+  ug <- ugList(cliq)
+  ans  <- list(
+               potlist     = x,
+               nodes       = nodes(ug),
+               description = description,
+               ug          = ug,
+               control     = control,
+               trace       = trace)
+  class(ans) <- c("list-grain","grain")    
+  ans
+  
+  
+}
+
+
 ## Printing grain
 ##
 print.grain <- function(x,...){
@@ -102,5 +126,3 @@ print.grain <- function(x,...){
 
   return(invisible(x))
 }
-
-
