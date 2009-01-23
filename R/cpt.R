@@ -121,6 +121,30 @@ cpt2 <- function(v, pa=NULL, values=NULL, gmData, smooth=0,
   ptable(c(v,pa), lev, values, normalize=normalize, smooth=smooth)
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 eliminationOrder <- function(gg){
   is.acyc <- TRUE
   ### amat <- as.adjmat(gg)

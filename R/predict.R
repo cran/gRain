@@ -1,11 +1,9 @@
-predict.grain <- function(object, response, predictors,
+predict.grain <- function(object, response, predictors=setdiff(names(newdata), response),
                                    newdata, type="class", ...){
 
 
   if (!inherits(object, "compgrain"))
     object <- compile(object, propagate=TRUE)
-
-  ##object <- compilegm(object, propagate=TRUE)
 
   
   type <- match.arg(type, c("class","distribution"))
@@ -18,14 +16,18 @@ predict.grain <- function(object, response, predictors,
     v <- matrix(NA, nc=length(a),nr=nrow(newdata))
     colnames(v) <- a
     v})
-  
+
+
   for (i in 1:nrow(newdata)){
     case      <- newdata[i,predictors]
+
     objecttmp1    <- setFinding(object,nodes=names(case), states=case)
+
     p.e       <- pFinding(objecttmp1)
     p.evec[i] <- p.e
     for (j in 1:length(response)){
       ##pj   <- nodeMarginal(objecttmp1, response[j])[[1]]$values
+
       pj   <- nodeMarginal(objecttmp1, response[j])[[1]] ## BRIS
       ans[[j]][i,] <- pj
     }

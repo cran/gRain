@@ -61,6 +61,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     }
   }
 
+
   ## print(nodes); print(states)
 
 
@@ -72,9 +73,11 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
 
 
     object$potlistwork  <- .insertEv(nodes, states, object$potlistwork, object$rip)
+
     object$initialized  <- FALSE
 
 
+    
     if (!is.null(currev)){
       ev <- list(nodes=c(currev$nodes,nodes), states=c(currev$states,states))
     } else {
