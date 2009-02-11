@@ -24,7 +24,8 @@ simarray <- function(x, n=1, margin, index){
   ldr <-length(dr)
   cp  <-cumprod(c(1,dr[-ldr]))
   res <-matrix(0,n,ldr)
-  for(j in 1:n) res[j,]<-1+((samp[j]-1)%/%cp)%%dr
+  for(j in 1:n)
+    res[j,] <- 1+((samp[j]-1)%/%cp)%%dr
   colnames(res) <- cnames
   res
 }

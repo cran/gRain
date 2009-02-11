@@ -190,14 +190,14 @@ in1
 
 @ 
 <<>>=
-querygm(in1,nodes=c("lung","bronc"), type="marginal")
+querygrain(in1,nodes=c("lung","bronc"), type="marginal")
 @ %def 
 
 Likewise, a joint distribution can be obtained.
 
 @ 
 <<>>=
-querygm(in1,nodes=c("lung","bronc"), type="joint")
+querygrain(in1,nodes=c("lung","bronc"), type="joint")
 @ %def 
 
 \item Evidence can be entered as:
@@ -211,8 +211,8 @@ in12  <- setFinding(in1,nodes=c("asia","dysp"),states=c("yes","yes"))
 
 @ 
 <<>>=
-querygm(in12,nodes=c("lung","bronc"))
-querygm(in12,nodes=c("lung","bronc"), type="joint")
+querygrain(in12,nodes=c("lung","bronc"))
+querygrain(in12,nodes=c("lung","bronc"), type="joint")
 @ %def 
 
 

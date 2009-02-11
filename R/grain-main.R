@@ -3,12 +3,39 @@
 ## Creating grain
 ##
 
-grain <- function(x, gmData, description="grain",  control=list(), trace=0,...)
+grain <- function(x, data, description="grain",  control=list(), trace=0,...)
 {
   UseMethod("grain")
 }
 
-grain.cptspec <- function(x, gmData, description="grain", control=list(), trace=0,...)
+grain.list <- function(x, data, description="grain", control=list(), trace=0,...){
+
+  con <- .defaultControl()
+  con[(namc <- names(control))] <- control
+  control <- con
+
+  cliq<-lapply(x, function(a) names(dimnames(a)))
+
+  ug <- ugList(cliq)
+  ans  <- list(
+               potlist     = x,
+               nodes       = nodes(ug),
+               description = description,
+               ug          = ug,
+               
+               initialized = FALSE,
+               compiled    = FALSE,
+               propagated  = FALSE,
+               
+               control     = control,
+               trace       = trace)
+  class(ans) <- c("list-grain","grain")    
+  ans
+  
+  
+}
+
+grain.cptspec <- function(x, data, description="grain", control=list(), trace=0,...)
 {
 
   con <- .defaultControl()
@@ -35,8 +62,10 @@ grain.cptspec <- function(x, gmData, description="grain", control=list(), trace=
   ## FIXME: Should *not* have any effect to supply gmData
   ##
   t0 <- proc.time()
-  if (missing(gmData))
-    gmData <- as.gmData(x)
+  ##if (missing(gmData))
+
+  gmData <- as.gmData(x) ## FIXME: Remove gmData stuff
+
   if (!is.null(control$timing) && control$timing)
     cat("Time: Create gmData:", proc.time()-t0,"\n")
 
@@ -48,6 +77,11 @@ grain.cptspec <- function(x, gmData, description="grain", control=list(), trace=
                description = description,
                dag         = dag,
                cptlist     = x,
+
+               initialized = FALSE,
+               compiled    = FALSE,
+               propagated  = FALSE,
+
                control     = control,
                trace       = trace)
   class(ans) <- c("cpt-grain","grain")
@@ -57,11 +91,20 @@ grain.cptspec <- function(x, gmData, description="grain", control=list(), trace=
   return(ans)
 }
 
-grain.graphNEL <- function(x, gmData, description="grain", control=list(), trace=0,...){
+grain.graphNEL <- function(x, data, description="grain", control=list(), trace=0,...){
 
   con <- .defaultControl()
   con[(namc <- names(control))] <- control
   control <- con
+
+  if (!missing(data)){
+    if (!("gmData" %in% class(data))){
+      gmData <- as.gmData(data)
+    } else {
+      gmData <- data
+    }
+  }
+
   
   if (edgemode(x)=="directed"){
     ans  <- list(
@@ -69,6 +112,11 @@ grain.graphNEL <- function(x, gmData, description="grain", control=list(), trace
                  nodes       = nodes(x),
                  description = description,
                  dag         = x,
+                 
+                 initialized = FALSE,
+                 compiled    = FALSE,
+                 propagated  = FALSE,
+
                  control     = control,
                  trace       = trace)
     class(ans) <- c("dag-grain","grain")
@@ -78,6 +126,12 @@ grain.graphNEL <- function(x, gmData, description="grain", control=list(), trace
                  nodes       = nodes(x),
                  description = description,
                  ug          = x,
+
+
+                 initialized = FALSE,
+                 compiled    = FALSE,
+                 propagated  = FALSE,
+                 
                  control     = control,
                  trace       = trace)
     class(ans) <- c("ug-grain","grain")    
@@ -86,27 +140,6 @@ grain.graphNEL <- function(x, gmData, description="grain", control=list(), trace
 }
 
 
-grain.list <- function(x, description="grain", control=list(), trace=0,...){
-
-  con <- .defaultControl()
-  con[(namc <- names(control))] <- control
-  control <- con
-
-  cliq<-lapply(x, function(a) names(dimnames(a)))
-
-  ug <- ugList(cliq)
-  ans  <- list(
-               potlist     = x,
-               nodes       = nodes(ug),
-               description = description,
-               ug          = ug,
-               control     = control,
-               trace       = trace)
-  class(ans) <- c("list-grain","grain")    
-  ans
-  
-  
-}
 
 
 ## Printing grain
@@ -114,7 +147,8 @@ grain.list <- function(x, description="grain", control=list(), trace=0,...){
 print.grain <- function(x,...){
   cat("Independence network: ") #", x$description, " ")
 
-  isCompiled <- inherits(x, "compgrain")
+  ##isCompiled <- inherits(x, "compgrain")
+  isCompiled <- x$compiled
 
   isPropagated <- x$propagated
 
@@ -124,5 +158,6 @@ print.grain <- function(x,...){
   cat("Compiled:", isCompiled, "Propagated:",
       isPropagated, "\n")
 
+  print(class(x))
   return(invisible(x))
 }
