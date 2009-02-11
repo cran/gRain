@@ -1,39 +1,37 @@
-querygm <- function(object,nodes=nodeNames(object), normalize=TRUE,
+querygrain <- function(object,nodes=nodeNames(object), normalize=TRUE,
                     type=c("marginal","joint","conditional"),
                     return="array",
                     trace=0)
 {
-  UseMethod("querygm")
+  UseMethod("querygrain")
 }
 
-querygm.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
+querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
                                type=c("marginal","joint","conditional"),
                                return="array",
                                trace=0){
 
   return <- match.arg(return, c("array","data.frame"))
   t0 <- proc.time()
-  if (!inherits(object, "compgrain")){
-    #cat("Compiling model...\n")
-    object <- compile(object)
-    ##object <- compilegm(object)
-  }
 
-
-  
-  if (!object$initialized){
-    #cat("Propagating model...\n")
-    object <- propagate(object)
-  }
   if (is.null(nodes))
     return(invisible(NULL))
-
+  
+  if (!object$compiled){
+    ##cat("Compiling (and propagating) model ...\n")
+    object <- compile(object, propagate=TRUE)
+  } else {
+    if (!object$propagated){
+      ##cat("Propagating model...\n")
+      object <- propagate(object)
+    }
+  }
 
   type = match.arg(type, choices=c("marginal","joint","conditional"))
   switch(type,
          "marginal"={
            ans <- nodeMarginal(object, nodes, trace)
-           ans <- ans[nodes]
+           #ans <- ans[nodes]
            if (return=="data.frame")
              ans <- lapply(ans, as.data.frame.table)
          },
@@ -44,7 +42,7 @@ querygm.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
              ans <- as.data.frame.table(ans) ## BRIS
          },
          "conditional"={
-           qobject <- querygm(object, nodes, type="joint", return="data.frame")
+           qobject <- querygrain(object, nodes, type="joint", return="data.frame")
            nst     <- nodeStates(object)[nodes]
            ##ans     <- ctab(nodes, nst, values=qobject$values, normalize="first")
            ans     <- ptable(nodes, nst, values=qobject$Freq, normalize="first") ## BRIS
@@ -136,31 +134,6 @@ print.ctabnumeric <- function(x,...){
 
 
 
-# querybn <- function(bn, nodes=nodeNames(bn), normalize=TRUE,
-#                     type=c("marginal","joint","conditional"), trace=0){
-#   if (!bn$initialized){
-#     bn <- propagate(bn)
-#     #cat("Network is not propagated - can not answer queries...\n")
-#     #return(invisible(NULL))
-#   }
-#   if (is.null(nodes))
-#     return(invisible(NULL))
-
-#   type = match.arg(type)
-#   switch(type,
-#          "marginal"={
-#            nodeMarginal(bn, nodes, trace)
-#          },
-#          "joint"={
-#            nodeJoint(bn, nodes, normalize, trace)
-#          },
-#          "conditional"={
-#            qbn <- querybn(bn, nodes, type="joint")
-#            nst <- nodeStates(bn)[nodes]
-#            #nst <- sapply(nst, length)
-#            ctab(nodes, nst, values=qbn$values, normalize="first")
-#          })
-# }
 
 
 

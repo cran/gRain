@@ -24,11 +24,8 @@ as.setmat <- function(glist,vn=unique(unlist(glist))){
 
 dag2cptspec <- function(dag, gmData, smooth=0){
   vparlist <- vpar(dag)
-  ##ans      <- lapply(vparlist, cpt2, gmData=gmData, smooth=smooth, normalize=TRUE)
-  ##cat("dag2cptspec:", smooth, "\n")
   ans      <- lapply(vparlist, cpt2, gmData=gmData, smooth=smooth, normalize='first')
-
-  cptspec(ans)
+  .cptspec(ans)
 }
 
 
@@ -167,6 +164,22 @@ ug2dag <- function(ug){
 
 
 
+
+## Marginalize array onto margin
+## FIXME: Remove this...
+tableMarginPrim <- function(t1, margin, normalize=FALSE){
+  if (missing(margin) || (length(margin)==1 && is.na(margin))){
+    return(sum(as.numeric(t1)))
+  }
+  vn    <- names(dimnames(t1))
+  idx   <- match(margin,vn)
+  x     <- apply(t1, idx, sum)
+  if (normalize)
+    x <- x/sum(x)
+  att           <- attributes(t1)
+  attributes(x) <- list(dim=att$dim[idx], dimnames=att$dimnames[idx], class="ptable")
+  x
+}
 
 
 

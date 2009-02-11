@@ -273,10 +273,12 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
   x     <-readHuginNet(filename,trace)
   x     <-transformHuginNet2internal(x)
 
+
+  
   gmd   <- as.gmData(x)
   pl   <- lapply(x$potentialList, hpot2cpt, gmd)
 
-  pl <- cptspec(pl)
+  pl <- .cptspec(pl)
   value <- list(cptlist=pl, gmData=gmd, description=description)
   class(value) <- "huginNet"
   return(value)
@@ -294,7 +296,7 @@ hpot2cpt <- function(cpot,gmd){
   v   <- varNames(gmd)[match(cpot$nodeVar,shortNames(gmd))]
   pa  <- varNames(gmd)[match(cpot$parentVar,shortNames(gmd))]
   #cat("v:", v, "\n pa:", paste(pa, collapse=' '),"\n")
-  cptable(v=v, pa=pa, values=cpot$potential, gmData=gmd)
+  .cptable(v, pa=pa, values=cpot$potential, gmData=gmd)
 }
 
 

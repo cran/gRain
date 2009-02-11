@@ -1,6 +1,6 @@
-\name{querygm}
-\alias{querygm}
-\alias{querygm.grain}
+\name{querygrain}
+\alias{querygrain}
+\alias{querygrain.grain}
 \alias{setFinding}
 \alias{retractFinding}
 \alias{getFinding}
@@ -13,7 +13,7 @@
   distribution of a set of variables given finding (evidence) on other variables. 
 }
 \usage{
-querygm(object, nodes = nodeNames(object), normalize = TRUE, type =
+querygrain(object, nodes = nodeNames(object), normalize = TRUE, type =
 c("marginal", "joint", "conditional"), return="array", trace = 0)
 
 setFinding(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE)
@@ -56,7 +56,7 @@ pFinding(object)
  chest <- as.grain(loadHuginNet(testfile, trace=1))
  print(class(chest))
 
- qb <- querygm(chest)
+ qb <- querygrain(chest)
  qb
 
  lapply(qb, as.numeric) # Safe

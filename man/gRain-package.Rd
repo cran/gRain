@@ -17,7 +17,7 @@ systems (which includes Bayesian networks as a special case).
 
   The main function for building networks is \code{\link{grain}}.
   
-  The function \code{\link{querygm}} is used for querying
+  The function \code{\link{querygrain}} is used for querying
   independence networks.
 
   Functions \code{\link{simulate.grain}} and

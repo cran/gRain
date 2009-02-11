@@ -13,10 +13,12 @@
 \alias{as.grain}
 \alias{as.grain.huginNet}
 
-\alias{plot.compgrain}
-\alias{plot.cpt-grain}
-\alias{plot.dag-grain}
-\alias{plot.ug-grain}
+% \alias{plot.compgrain}
+% \alias{plot.cpt-grain}
+% \alias{plot.dag-grain}
+% \alias{plot.ug-grain}
+
+\alias{plot.grain}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Graphical Independence Network}
@@ -26,13 +28,13 @@
 \usage{
 %makebn(cptlist, gmData, description="ProbNet", root=NULL, propagate=FALSE, trace=0)
 %as.probnet(x, gmData, description="ProbNet",  control=list(),trace=0,...)
-grain(x, gmData, description="grain",  control=list(), trace=0,...) 
+grain(x, data, description="grain",  control=list(), trace=0, ...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{An argument to build an independence network from.}
   %\item{cptlist}{A list of conditional probability tables (see Examples below)}
-  \item{gmData}{A gmData object (see Examples below)}
+  \item{data}{An optional data set (currently must be an array/table)}
   \item{description}{A text describing the network}
   %\item{root}{Nodes which are required to be in the same clique (to make
   %  computations of joint distributions faster)}
@@ -64,33 +66,8 @@ grain(x, gmData, description="grain",  control=list(), trace=0,...)
   \code{\link[gRbase]{gmData}}}
 \examples{
 
-## Asia (chest clinique) example - using a gmData object
-##
-chestNames <- c("asia", "smoke", "tub", "lung", "bronc", "either", "xray", "dysp")
-gmd <- newgmData(chestNames,valueLabels=c("yes","no"))
-summary(gmd)
 
-p.a    <-cptable('asia', values=c(0.01,0.99),gmData=gmd)
-p.t.a  <-cptable('tub',pa='asia', values=c(0.05,0.95,0.01,0.99),gmData=gmd)
-p.s    <-cptable('smoke', values=c(0.5,0.5), gmData=gmd)
-p.l.s  <-cptable('lung',pa='smoke', values=c(0.1,0.9,0.01,0.99), gmData=gmd)
-p.b.s  <-cptable('bronc',pa='smoke', values=c(0.6,0.4,0.3,0.7), gmData=gmd)
-p.e.lt <-cptable('either',pa=c('lung','tub'),values=c(1,0,1,0,1,0,0,1),gmData=gmd)
-p.x.e  <-cptable('xray',pa='either', values=c(0.98,0.02,0.05,0.95), gmData=gmd)
-p.d.be <-cptable('dysp',pa=c('bronc','either'), values=c(0.9,0.1,0.7,0.3,0.8,0.2,0.1,0.9), gmData=gmd)
- 
-cptlist <- list(p.a, p.t.a, p.s, p.l.s, p.b.s, p.e.lt, p.x.e, p.d.be)
-cptlist[[1]]
-cptlist[[2]]
-
-bn <- grain(cptspec(cptlist), gmd)
-bn
-
-summary(bn)
-plot(bn)
-
-
-## Asia (chest clinique) example - without using a gmData object
+## Asia (chest clinique) example 
 ##
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
@@ -106,7 +83,6 @@ plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 pn <- grain(plist)
 pn
 
-
 summary(pn)
 plot(pn)
 
@@ -115,21 +91,16 @@ plot(pn)
 ## There are different ways:
 ##
 data(HairEyeColor)
-d   <- as.gmData(HairEyeColor)
+d   <- HairEyeColor
 dag <- dagList(list(~Hair, ~Eye+Hair, ~Sex+Hair))
 class(dag)
 ug <- ugList(list(~Eye+Hair, ~Sex+Hair))
 class(ug)
 
-## 1) Create directly from dag
+## Create directly from dag
+##
 b1  <- grain(dag,d)
 class(b1)
-
-## 2) Extract cpt's for dag from gmData and build network from cpt's
-x<-dag2cptspec(dag,d)
-class(x)
-b2 <- grain(x,d)
-class(b2)
 
 ## 3) Build model from undirected (decomposable) graph
 b3  <- grain(ug,d)
@@ -137,15 +108,15 @@ class(b3)
 
 ## Simple example - one clique only in triangulated graph
 ##
-plist <- cptspec(list(p.a, p.t.a))
+plist <- cptspec(list(a, t.a))
 pn <- grain(plist)
-querygm(pn)
+querygrain(pn)
 
 ## Simple example - disconnected network
 ##
-plist <- cptspec(list(p.a, p.t.a, p.s))
+plist <- cptspec(list(a, t.a, s))
 pn <- grain(plist)
-querygm(pn)
+querygrain(pn)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

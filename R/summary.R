@@ -1,9 +1,11 @@
 summary.grain <- function(object, type='std', ...){
+
   type <- match.arg(type,c("std","cliques","rip","configurations"))
 
   cat("Nodes :", object$nodes,"\n")
-  isCompiled   <- inherits(object, "compgrain")
+  isCompiled   <- object$compiled
   isPropagated <- object$propagated
+
   if (is.null(isPropagated))
     isPropagated <- FALSE
   else
@@ -18,12 +20,12 @@ summary.grain <- function(object, type='std', ...){
     
     #cat("\n")
     cl2 <- sapply(object$rip$cliques,length)
-    cat(" Number of cliques:",
-        length(cl2),"\n")
-    cat(" Maximal clique size:",
-        max(cl2),"\n")
-    cat(" Maximal number of configurations in cliques:",
-        max(unlist(  sapply(object$potlist, "[", "ncells"))), "\n")
+    cat(sprintf(" Number of cliques:              %4d \n",  length(cl2)))
+    cat(sprintf(" Maximal clique size:            %4d \n",  max(cl2)))
+    cat(sprintf(" Maximal state space in cliques: %4d \n",
+        max(unlistPrim(lapply(object$potlist, length)))))
+
+    ##max(unlist(  sapply(object$potlist, "[", "ncells"))), "\n")
     
     if(length(e<-getFinding(object))){
       print(e)
