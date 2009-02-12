@@ -1,4 +1,15 @@
-cptable <- function(v, pa=NULL, values=NULL,
+cptable <- function(v, pa=NULL, levels=NULL, values=NULL,
+                normalize=TRUE,
+                smooth=0                
+                ){
+
+  vpa <- c(.formula2character(v),.formula2character(pa))
+  ans <- list(vpa=vpa, values=values, normalize=normalize, smooth=smooth, levels=levels)
+  return(ans)
+
+}
+
+.cptable <- function(v, pa=NULL, values=NULL,
                 gmData=NULL, 
                 normalize=TRUE,
                 smooth=0, 
@@ -6,6 +17,8 @@ cptable <- function(v, pa=NULL, values=NULL,
                 ){
 
   vpa <- c(.formula2character(v),.formula2character(pa))
+
+  
   nvpa <- length(vpa)
 
   if (!is.null(gmData)){
@@ -16,7 +29,7 @@ cptable <- function(v, pa=NULL, values=NULL,
     ans    <- ptable(vpa, levels, values, smooth=smooth,
                      normalize=if (normalize) "first" else "none")  
   } else {
-    ## FIXME: There could be some consistency checking here...
+
     if (!inherits(levels,"list")){
       dn        <- vector("list",nvpa)
       names(dn) <- vpa 
@@ -27,14 +40,24 @@ cptable <- function(v, pa=NULL, values=NULL,
       dn <- levels
     }
     dims <- unlistPrim(lapply(dn,length))
-    ans <- ptable(vpa, nLevels=dn, values=values, smooth=smooth,
+
+    
+    vl <- prod(dims)
+    if (length(values) >1 && length(values) > vl) {
+      stop(sprintf("length of 'values' (%i) exceeds array dimension (%i) \n", length(values), vl))
+    }
+
+    values <- rep(values, length.out = vl)
+    ans <- ptable(vpa, levels=dn, values=values, smooth=smooth,
                   normalize=if (normalize) "first" else "none")
 
   }
   return(ans)
 }
 
-cptspec <- function(x){
+
+
+.cptspec <- function(x){
   vn <- sapply(lapply(x, varNames),    "[[", 1)
   vl <- lapply(lapply(x, valueLabels), "[[", 1)
   ## FIXME: There could be some consistency checking here...
@@ -43,6 +66,34 @@ cptspec <- function(x){
   class(x) <- "cptspec"
   x
 }
+
+cptspec <- function(x){
+  vparList <- lapply(x, "[[", "vpa")
+  vn <- uniquePrim(unlist(vparList))
+  vLevist <- sapply(vparList,    "[[", 1)
+  vLev <- lapply(x, "[[", "levels")
+  names(vLev)<-vLevist
+
+  idxb <- is.na(match(vn, vLevist))
+  if (any(idxb)){
+    cat("Nodes not specified:", vn[idxb], "\n")
+    stop()  
+    }
+
+  ans <- vector("list", length(vparList))      
+  for (ii in 1:length(vparList)){
+    vpar <- vparList[[ii]]
+    vLev[vpar]
+    x[[ii]]$values
+    ans[[ii]] <- .cptable(vpar, values=x[[ii]]$values, normalize=x[[ii]]$normalize, smooth=x[[ii]]$smooth, levels=vLev[vpar])
+  }
+  attributes(ans) <- list(nodes=vn, levels=vLev)  ## FIXME: Can be removed!
+  names(ans) <- vn
+  class(ans) <- "cptspec"
+  ans
+}
+
+
 
 as.gmData.cptspec <- function(from){
   newgmData(attr(from,"nodes"), valueLabels=attr(from,"levels"))
@@ -71,9 +122,13 @@ print.cptspec <- function(x,...){
 cpt2 <- function(v, pa=NULL, values=NULL, gmData, smooth=0,
                  normalize=c("none","first","all")){
 
+  
   normalize <- match.arg(normalize, choices=c("none","first","all"))
   ## Check that (v,pa) is in gmData
   vpa <- c(v,pa)
+  #print("cpt2")
+  #print(vpa)
+  
   uuu <- match(vpa, varNames(gmData))
   if (any(is.na(uuu)))
     stop("Nodes {",paste(vpa[is.na(uuu)],collapse=','), "} do not exist in gmData\n")

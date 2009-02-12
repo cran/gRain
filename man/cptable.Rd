@@ -1,4 +1,4 @@
-\name{cpt}
+\name{cptable}
 \alias{cptable}
 \alias{print.cpt}
 \alias{cptspec}
@@ -9,14 +9,13 @@
   Creates conditional probability tables of the form p(v|pa(v)). 
 }
 \usage{
-cptable(v, pa = NULL, values = NULL, gmData=NULL, normalize = TRUE, smooth = 0, levels=NULL)
+cptable(v,pa=NULL, levels=NULL, values = NULL, normalize = TRUE, smooth = 0)
 cptspec(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{v}{Variable}
-  \item{pa}{Possible parents}
-  \item{gmData}{Name of gmData object (where to look for v and pa)}
+  \item{v}{A vertex}
+  \item{pa}{The parents of vertex v}
   \item{values}{Probabilities; recycled if necessary}
 
   \item{normalize}{See 'details' below.}
@@ -25,14 +24,14 @@ cptspec(x)
   \item{x}{A list of cpts}
 }
 \details{
-  If \code{normalize=TRUE} then for each configuration of the parents,
-  "pa", the probabilities are normalized to sum to one. 
+  If \code{normalize=TRUE} then for each configuration of the parents
+  the probabilities are normalized to sum to one. 
   
   If \code{smooth} is non--zero then zero entries of
   \code{values} are replaced with \code{smooth} before normalization takes place.
 
-  If no \code{gmData} object is given, then \code{levels} (giving the
-  levels of 'v') must be given. Otherwise  \code{levels} is ignored.
+%  If no \code{gmData} object is given, then \code{levels} (giving the
+%  levels of 'v') must be given. Otherwise  \code{levels} is ignored.
 }
 
 \value{
@@ -53,11 +52,13 @@ cptspec(x)
 %}
 %\seealso{\code{\link{ctab}}}
 \examples{
-g <- newgmData(letters[1:5],nLevels=2)
 
-t1 <- cptable("a",pa="b", gmData=g,values=1:4)
-
-t2 <- cptable("a",pa=c("b","c"), levels=c("y","n"),values=1:4)
+yn <- c("yes","no")
+ynm <- c("yes","no","maybe")
+a    <- cptable(~asia, values=c(1,99),levels=yn)
+t.a  <- cptable(~tub+asia, values=c(5,95,1,99,1,999),levels=ynm)
+d.a  <- cptable(~dia+asia, values=c(5,5,1,99,100,999),levels=ynm)
+cptspec(list(a,t.a,d.a))
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

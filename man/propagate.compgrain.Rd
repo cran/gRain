@@ -1,6 +1,6 @@
 \name{propagate}
 \alias{propagate}
-\alias{propagate.compgrain}
+\alias{propagate.grain}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Propagate a Bayesian network}
 \description{
@@ -9,7 +9,7 @@
 }
 \usage{
 propagate(object,...)
-propagate.compgrain(object, trace = object$trace,...)
+propagate.grain(object, trace = object$trace,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

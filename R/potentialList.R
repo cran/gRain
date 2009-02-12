@@ -59,9 +59,8 @@
 
 
 .resetgrain <- function(bn){
-  ##bn$potlist     <- .propagate(bn$potlistorig, bn$rip, bn$trace)
   bn$potlist     <- bn$potlistorig
-  bn$finding    <- NULL
+  bn$finding     <- NULL
   bn$initialized <- TRUE
   bn
 }

@@ -6,5 +6,5 @@ gRain-package           GRAphical Independence Networks
 loadHuginNet            Load and save Hugin net files
 predict.grain           Make predictions from a probabilistic network
 propagate               Propagate a Bayesian network
-querygm                 Query an independence network
+querygrain              Query an independence network
 simulate.grain          Simulate from an independence network

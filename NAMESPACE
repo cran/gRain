@@ -11,13 +11,15 @@ import(methods)
 export(
 
        "cpt2",          ## FIXME: Dirty hack...
-       ".propagate",    ## FIXME: Dirty hack...
+       "propagateLS",    ## FIXME: Dirty hack...
 
 ### Simple graph operations
-       "plot.cpt-grain",
-       "plot.dag-grain",
-       "plot.ug-grain",
-       "plot.compgrain",
+##        "plot.cpt-grain",
+##        "plot.dag-grain",
+##        "plot.ug-grain",
+##        "plot.compgrain",
+
+       "plot.grain",
        "predict.grain",
        
 ### Bayesian Networks
@@ -25,7 +27,7 @@ export(
        "compile",
        "compile.grain",
        "propagate",
-       "propagate.compgrain", 
+       "propagate.grain", 
        "cptable",
        "setFinding",
        "getFinding",
@@ -34,8 +36,8 @@ export(
 
        "print.grain",
        "print.grainFinding",
-       "querygm",
-       "querygm.grain",       
+       "querygrain",
+       "querygrain.grain",       
 
        "propagate",
        "dag2cptspec",

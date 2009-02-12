@@ -1,9 +1,10 @@
 
-propagate.compgrain <- function(object, trace=object$trace, ...){
+propagate.grain <- function(object, trace=object$trace, ...){
 
   t0 <- proc.time()
-  object$potlist <- .propagate(object$potlistwork, object$rip,
+  object$potlist <- propagateLS(object$potlistwork, object$rip,
                                initialize=TRUE, trace=trace)
+
   object$initialized <- TRUE
   object$propagated  <- TRUE
   
@@ -18,8 +19,11 @@ propagate.compgrain <- function(object, trace=object$trace, ...){
   return(object)
 }
 
-.propagate <- function(potlist, rip, initialize=FALSE, trace=0){
-  if (trace>=1) cat(".Propagating BN: [.propagate]\n")
+
+## Lauritzen Spiegelhalter propagation
+##
+propagateLS <- function(potlist, rip, initialize=TRUE, trace=0){
+  if (trace>=1) cat(".Propagating BN: [propagateLS]\n")
 
   cliq   <- rip$cliques
   seps   <- rip$separators
@@ -29,36 +33,38 @@ propagate.compgrain <- function(object, trace=object$trace, ...){
   ## FIXME: This is a hack introduced because RIP now returns 0 as the
   ## parent index for the first clique
   pa[pa==0]<-NA
-    
+
+  ## Backward propagation (collect evidence) towards root of junction tree
+  ##
   if(trace>=2) cat("..BACKWARD:\n")
   t0 <- proc.time()
   if (ncliq>1){
-    for (i in ncliq:2){      
-      if(trace>=2) cat("..Current clique:",i,"             {",cliq[[i]],"}", "\n")      
-      cpot  <- potlist[[i]];      
-      csep  <- seps[[i]]
-      cpa   <- potlist[[pa[i]]]
+    for (ii in ncliq:2){      
+      if(trace>=2) cat("..Current clique:",ii,"             {",cliq[[ii]],"}", "\n")      
+      cpot  <- potlist[[ii]];      
+      csep  <- seps[[ii]]
+      cpa   <- potlist[[pa[ii]]]
 
       if (length(csep)>=1 && !is.na(csep)){
         if(trace>=2) cat("..Marginalize onto separator :", "  {", csep,"}", "\n")
         
-        ##septab   <- tableMarginPrim(cpot, csep)
+                                        #septab   <- tableMarginPrim(cpot, csep)
         septab   <- tableMargin(cpot, csep)
-        ##cpotnew  <- tableOp(cpot, septab, "/")
+                                        #cpotnew  <- tableOp(cpot, septab, "/")
         cpotnew  <- .tableOp2(cpot, septab, `/`)             
-        potlist[[i]]     <- cpotnew        
-        ##potlist[[pa[i]]] <- tableOp(cpa, septab, "*")
-        potlist[[pa[i]]] <- .tableOp2(cpa, septab, `*`) 
+        potlist[[ii]]     <- cpotnew        
+                                        #potlist[[pa[i]]] <- tableOp(cpa, septab, "*")
+        potlist[[pa[ii]]] <- .tableOp2(cpa, septab, `*`) 
 
         if(trace>=4) {
           cat("....Dividing by marginal\n"); print (septab); print (cpot); print(cpotnew)
           cat("....Parent potential\n"); print(cpa);
         }
 
-      } else{        
-        potlist[[1]] <- potlist[[1]] * sum(cpot) 
-        cpot         <- cpot / sum(cpot) 
-        potlist[[i]] <- cpot
+      } else{
+        zzz <- sum(cpot)
+        potlist[[1]]  <- potlist[[1]] * zzz
+        potlist[[ii]] <- cpot / zzz
       }
     }
   }
@@ -78,29 +84,32 @@ propagate.compgrain <- function(object, trace=object$trace, ...){
     cat("....Normalizing constant:\n");  print(normConst)
   }
 
+  ## Forward propagation (distribute evidence) away from root of junction tree
+  ##
+  
   if(trace>=2)cat("..FORWARD:\n")
-
   t0 <- proc.time()
-  for (i in 1:ncliq){
-    
-    if(trace>=2) cat("..Current clique:",i,"             {",cliq[[i]],"}", "\n")      
-    ch <- which(pa[-1]==i)+1
+  for (ii in 1:ncliq){
+    if(trace>=2) cat("..Current clique:",ii,"             {",cliq[[ii]],"}", "\n")      
+    ch <- which(pa[-1]==ii)+1
 
     if (length(ch)>0){
-      if (trace>=2) cat("..Children:", ch, "\n")
-      for (j in 1:length(ch)){
+      if (trace>=2)
+        cat("..Children:", ch, "\n")
+      for (jj in 1:length(ch)){
 
-        if (length(seps[[ch[j]]])>0){
+        if (length(seps[[ch[jj]]])>0){
           if(trace>=2)
-            cat("..Marginalize onto separator", ch[j], ": {", seps[[ch[j]]]," }\n")
+            { cat("..Marginalize onto separator", ch[jj], ": {", seps[[ch[jj]]]," }\n") }
 
-          septab <- tableMarginPrim(potlist[[i]], seps[[ch[j]]])
+                                        #septab <- tableMarginPrim(potlist[[ii]], seps[[ch[jj]]])
+          septab <- tableMargin(potlist[[ii]], seps[[ch[jj]]])
 
           if(trace>=4)
-            {cat("Marginal:\n"); print (septab)}
-
-          ##potlist[[ch[j]]] <- tableOp(potlist[[ch[j]]], septab, "*") ##newpot
-          potlist[[ch[j]]] <- .tableOp2(potlist[[ch[j]]], septab, `*`) ##newpot
+            { cat("Marginal:\n"); print (septab) }
+          
+                                        #potlist[[ch[j]]] <- tableOp(potlist[[ch[j]]], septab, "*") ##newpot
+          potlist[[ch[jj]]] <- .tableOp2(potlist[[ch[jj]]], septab, `*`) ##newpot
         }
       }
     }

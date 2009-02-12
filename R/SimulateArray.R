@@ -3,12 +3,22 @@
 #### Bristol, March 2008
 ####
 
-
 simulate.grain <- function(object, nsim=1, seed=NULL, ...){
 
-  if (!inherits(object, "compgrain"))
-    object <- compile(object, propagate=TRUE)
+##   if (!inherits(object, "compgrain"))
+##     object <- compile(object, propagate=TRUE)
 
+  if (!object$compiled){
+    #cat("Compiling (and propagating) model ...\n")
+    object <- compile(object, propagate=TRUE)
+  } else {
+    if (!object$propagated){
+     # cat("Propagating model...\n")
+      object <- propagate(object)
+    }
+  }
+
+  
   
   #object <- compilegm(object, propagate=TRUE)
 
@@ -63,10 +73,10 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   ans <- as.data.frame(ans)
   vn <- names(ans)
   
-  for (j in 1:ncol(ans)){
-    match(vn[j], names(ns))
-    ans[,j] <- factor(ans[,j], levels=seq(ns[[j]]))
-    levels(ans[,j]) <- ns[[j]]
+  for (jj in 1:ncol(ans)){
+    match(vn[jj], names(ns))
+    ans[,jj] <- factor(ans[,jj], levels=seq(ns[[jj]]))
+    levels(ans[,jj]) <- ns[[jj]]
   }
 
   return(ans)
