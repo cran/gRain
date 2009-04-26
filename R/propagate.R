@@ -19,7 +19,6 @@ propagate.grain <- function(object, trace=object$trace, ...){
   return(object)
 }
 
-
 ## Lauritzen Spiegelhalter propagation
 ##
 propagateLS <- function(potlist, rip, initialize=TRUE, trace=0){
@@ -48,16 +47,12 @@ propagateLS <- function(potlist, rip, initialize=TRUE, trace=0){
       if (length(csep)>=1 && !is.na(csep)){
         if(trace>=2) cat("..Marginalize onto separator :", "  {", csep,"}", "\n")
         
-                                        #septab   <- tableMarginPrim(cpot, csep)
-        septab   <- tableMargin(cpot, csep)
-                                        #cpotnew  <- tableOp(cpot, septab, "/")
-        cpotnew  <- .tableOp2(cpot, septab, `/`)             
-        potlist[[ii]]     <- cpotnew        
-                                        #potlist[[pa[i]]] <- tableOp(cpa, septab, "*")
-        potlist[[pa[ii]]] <- .tableOp2(cpa, septab, `*`) 
+        septab            <- tableMargin(cpot, csep)
+        potlist[[ii]]     <- tableOp2(cpot, septab, `/`)             
+        potlist[[pa[ii]]] <- tableOp2(cpa,  septab, `*`) 
 
         if(trace>=4) {
-          cat("....Dividing by marginal\n"); print (septab); print (cpot); print(cpotnew)
+          cat("....Dividing by marginal\n"); print (septab); print (cpot); 
           cat("....Parent potential\n"); print(cpa);
         }
 
@@ -97,19 +92,16 @@ propagateLS <- function(potlist, rip, initialize=TRUE, trace=0){
       if (trace>=2)
         cat("..Children:", ch, "\n")
       for (jj in 1:length(ch)){
-
         if (length(seps[[ch[jj]]])>0){
           if(trace>=2)
             { cat("..Marginalize onto separator", ch[jj], ": {", seps[[ch[jj]]]," }\n") }
-
-                                        #septab <- tableMarginPrim(potlist[[ii]], seps[[ch[jj]]])
-          septab <- tableMargin(potlist[[ii]], seps[[ch[jj]]])
+          
+          septab            <- tableMargin(potlist[[ii]], seps[[ch[jj]]])
+          potlist[[ch[jj]]] <- tableOp2(potlist[[ch[jj]]], septab, `*`) 
 
           if(trace>=4)
             { cat("Marginal:\n"); print (septab) }
           
-                                        #potlist[[ch[j]]] <- tableOp(potlist[[ch[j]]], septab, "*") ##newpot
-          potlist[[ch[jj]]] <- .tableOp2(potlist[[ch[jj]]], septab, `*`) ##newpot
         }
       }
     }

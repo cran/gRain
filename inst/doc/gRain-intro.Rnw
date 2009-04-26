@@ -175,7 +175,7 @@ d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 
 @ 
 <<>>=
-plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 in1 <- grain(plist)
 in1
 @ %def 

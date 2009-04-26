@@ -1,14 +1,12 @@
-\name{propagate}
-\alias{propagate}
+\name{propagate.grain}
 \alias{propagate.grain}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Propagate a Bayesian network}
+\title{Propagate a graphical independence network (a Bayesian network)}
 \description{
   Propagation refers to calibrating the cliques of the junction tree so
   that the clique potentials are consistent on their intersections
 }
 \usage{
-propagate(object,...)
 propagate.grain(object, trace = object$trace,...)
 }
 %- maybe also 'usage' for other objects documented here.
