@@ -94,7 +94,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
   cli <- rip$cliques
 
   ## Note: perhaps create amat globally 
-  amat <- as.setmat(cli,vn=rip$nodes)
+  amat <- .as.setmat(cli,vn=rip$nodes)
 
 
   
@@ -120,14 +120,14 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
 
       lev <- dimnames(cpot)[[currn]]
 #            print(lev)
-      evTab  <- evidenceTable(currn, currs, lev)
+      evTab  <- .evidenceTable(currn, currs, lev)
       potlist[[j]]  <- tableOp(cpot, evTab, "*")
     }
   }
   potlist
 }
 
-evidenceTable <- function(node, state, levels){
+.evidenceTable <- function(node, state, levels){
   pot   <- rep.int(0,length(levels))
   pot[match(state, levels)] <- 1
   t2  <- ptable(node, list(levels), pot)
@@ -136,6 +136,14 @@ evidenceTable <- function(node, state, levels){
 
 
 retractFinding <- function(object, nodes=NULL, propagate=TRUE){
+
+  .resetgrain <- function(bn){
+    bn$potlist     <- bn$potlistorig
+    bn$finding     <- NULL
+    bn$initialized <- TRUE
+    bn
+  }
+
   if (is.null(nodes))
     return(.resetgrain(object))
 

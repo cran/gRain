@@ -11,12 +11,13 @@
 
 \usage{
 loadHuginNet(file, description, trace = 0)
-saveHuginNet(bn, file, trace = 0)
+saveHuginNet(gin, file, trace = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{bn}{An independence network}
-  \item{file}{A HUGIN net file}
+  \item{gin}{An independence network}
+  \item{file}{Name of HUGIN net file. Convenient to give the file the
+    extension '.net'}
   \item{description}{A text describing the network, defaults to \code{file}}
   \item{trace}{Debugging information}
 }
@@ -38,24 +39,22 @@ saveHuginNet(bn, file, trace = 0)
 
 ## Load HUGIN net file
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
-chestf <- loadHuginNet(tf, trace=1)
-chest <- as.grain(chestf)
+chest <- loadHuginNet(tf, trace=1)
+chest 
 
 ## Save a copy
 td <- tempdir()
 saveHuginNet(chest, paste(td,"/chest.net",sep=''))
 
 ## Load the copy
-chestf2 <- loadHuginNet(paste(td,"/chest.net",sep=''))
-chest2  <- as.grain(chestf2)
+chest2 <- loadHuginNet(paste(td,"/chest.net",sep=''))
 
 tf <- system.file("huginex", "golf.net", package = "gRain")
-golff <- loadHuginNet(tf, trace=1)
-golf <- as.grain(golff)
+golf <- loadHuginNet(tf, trace=1)
 
 saveHuginNet(golf, paste(td,"/golf.net",sep=''))
-golff2 <- loadHuginNet(paste(td,"/golf.net",sep=''))
-golf2  <- as.grain(golff2)
+golf2 <- loadHuginNet(paste(td,"/golf.net",sep=''))
+
 
 }
 \keyword{utilities}

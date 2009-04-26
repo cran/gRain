@@ -1,14 +1,15 @@
-\name{compile}
-\alias{compile}
+\name{compile.grain}
 \alias{compile.grain}
+\alias{compile.cpt-grain}
+\alias{compile.pot-grain}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Compile a Bayesian network (aka a graphical independence network)}
+\title{Compile a graphical independence network (a Bayesian network)}
 \description{
   Compiles a Bayesian network. This means creating a junction tree and
   establishing clique potentials.
 }
 \usage{
-compile(object, ...)
 compile.grain(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 0, control = object$control, trace = 0, ...)
 }
 %- maybe also 'usage' for other objects documented here.

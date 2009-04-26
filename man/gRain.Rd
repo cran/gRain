@@ -2,6 +2,7 @@
 
 \alias{grain}
 \alias{grain.cptspec}
+\alias{grain.potspec}
 \alias{grain.graphNEL}
 
 \alias{nodeNames}
@@ -9,14 +10,8 @@
 \alias{nodeNames.grain}
 \alias{nodeStates.grain}
 
-
-\alias{as.grain}
-\alias{as.grain.huginNet}
-
-% \alias{plot.compgrain}
-% \alias{plot.cpt-grain}
-% \alias{plot.dag-grain}
-% \alias{plot.ug-grain}
+% \alias{as.grain}
+% \alias{as.grain.huginNet}
 
 \alias{plot.grain}
 
@@ -26,16 +21,14 @@
   The 'grain' builds a graphical independence network.
 }
 \usage{
-%makebn(cptlist, gmData, description="ProbNet", root=NULL, propagate=FALSE, trace=0)
-%as.probnet(x, gmData, description="ProbNet",  control=list(),trace=0,...)
-grain(x, data, description="grain",  control=list(), trace=0, ...) 
+grain(x, data, control=list(), trace=0, ...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{An argument to build an independence network from.}
   %\item{cptlist}{A list of conditional probability tables (see Examples below)}
   \item{data}{An optional data set (currently must be an array/table)}
-  \item{description}{A text describing the network}
+  %\item{description}{A text describing the network}
   %\item{root}{Nodes which are required to be in the same clique (to make
   %  computations of joint distributions faster)}
   %\item{propagate}{Should the network be propagated (i.e. initialized)}
@@ -79,7 +72,8 @@ e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
 x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 
-plist <- cptspec(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+
+plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 pn <- grain(plist)
 pn
 
@@ -108,13 +102,13 @@ class(b3)
 
 ## Simple example - one clique only in triangulated graph
 ##
-plist <- cptspec(list(a, t.a))
+plist <- compileCPT(list(a, t.a))
 pn <- grain(plist)
 querygrain(pn)
 
 ## Simple example - disconnected network
 ##
-plist <- cptspec(list(a, t.a, s))
+plist <- compileCPT(list(a, t.a, s))
 pn <- grain(plist)
 querygrain(pn)
 

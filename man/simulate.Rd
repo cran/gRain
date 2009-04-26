@@ -33,8 +33,7 @@
 \dontrun{
 
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
-chestf <- loadHuginNet(tf, trace=1)
-chest <- as.grain(chestf)
+chest <- loadHuginNet(tf, trace=1)
 
 simulate(chest,n=10)
 

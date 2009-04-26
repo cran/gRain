@@ -1,7 +1,6 @@
 \name{cptable}
 \alias{cptable}
-\alias{print.cpt}
-\alias{cptspec}
+\alias{print.cptable}
 %- Also NEED an '\alias' for EACH other topic documented here.
 
 \title{Create conditional probability tables (CPTs)}
@@ -10,7 +9,6 @@
 }
 \usage{
 cptable(v,pa=NULL, levels=NULL, values = NULL, normalize = TRUE, smooth = 0)
-cptspec(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,7 +19,6 @@ cptspec(x)
   \item{normalize}{See 'details' below.}
   \item{smooth}{See 'details' below.}
   \item{levels}{See 'details' below.}
-  \item{x}{A list of cpts}
 }
 \details{
   If \code{normalize=TRUE} then for each configuration of the parents
@@ -41,7 +38,7 @@ cptspec(x)
   If no  \code{gmData} object is given, then
   'cpt' returns an object of class 'cptTemplate'. 
 
-  'cptspec' returns an object of class 'cptspec' (which is just a list
+  'compileCPT' returns an object of class 'cptspec' (which is just a list
   with a special class attribute).
 }
 %\references{ ~put references to the literature/web site here ~ }
@@ -58,7 +55,7 @@ ynm <- c("yes","no","maybe")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
 t.a  <- cptable(~tub+asia, values=c(5,95,1,99,1,999),levels=ynm)
 d.a  <- cptable(~dia+asia, values=c(5,5,1,99,100,999),levels=ynm)
-cptspec(list(a,t.a,d.a))
+compileCPT(list(a,t.a,d.a))
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

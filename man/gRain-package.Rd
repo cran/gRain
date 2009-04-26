@@ -3,12 +3,12 @@
 \alias{gRain}
 \docType{package}
 \title{
-GRAphical Independence Networks
+  Overview - the gRain package for graphical independence networks
 }
 \description{
-Probability propagation in graphical
-independence networks, also known as probabilistic expert
-systems (which includes Bayesian networks as a special case).
+  Probability propagation in graphical independence networks,
+  also known as probabilistic expert
+systems (which includes Bayesian networks).
 }
 \details{
   This package implements graphical independence networks.

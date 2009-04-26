@@ -4,9 +4,7 @@
 ## the variables in margin (a vector of indices) takes values
 ## given by index
 ##
-## Based on code kindly provided by Peter Green
-##
-simarray <- function(x, n=1, margin, index){
+.simarray <- function(x, n=1, margin, index){
   if(missing(margin)) {
       r <- NULL
       dr<-dim(x)

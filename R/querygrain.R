@@ -6,6 +6,7 @@ querygrain <- function(object,nodes=nodeNames(object), normalize=TRUE,
   UseMethod("querygrain")
 }
 
+
 querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
                                type=c("marginal","joint","conditional"),
                                return="array",
@@ -18,11 +19,11 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
     return(invisible(NULL))
   
   if (!object$compiled){
-    ##cat("Compiling (and propagating) model ...\n")
+    #cat("Compiling (and propagating) model ...\n")
     object <- compile(object, propagate=TRUE)
   } else {
     if (!object$propagated){
-      ##cat("Propagating model...\n")
+      #cat("Propagating model...\n")
       object <- propagate(object)
     }
   }
@@ -31,23 +32,19 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
   switch(type,
          "marginal"={
            ans <- nodeMarginal(object, nodes, trace)
-           #ans <- ans[nodes]
            if (return=="data.frame")
              ans <- lapply(ans, as.data.frame.table)
          },
          "joint"={
            ans<-nodeJoint(object, nodes, normalize, trace)
-           ## ans <- as.data.frame(ans)
            if (return=="data.frame")
              ans <- as.data.frame.table(ans) ## BRIS
          },
          "conditional"={
            qobject <- querygrain(object, nodes, type="joint", return="data.frame")
            nst     <- nodeStates(object)[nodes]
-           ##ans     <- ctab(nodes, nst, values=qobject$values, normalize="first")
            ans     <- ptable(nodes, nst, values=qobject$Freq, normalize="first") ## BRIS
            
-           ##ans <- as.data.frame(ans)
            if (return=="data.frame")
              ans <- as.data.frame.table(ans) ## BRIS
          })
@@ -56,9 +53,9 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
   
   ans
 }
-  
+
                    
-nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=0){
+nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=1){
 
   if (is.null(set))
     set <- bn$rip$nodes
@@ -70,12 +67,12 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=0){
   if (any(idxb)){
     if (trace>=1) cat(".Calculating directly from clique\n")
     tab <- bn$potlist[[which(idxb)[1]]]
-    value <- tableMarginPrim(tab, set)
+    value <- tableMargin(tab, set)
     if (!normalize){
       value$values <- value$values * pFinding(bn)
     }
   } else {
-    vl    <- valueLabels(bn$gmData)[set]
+    vl    <- bn$universe$levels[set]
     value <- ptable(names(vl),vl)
     levs  <- as.data.frame.table(value)[,1:length(vl), drop=FALSE] ## BRIS
     levs2 <- do.call("cbind",lapply(levs, as.character))
@@ -91,12 +88,7 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=0){
 }  
 
 
-
-
-
-
-
-nodeMarginal <- function(x, set=NULL,trace=0){
+nodeMarginal <- function(x, set=NULL,trace=1){
 
   potlist  <- x$potlist
   rip      <- x$rip
@@ -114,11 +106,13 @@ nodeMarginal <- function(x, set=NULL,trace=0){
     cli    <- rip$cliques
     mtablist <- as.list(rep(NA, length(nodes)))
     for (i in 1:length(nodes)){
-      cvert <- nodes[i]
-      idxall<-which(sapply(cli, function(x) subsetof(cvert,x)))
-      idx <- idxall[1]
-      cpot <- potlist[[idx]]
-      mtab <- tableMarginPrim(cpot, cvert,normalize=TRUE)
+      cvert  <- nodes[i]
+      idxall <- which(sapply(cli, function(x) subsetof(cvert,x)))
+      idx    <- idxall[1]
+      cpot   <- potlist[[idx]]
+      ##print(cpot)
+      mtab   <- tableMargin(cpot, cvert)
+      mtab   <- mtab/sum(mtab)
       mtablist[[i]] <- mtab
     }
     names(mtablist) <- nodes
@@ -126,11 +120,11 @@ nodeMarginal <- function(x, set=NULL,trace=0){
   } 
 }
 
-print.ctabnumeric <- function(x,...){
-  cat(paste(attr(x,"varNames"),collapse=' '),"\n")
-  print.default(c(x))
-  invisible(x)
-}
+## print.ctabnumeric <- function(x,...){
+##   cat(paste(attr(x,"varNames"),collapse=' '),"\n")
+##   print.default(c(x))
+##   invisible(x)
+## }
 
 
 

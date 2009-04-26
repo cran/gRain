@@ -8,7 +8,6 @@
 \alias{as.cumcounts.data.frame}
 
 \alias{print.grain}
-\alias{print.cptspec}
 \alias{print.grainFinding}
 
 \alias{checkdag}
