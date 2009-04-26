@@ -53,8 +53,8 @@ pFinding(object)
 }
 \examples{
  testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
- chest <- as.grain(loadHuginNet(testfile, trace=1))
- print(class(chest))
+ chest <- loadHuginNet(testfile, trace=0)
+
 
  qb <- querygrain(chest)
  qb

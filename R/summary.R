@@ -46,9 +46,8 @@ summary.grain <- function(object, type='std', ...){
                cat(" ", i, ":", object$potlist[[i]]$ncells, "\n")
              }
            })
-    
-    
-    return(invisible(object))
   }
+  return(invisible(object))
+
 }
 

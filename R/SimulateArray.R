@@ -5,9 +5,6 @@
 
 simulate.grain <- function(object, nsim=1, seed=NULL, ...){
 
-##   if (!inherits(object, "compgrain"))
-##     object <- compile(object, propagate=TRUE)
-
   if (!object$compiled){
     #cat("Compiling (and propagating) model ...\n")
     object <- compile(object, propagate=TRUE)
@@ -18,13 +15,6 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
     }
   }
 
-  
-  
-  #object <- compilegm(object, propagate=TRUE)
-
-  
-  ### asarr <- function(x){x}
-  
   plist  <- object$potlist
   cqlist <- object$rip$cli
   splist <- object$rip$sep
@@ -34,7 +24,7 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   colnames(ans) <- nodeNames(object)
 
   ctab  <- plist[[1]]
-  res   <- simarray(x=ctab,n=nsim)
+  res   <- .simarray(x=ctab,n=nsim)
   ans[,colnames(res)] <- res
   
   ## Iterate
@@ -43,10 +33,8 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
       ctab <- plist[[ii]]
       vn   <- names(dimnames(ctab)) # Safe
       s2   <- splist[[ii]]
-      ##mtab <- tableMarginPrim(ctab,s2)
       mtab <- tableMargin(ctab,s2) ## FIXME: Check this
-      ##ctab <- tableOp(ctab, mtab, "/")
-      ctab <- .tableOp2(ctab, mtab, `/`) ## FIXME: Check this
+      ctab <- tableOp2(ctab, mtab, `/`) ## FIXME: Check this
       
       r2   <- setdiff(vn, s2)
       ##cat("r:", r2, "s:", s2, "\n")    
@@ -60,9 +48,9 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
         key   <- un %*% sc / sc[1]
 
         for(k in unique(key)) 
-          res[k==key,] <- simarray(ctab, sum(k==key), s2idx, un[match(k,key),])
+          res[k==key,] <- .simarray(ctab, sum(k==key), s2idx, un[match(k,key),])
       } else {
-        res <- simarray(x=ctab,n=nsim)
+        res <- .simarray(x=ctab,n=nsim)
       }
       ans[,colnames(res)] <- res
     }
