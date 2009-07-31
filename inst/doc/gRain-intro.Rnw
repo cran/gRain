@@ -23,8 +23,9 @@
 
 \def\code#1{\texttt{#1}}
 
-\def\grain{\texttt{gRain}}
-\def\inet{\texttt{iNet}}
+\def\grbn{\texttt{gRain}}
+\def\grain{\texttt{grain}}
+
 
 \author{
   S{\o}ren H{\o}jsgaard\\Aarhus University, Denmark
@@ -42,11 +43,11 @@
 
 \section{Introduction}
 
-
-The \grain\ package is accompanied by a larger manual which is also
-available from \url{http://gbi.agrsci.dk/~shd/public/gRainweb/}. This
-vignette is just an excerpt from this manual. 
-
+The \grbn\ package implements propagation in [gra]phical [i]ndependence
+[n]etworks (hereafter abbreviated \grain). Such networks are also known
+as probabilistic networks and Bayesian networks. More
+information about the package might be available from the webpage 
+\url{http://gbi.agrsci.dk/~shd/}. 
 
 
 \section{A worked example: chest clinic} 
@@ -54,7 +55,7 @@ vignette is just an excerpt from this manual.
 
 This section reviews the chest clinic example of \cite{lau/spieg:88}
 (illustrated in Figure~\ref{fig:chest-LS}) and shows one way of
-specifying the model in \grain{}.  \cite{lau/spieg:88} motivate the
+specifying the model in \grbn{}.  \cite{lau/spieg:88} motivate the
 chest clinic example as follows:
 
 \begin{quote}
@@ -69,13 +70,13 @@ chest clinic example as follows:
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[height=3cm]{fig/chest-LS2}
+  \includegraphics[height=5cm]{fig/chest-LS2}
   \caption{Chest clinic example from LS.}
   \label{fig:chest-LS}
 \end{figure}
 
 
-\subsection{Building a \inet}
+\subsection{Building a \grain}
 
 A Bayesian network is a special case of graphical independence
 networks. In this section we outline how to build a Bayesian network. 
@@ -126,15 +127,15 @@ options("prompt"="> ","width"=85)
 @ 
 
 
-\subsection{Queries to \inet s}
+\subsection{Queries to \grain s}
 \label{sec:xxx}
 
-Suppose we are given evidence that a set of variables $E\subset V$
+Suppose we are given the finding (evidence) that a set of variables $E\subset V$
 have a specific value $e^*$. For example that a person has recently visited
 Asia and suffers from dyspnoea, i.e.\ $\alpha=\mbox{yes}$ and
 $\delta=\mbox{yes}$.
 
-With this  evidence, we are often interested in the
+With this  finding, we are often interested in the
 conditional distribution $p(v|E=e^*)$ for some of the variables $v \in
 V \setminus E$ or in $p(U|E=e^*)$ for a set $U\subset V
 \setminus E$. 
@@ -145,10 +146,10 @@ $p(\lambda,\tau,\beta|e^*)$.
 
 Interest might also be in
 calculating the probability of a specific event, e.g.\ the probability
-of seeing a specific evidence, i.e.\ $p(E=e^*)$.
+of seeing a specific finding, i.e.\ $p(E=e^*)$.
 
 
-\subsection{A one--minute version of  \grain{}}
+\section{A one--minute version of  \grbn{}}
 \label{sec:oneminute}
 
 A simple way of  specifying the model for the chest clinic
@@ -171,7 +172,7 @@ x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 @ %def 
 
-\item Create the \inet\ from the conditional probability tables:
+\item Create the \grain\ from the conditional probability tables:
 
 @ 
 <<>>=
@@ -186,7 +187,7 @@ in1
 % in1c <- compilegm(in1, propagate=TRUE)
 % @ %def 
 
-\item The \inet\ can be queried to give marginal probabilities:
+\item The \grain\ can be queried to give marginal probabilities:
 
 @ 
 <<>>=
@@ -200,19 +201,41 @@ Likewise, a joint distribution can be obtained.
 querygrain(in1,nodes=c("lung","bronc"), type="joint")
 @ %def 
 
-\item Evidence can be entered as:
+\item Findings can be entered as:
 
 @ 
 <<>>=
 in12  <- setFinding(in1,nodes=c("asia","dysp"),states=c("yes","yes"))
 @ %def
 
-\item The \inet\ can be queried again:
+\item The \grain\ can be queried again:
 
 @ 
 <<>>=
 querygrain(in12,nodes=c("lung","bronc"))
 querygrain(in12,nodes=c("lung","bronc"), type="joint")
+@ %def 
+
+
+\item Zero probabilities
+  
+  Consider setting the finding
+@ 
+<<>>=
+in13  <- setFinding(in1,nodes=c("either","tub"),states=c("no","yes"))
+@ %def
+  
+Under the model, this finding has zero probability;
+@ 
+<<>>=
+pFinding(in13)
+@ %def 
+
+Therefore, all conditional probabilities are (under the model) undefined;
+
+@ 
+<<>>=
+querygrain(in13,nodes=c("lung","bronc"), type="joint")
 @ %def 
 
 

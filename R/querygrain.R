@@ -1,16 +1,15 @@
 querygrain <- function(object,nodes=nodeNames(object), normalize=TRUE,
                     type=c("marginal","joint","conditional"),
                     return="array",
-                    trace=0)
+                    details=0)
 {
   UseMethod("querygrain")
 }
 
-
 querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
                                type=c("marginal","joint","conditional"),
                                return="array",
-                               trace=0){
+                               details=0){
 
   return <- match.arg(return, c("array","data.frame"))
   t0 <- proc.time()
@@ -31,12 +30,12 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
   type = match.arg(type, choices=c("marginal","joint","conditional"))
   switch(type,
          "marginal"={
-           ans <- nodeMarginal(object, nodes, trace)
+           ans <- nodeMarginal(object, nodes, details)
            if (return=="data.frame")
              ans <- lapply(ans, as.data.frame.table)
          },
          "joint"={
-           ans<-nodeJoint(object, nodes, normalize, trace)
+           ans<-nodeJoint(object, nodes, normalize, details)
            if (return=="data.frame")
              ans <- as.data.frame.table(ans) ## BRIS
          },
@@ -54,8 +53,10 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
   ans
 }
 
-                   
-nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=1){
+
+
+
+nodeJoint <- function(bn, set=NULL, normalize=TRUE,details=1){
 
   if (is.null(set))
     set <- bn$rip$nodes
@@ -65,7 +66,7 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=1){
   idxb <- sapply(cli, function(d) subsetof(set, d))
   
   if (any(idxb)){
-    if (trace>=1) cat(".Calculating directly from clique\n")
+    if (details>=1) cat(".Calculating directly from clique\n")
     tab <- bn$potlist[[which(idxb)[1]]]
     value <- tableMargin(tab, set)
     if (!normalize){
@@ -76,9 +77,11 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=1){
     value <- ptable(names(vl),vl)
     levs  <- as.data.frame.table(value)[,1:length(vl), drop=FALSE] ## BRIS
     levs2 <- do.call("cbind",lapply(levs, as.character))
-    p<-sapply(1:nrow(levs2), function(i)
-              pFinding(setFinding(bn, nodes=set, states=levs2[i,]))
-              )
+    p <- sapply(1:nrow(levs2), function(i){
+      #cat ("nodeJoint:","\n")
+      #print(levs2[i,])
+      pFinding(setFinding(bn, nodes=set, states=levs2[i,]))
+    })
     if (normalize)
       p <- p / sum(p)
     attributes(p) <- attributes(value)
@@ -88,7 +91,7 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,trace=1){
 }  
 
 
-nodeMarginal <- function(x, set=NULL,trace=1){
+nodeMarginal <- function(x, set=NULL,details=1){
 
   potlist  <- x$potlist
   rip      <- x$rip

@@ -37,16 +37,16 @@ saveHuginNet(gin, file, trace = 0)
 \seealso{\code{\link{grain}} }
 \examples{
 
-## Load HUGIN net file
+%% Load HUGIN net file
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
 chest <- loadHuginNet(tf, trace=1)
 chest 
 
-## Save a copy
+%% Save a copy
 td <- tempdir()
 saveHuginNet(chest, paste(td,"/chest.net",sep=''))
 
-## Load the copy
+%% Load the copy
 chest2 <- loadHuginNet(paste(td,"/chest.net",sep=''))
 
 tf <- system.file("huginex", "golf.net", package = "gRain")
