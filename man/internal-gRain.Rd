@@ -1,6 +1,6 @@
 \name{internal-gRain}
 
-\alias{cpt2} ## FIXME: CRAP NAME
+\alias{cpt2} %% FIXME: CRAP NAME
 
 \alias{propagateLS}
 
@@ -16,11 +16,11 @@
 \alias{nodeMarginal}
 \alias{nodeJoint}
 
-
 \alias{dag2cptspec}
 \alias{print.huginNet}
 
 \alias{summary.grain}
+
 \alias{printlist}
 \alias{printlist.default}
 \alias{printlist.list}
@@ -30,6 +30,6 @@
 
 %\alias{}
 
-\title{Internal functions for the gRbayesnet package}
+\title{Internal functions for the gRain package}
 \description{These functions should not be called directly by the user}
 \keyword{internal}% at least one, from doc/KEYWORDS

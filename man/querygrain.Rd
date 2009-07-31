@@ -14,7 +14,7 @@
 }
 \usage{
 querygrain(object, nodes = nodeNames(object), normalize = TRUE, type =
-c("marginal", "joint", "conditional"), return="array", trace = 0)
+c("marginal", "joint", "conditional"), return="array", details = 0)
 
 setFinding(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE)
 retractFinding(object, nodes=NULL, propagate=TRUE)
@@ -33,7 +33,7 @@ pFinding(object)
   or the conditional of the first node given the rest be returned.}
   \item{return}{If "data.frame" the result is returned as a data frame
     (or possibly as a list of dataframes).}
-  \item{trace}{Debugging information}
+  \item{details}{Debugging information}
 
 }
 %\details{
@@ -59,8 +59,8 @@ pFinding(object)
  qb <- querygrain(chest)
  qb
 
- lapply(qb, as.numeric) # Safe
- sapply(qb, as.numeric) # Risky
+ lapply(qb, as.numeric) % Safe
+ sapply(qb, as.numeric) % Risky
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

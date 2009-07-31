@@ -59,9 +59,8 @@ grain(x, data, control=list(), trace=0, ...)
   \code{\link[gRbase]{gmData}}}
 \examples{
 
-
-## Asia (chest clinique) example 
-##
+%% Asia (chest clinique) example 
+%%
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
 t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
@@ -81,9 +80,9 @@ summary(pn)
 plot(pn)
 
 
-## Create network from gmData (with data) and graph specification.
-## There are different ways:
-##
+%% Create network from gmData (with data) and graph specification.
+%% There are different ways:
+%%
 data(HairEyeColor)
 d   <- HairEyeColor
 dag <- dagList(list(~Hair, ~Eye+Hair, ~Sex+Hair))
@@ -91,23 +90,23 @@ class(dag)
 ug <- ugList(list(~Eye+Hair, ~Sex+Hair))
 class(ug)
 
-## Create directly from dag
-##
+%% Create directly from dag
+%%
 b1  <- grain(dag,d)
 class(b1)
 
-## 3) Build model from undirected (decomposable) graph
+%% 3) Build model from undirected (decomposable) graph
 b3  <- grain(ug,d)
 class(b3)
 
-## Simple example - one clique only in triangulated graph
-##
+%% Simple example - one clique only in triangulated graph
+%%
 plist <- compileCPT(list(a, t.a))
 pn <- grain(plist)
 querygrain(pn)
 
-## Simple example - disconnected network
-##
+%% Simple example - disconnected network
+%% 
 plist <- compileCPT(list(a, t.a, s))
 pn <- grain(plist)
 querygrain(pn)
