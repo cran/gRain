@@ -2,8 +2,8 @@
 propagate.grain <- function(object, trace=object$trace, ...){
 
   t0 <- proc.time()
-  object$potlist <- propagateLS(object$potlistwork, object$rip,
-                               initialize=TRUE, trace=trace)
+  object$potlist <- propagateLS(object$potlistwork,
+                                rip=object$rip, initialize=TRUE, trace=trace)
 
   object$initialized <- TRUE
   object$propagated  <- TRUE
@@ -22,6 +22,7 @@ propagate.grain <- function(object, trace=object$trace, ...){
 ## Lauritzen Spiegelhalter propagation
 ##
 propagateLS <- function(potlist, rip, initialize=TRUE, trace=0){
+
   if (trace>=1) cat(".Propagating BN: [propagateLS]\n")
 
   cliq   <- rip$cliques
@@ -67,8 +68,13 @@ propagateLS <- function(potlist, rip, initialize=TRUE, trace=0){
   normConst <- sum(potlist[[1]]) 
 
   if (normConst==0){
-    stop("Propagation of inconsistent finding has been attempted...\n",call.=FALSE)
+    ##cat("Normalizing constant is zero\n")
+    attr(potlist, "pFinding") <- normConst
+    ##return(potlist)
+    #stop("Propagation of inconsistent finding has been attempted...\n",call.=FALSE)
   }
+
+  ## cat("propagateLS going on... normConst:", normConst, "\n")
 
   if (initialize){
     potlist[[1]] <- potlist[[1]]/normConst 

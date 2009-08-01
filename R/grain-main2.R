@@ -80,7 +80,7 @@ grain.graphNEL <- function(x, data=NULL, control=list(), trace=0,...){
 ## Printing grain
 ##
 print.grain <- function(x,...){
-  cat("Independence network (2): ") #", x$description, " ")
+  cat("Independence network: ") #", x$description, " ")
 
   ##isCompiled <- inherits(x, "compgrain")
   isCompiled <- x$compiled

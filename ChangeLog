@@ -1,3 +1,11 @@
+2009-07-31 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* In previous versions: If the normalizing constant was zero then
+	propagation was stopped. This has been changed so that propagation
+	continues and the conditional probabilities are then NaN.
+
+	* Version 0.8.1 uploaded
+
 2009-04-26 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* Simplification of code.

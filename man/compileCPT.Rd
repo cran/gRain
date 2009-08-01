@@ -34,7 +34,7 @@ compilePOT(x)
 %}
 \seealso{\code{\link{extractCPT}}, \code{\link{extractPOT}}}
 \examples{
-## To be written
+%% To be written
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
