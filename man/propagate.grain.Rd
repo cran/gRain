@@ -7,12 +7,12 @@
   that the clique potentials are consistent on their intersections
 }
 \usage{
-propagate.grain(object, trace = object$trace,...)
+propagate.grain(object, details = object$details,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{A grain object}
-  \item{trace}{For debugging info}
+  \item{details}{For debugging info}
   \item{...}{Currently not used}
 }
 % \details{

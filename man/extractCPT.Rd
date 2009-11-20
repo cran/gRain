@@ -36,9 +36,9 @@ extractPOT(x, graph, smooth = 0)
 %  ~Make other sections like Warning with \section{Warning }{....} ~
 % }
 \seealso{\code{\link{compileCPT}}, \code{\link{compilePOT}}, \code{\link{grain}}}
-\examples{
+%\examples{
 %% To be written
-}
+%}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{utilities}

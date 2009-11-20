@@ -1,8 +1,8 @@
 \name{compileCPT,compilePOT}
 \alias{compileCPT}
 \alias{compilePOT}
-\alias{print.cptspec}
-\alias{print.potspec}
+\alias{print.CPTspec}
+\alias{print.POTspec}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Compile conditional probability tables / cliques potentials.}
@@ -33,9 +33,9 @@ compilePOT(x)
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 \seealso{\code{\link{extractCPT}}, \code{\link{extractPOT}}}
-\examples{
+%\examples{
 %% To be written
-}
+%}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{utilities}

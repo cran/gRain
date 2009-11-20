@@ -5,12 +5,12 @@
 
 simulate.grain <- function(object, nsim=1, seed=NULL, ...){
 
-  if (!object$compiled){
-    #cat("Compiling (and propagating) model ...\n")
+  if (!object$isCompiled){
+                                        #cat("Compiling (and propagating) model ...\n")
     object <- compile(object, propagate=TRUE)
   } else {
-    if (!object$propagated){
-     # cat("Propagating model...\n")
+    if (!object$isPropagated){
+                                        # cat("Propagating model...\n")
       object <- propagate(object)
     }
   }

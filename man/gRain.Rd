@@ -1,8 +1,9 @@
 \name{grain}
 
 \alias{grain}
-\alias{grain.cptspec}
-\alias{grain.potspec}
+\alias{print.grain}
+\alias{grain.CPTspec}
+\alias{grain.POTspec}
 \alias{grain.graphNEL}
 
 \alias{nodeNames}
@@ -21,20 +22,16 @@
   The 'grain' builds a graphical independence network.
 }
 \usage{
-grain(x, data, control=list(), trace=0, ...) 
+grain(x, data, control=list(), smooth=0, details=0, ...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{An argument to build an independence network from.}
-  %\item{cptlist}{A list of conditional probability tables (see Examples below)}
   \item{data}{An optional data set (currently must be an array/table)}
-  %\item{description}{A text describing the network}
-  %\item{root}{Nodes which are required to be in the same clique (to make
-  %  computations of joint distributions faster)}
-  %\item{propagate}{Should the network be propagated (i.e. initialized)}
-  %\item{smooth}{Should values be smoothed, see 'Details' below.}
   \item{control}{A list defining controls, see 'details' below.}
-  \item{trace}{Debugging information.}
+  \item{smooth}{A (usuall small) number to add to the counts of a table
+    if the grain is built from a graph plus a dataset.}
+  \item{details}{Debugging information.}
   \item{...}{Additional arguments, currently not used.}
 }
 \details{
@@ -55,8 +52,9 @@ grain(x, data, control=list(), trace=0, ...)
   \code{\link{setFinding}},
   \code{\link{getFinding}},
   \code{\link{pFinding}},
-  \code{\link{retractFinding}},
-  \code{\link[gRbase]{gmData}}}
+  \code{\link{retractFinding}}
+  %\code{\link[gRbase]{gmData}}
+}
 \examples{
 
 %% Asia (chest clinique) example 

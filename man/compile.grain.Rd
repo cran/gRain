@@ -10,7 +10,7 @@
   establishing clique potentials.
 }
 \usage{
-compile.grain(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 0, control = object$control, trace = 0, ...)
+compile.grain(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 0, control = object$control, details = 0, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,7 +23,7 @@ compile.grain(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 
   \item{smooth}{If non-zero this value is added to all potentials (to
     avoid zeros in the joint distribution)}
   \item{control}{Controlling the compilation process. }
-  \item{trace}{For debugging info. Do not use.}
+  \item{details}{For debugging info. Do not use.}
   \item{\dots}{Currently not used.}
 }
 % \details{

@@ -33,7 +33,7 @@
 \dontrun{
 
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
-chest <- loadHuginNet(tf, trace=1)
+chest <- loadHuginNet(tf, details=1)
 
 simulate(chest,n=10)
 

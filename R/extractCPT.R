@@ -2,6 +2,10 @@ extractCPT <- function(x, graph, V=nodes(graph), smooth=0){
   UseMethod("extractCPT")
 }
 
+extractPOT <- function(x, graph, smooth=0){
+  UseMethod("extractPOT")
+}
+
 extractCPT.table <- function(x, graph, V=nodes(graph), smooth=0){
   if (!identical(edgemode(graph), "directed"))
     stop("Graph must be directed\n")
@@ -11,22 +15,19 @@ extractCPT.table <- function(x, graph, V=nodes(graph), smooth=0){
   return(ans)
 }
 
-extractPOT <- function(x, graph, smooth=0){
-  UseMethod("extractPOT")
-}
-
 extractPOT.table <- function(x, graph, smooth=0){
   if (!identical(edgemode(graph), "undirected"))
     stop("Graph must be undirected\n")
-
   if (length(mcs(graph))==0)
     cat("Notice: graph is not triangulated\n")
 
   r <- rip(graph)
-
   .extractPotentialTable(x, r$cliques, r$sep, smooth=smooth)
 }
 
+
+### FIXME: Not sure if smoothing this way is entirely appropriate.
+###
 .extractPotentialTable <- function(x, cliq, seps=NULL, smooth=0){
   ans <- vector("list", length(cliq))
   for (ii in seq_along(cliq)){
@@ -43,6 +44,12 @@ extractPOT.table <- function(x, graph, smooth=0){
   }
   ans
 }
+
+
+
+
+
+
 
 ## extractPotentials.data.frame <- function(x, cliq, seps=NULL, smooth=0){
 ##   ans <- vector("list", length(cliq))

@@ -7,8 +7,8 @@
 \alias{as.cumcounts}
 \alias{as.cumcounts.data.frame}
 
-\alias{print.grain}
-\alias{print.grainFinding}
+
+
 
 \alias{checkdag}
 \alias{ctabnames}
