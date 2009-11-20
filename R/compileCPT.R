@@ -1,6 +1,4 @@
 compileCPT <- function(x){
-  ## Does NOT use .cptable (and is hence free of gmData)...
-  ## cat("cptspec\n")
   parseit <- function(xi){
     if (is.array(xi))
       cls <- "array"
@@ -29,13 +27,11 @@ compileCPT <- function(x){
              vlev    <- vparlev[[1]]
              values  <- as.numeric(xi)
              tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values, normalize="first", smooth=0)
-           }
-           )
+           })
     return(tmp)
   }
 
   xxx <- lapply(x, parseit)
-
   vnamList <- lapply(xxx, "[[", "vnam")
   vlevList <- lapply(xxx, "[[", "vlev")
   names(vlevList) <- vnamList
@@ -57,7 +53,6 @@ compileCPT <- function(x){
                         levels    = lev)
   }
   names(ans) <- vnamList
-  
                                         #vn.ment  <- uniquePrim(unlist(vparList))    
   vparList <- lapply(xxx, "[[", "vpar")
   valList  <- lapply(xxx, "[[", "values")
@@ -75,7 +70,7 @@ compileCPT <- function(x){
                           levels=vlevList,
                           nlev=di,
                           dag=dg)  ## FIXME: nodes can be removed!
-  class(ans) <- "cptspec"
+  class(ans) <- "CPTspec"
   return(ans)
 }
 
@@ -86,27 +81,24 @@ compilePOT <- function(x){
   if (length(mcs(uug))==0)
     stop("Graph defined by potentals is not triangulated...\n")
     
-  lll <- unlist(lapply(x, dimnames),recursive=FALSE)
-  nnn <- names(lll)
-  iii <- match(unique(nnn), nnn)
+  lll     <- unlist(lapply(x, dimnames),recursive=FALSE)
+  nnn     <- names(lll)
+  iii     <- match(unique(nnn), nnn)
   levels  <- lll[iii]
   vn      <- nnn[iii]
-  di <- c(lapply(levels, length), recursive=TRUE)
+  di      <- c(lapply(levels, length), recursive=TRUE)
   names(di) <- vn
-
   ans <- x
   attributes(ans) <- list(nodes=vn,
                           levels=levels,
                           nlev=di,
                           ug=uug)  ## FIXME: nodes can be removed!
-  class(ans) <- "potspec"
+  class(ans) <- "POTspec"
   return(ans)
 }
 
-
-
-print.cptspec <- function(x,...){
-  cat("cptspec with probabilities:\n")
+print.CPTspec <- function(x,...){
+  cat("CPTspec with probabilities:\n")
   lapply(x,
          function(xx){
            vn <- varNames(xx)
@@ -115,14 +107,12 @@ print.cptspec <- function(x,...){
            } else {
              cat(paste(" P(",vn,")\n"))
            }
-         }
-         )
+         })
   return(invisible(x))
 }
 
-
-print.potspec <- function(x,...){
-  cat("potspec with potentials:\n")
+print.POTspec <- function(x,...){
+  cat("POTspec with potentials:\n")
   lapply(x,
          function(xx){
            vn <- names(dimnames(xx))

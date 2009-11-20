@@ -21,7 +21,7 @@ print.grainFinding <- function(x, ...){
 
 setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE){
 
-  if (!object$compiled){
+  if (!object$isCompiled){
     ##cat("setFinding: Compiling model ...\n")
     object <- compile(object)
   }
@@ -32,46 +32,47 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     states  <- flist2[,2]
   }
 
-  bnnodes   <- object$nodes 
-  currev    <- getFinding(object)
+  netNodes   <- object$nodes 
+  currFinding    <- getFinding(object)
   len       <- length(nodes)
 
   for (i in 1:len){
     ev1   <- nodes[i]; 
-    if (!(ev1 %in% bnnodes)){
+    if (!(ev1 %in% netNodes)){
       nodes[i] <- states[i] <- NA
       warning("Node ", ev1, " is not in network, skipping it...\n",call.=FALSE)
     }
   }
 
+  ## Ignore NA's in the states
+  ##
   nodes  <- nodes[!is.na(states)]
   states <- states[!is.na(states)]
 
   ## Drop nodes which are already given evidence in the network
   ##
-  if (!is.null(currev)){
-    idx    <- match(intersect(currev$nodes, nodes), nodes)
+  if (!is.null(currFinding)){
+    idx    <- match(intersect(currFinding$nodes, nodes), nodes)
     if (length(idx)>0){
       nodes  <- nodes[-idx]
       states <- states[-idx]
     }
   }
 
-
-  ## print(nodes); print(states)
-  
+  ## Now insert the findings
+  ##
   if (length(nodes)>0){
-    t0 <- proc.time()
-    
+    t0 <- proc.time()    
     object$potlistwork  <- .insertFinding(nodes, states, object$potlistwork, object$rip)
-    object$initialized  <- FALSE
+    object$isInitialized  <- FALSE
 
-    if (!is.null(currev)){
-      ev <- list(nodes=c(currev$nodes,nodes), states=c(currev$states,states))
+    if (!is.null(currFinding)){
+      ev <- list(nodes=c(currFinding$nodes,nodes), states=c(currFinding$states,states))
     } else {
       ev <- list(nodes=nodes, states=states)
     }
 
+    ## Set finding slot
     class(ev)<-"grainFinding"
     object$finding <- ev
 
@@ -81,22 +82,19 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     if (propagate){
       object<-propagate(object)
     } else {
-      object$propagated <- FALSE
+      object$isPropagated <- FALSE
     }
   } 
-
   return(object)
 }
 
-.insertFinding <- function(nodes, states, potlist, rip, trace=0){
+.insertFinding <- function(nodes, states, potlist, rip, details=0){
 
-  if (trace>=1) cat(".function: .insertCpt\n")
+  .infoPrint(details, 1, cat(".insertFinding\n"))
   cli <- rip$cliques
 
   ## Note: perhaps create amat globally 
   amat <- .as.setmat(cli,vn=rip$nodes)
-
-
   
   for (i in 1:length(nodes)){
     currn <- nodes[i]
@@ -106,20 +104,12 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     ##idx <- which(rowSums(amat[,currn,drop=FALSE])==1)#[1]
     idx <- which(amat[,currn]==1)#[1]
 
-
     ##cat("Host cliques:",paste(idx,sep=' '),"\n");
     for (j in idx){            
-
       cpot <- potlist[[j]]
-
-
-      ##cat("Current clique:", paste(varNames(cpot), sep=' '),"\n")
-
-##       lev    <- valueLabels.array(cpot)[[currn]] ## BRIS
-##       print(lev)
-
+      ## cat("Current clique:", paste(varNames(cpot), sep=' '),"\n")
+      ## lev    <- valueLabels.array(cpot)[[currn]] ## BRIS
       lev <- dimnames(cpot)[[currn]]
-#            print(lev)
       evTab  <- .evidenceTable(currn, currs, lev)
       potlist[[j]]  <- tableOp(cpot, evTab, "*")
     }
@@ -137,11 +127,11 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
 
 retractFinding <- function(object, nodes=NULL, propagate=TRUE){
 
-  .resetgrain <- function(bn){
-    bn$potlist     <- bn$potlistorig
-    bn$finding     <- NULL
-    bn$initialized <- TRUE
-    bn
+  .resetgrain <- function(xxx){
+    xxx$potlist       <- xxx$potlistorig
+    xxx$finding       <- NULL
+    xxx$isInitialized <- TRUE
+    xxx
   }
 
   if (is.null(nodes))
