@@ -4,11 +4,11 @@
 
 
 loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
-                         trace=0){
+                         details=0){
 
   filename <- file
   
-  x     <-.readHuginNet(filename,trace)
+  x     <-.readHuginNet(filename,details)
   x     <-.transformHuginNet2internal(x)
 
 
@@ -42,10 +42,10 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
 }
 
 
-.readHuginNet <- function(file, trace=0){
+.readHuginNet <- function(file, details=0){
 
   filename <- file
-  if (trace>=1)cat(".HUGIN netfile:", filename,"\n")
+  .infoPrint(details, 1, cat(".HUGIN netfile:", filename,"\n"))
   nodeCount <- 0
   con <- file(filename, "rb")
   repeat{
@@ -58,7 +58,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
   }
   close(con)
 
-  if(trace>=3) cat("...there are around", nodeCount, "nodes \n")
+  .infoPrint(details, 3, cat("...there are around", nodeCount, "nodes \n"))
 
   ## Data structure for holding specification (possibly too long)
   ##
@@ -74,23 +74,26 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
     switch(state,
            "start"={
              if (.hasToken("net",cline)){
-               state="net";    if(trace>=2)cat("..NET action\n")
+               state="net"
+               .infoPrint(details, 2, cat("..NET action\n"))
                wline <- cline
              }
            },
            "net"={
              wline <- c(wline, cline)
              if (.hasToken("}",cline)){
-               state="run1";           if(trace>=2)cat("..end NET action\n")
-               if(trace>=3){print("...NET"); print (wline)}
+               state="run1"
+               .infoPrint(details,2,cat("..end NET action\n"))
              }
            }, 
            "run1"={
              if (.hasToken("node", cline)){
-               state="node";             if(trace>=2)cat("..NODE action\n")               
+               state="node"
+               .infoPrint(details, 2, cat("..NODE action\n"))
              } else {
                if (.hasToken("potential", cline)){
-                 state="potential";  if(trace>=2) cat("..POTENTIAL action\n")
+                 state="potential";
+                 .infoPrint(details,2, cat("..POTENTIAL action\n"))
                }
              }
              wline <- cline
@@ -98,8 +101,8 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
            "node"={
              wline <- c(wline, cline)
              if (.hasToken("}",cline)){
-               state="run1";           if(trace>=2)cat("..end NODE action\n")
-               if(trace>=3) {print("...NODE"); print (wline)}
+               state="run1";
+               .infoPrint(details,2,cat("..end NODE action\n"))
                nodeList[[currNode]] <- wline;
                currNode <- currNode + 1 
              }     
@@ -107,8 +110,8 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
            "potential"={
              wline <- c(wline, cline)
              if (.hasToken("}",cline)){
-               state="run1";           if(trace>=2)cat("..end POTENTIAL action\n")
-               if(trace>=3){print("...POTENTIAL"); print (wline)}
+               state="run1";
+               .infoPrint(details,2, cat("..end POTENTIAL action\n"))
                potentialList[[currPotential]] <- wline;
                currPotential <- currPotential + 1 
                
@@ -341,7 +344,7 @@ splitVec.default <- function(val, lev){
 }
 
 
-saveHuginNet <- function(gin, file, trace=0){
+saveHuginNet <- function(gin, file, details=0){
 
   cptlist <- gin$cptlist
   gmd     <- gin$universe

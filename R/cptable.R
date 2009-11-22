@@ -65,83 +65,20 @@ print.cptable <- function(x,...){
   return(ans)
 }
 
-.cptspec <- function(x){
-  vn <- sapply(lapply(x, varNames),    "[[", 1)
-  vl <- lapply(lapply(x, valueLabels), "[[", 1)
+## .cptspec <- function(x){
+##   vn <- sapply(lapply(x, varNames),    "[[", 1)
+##   vl <- lapply(lapply(x, valueLabels), "[[", 1)
 
-  dg <- dagList(lapply(x, varNames))
-  if (is.null(dg)){
-    stop("Graph defined by the cpt's is not acyclical...\n");
-  }
-
-  ## FIXME: There could be some consistency checking here...
-  attributes(x) <- list(nodes=vn, levels=vl, dag=dg)
-  names(x) <- vn
-  class(x) <- "cptspec"
-  x
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## as.gmData.cptspec <- function(from){
-##   newgmData(attr(from,"nodes"), valueLabels=attr(from,"levels"))
-## }
-
-
-
-
-
-
-## ...cptspec <- function(x){
-
-##   ## { (v,pa(v)) }
-##   vparList      <- lapply(x, "[[", "vpa")
-
-##   ## { v }
-##   vn            <- c(lapply(vparList,    "[[", 1),recursive=TRUE)
-
-##   ## { Lev{v} }  
-##   vLev          <- lapply(x, "[[", "levels")                       
-##   names(vLev)   <- vn
-
-##   ## All variables mentioned in x
-##   vn.mentioned  <- uniquePrim(unlist(vparList))                 
-
-##   ## Check that all variables mentioned in x are given as v in a (v,pa(v)) configuration.
-##   idxb <- is.na(match(vn.mentioned, vn))
-##   if (any(idxb)){
-##     cat("Nodes not specified:", vn.mentioned[idxb], "\n")
-##     stop()  
-##   }
-
-##   ans <- vector("list", length(vparList))      
-##   for (ii in 1:length(vparList)){
-##     vpar <- vparList[[ii]]
-##     ans[[ii]] <- .cptable(vpar, values=x[[ii]]$values, normalize=x[[ii]]$normalize,
-##                           smooth=x[[ii]]$smooth, levels=vLev[vpar])
-##   }
-
-##   ## Create dag defined by { (v,pa(v)) }
-##   dg <- dagList(vparList)
+##   dg <- dagList(lapply(x, varNames))
 ##   if (is.null(dg)){
 ##     stop("Graph defined by the cpt's is not acyclical...\n");
 ##   }
 
-##   attributes(ans) <- list(nodes=vn, levels=vLev, dag=dg)  ## FIXME: nodes can be removed!
-##   names(ans) <- vn
-##   class(ans) <- "cptspec"
-##   ans
+##   ## FIXME: There could be some consistency checking here...
+##   attributes(x) <- list(nodes=vn, levels=vl, dag=dg)
+##   names(x) <- vn
+##   class(x) <- "cptspec"
+##   x
 ## }
+
+

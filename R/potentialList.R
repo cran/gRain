@@ -12,10 +12,6 @@
   potlist
 }
 
-
-
-
-
 ## Create potential list (cliques, gmData)
 ##
 .createPotentialList <- function(rip, gmd){
@@ -26,7 +22,6 @@
       cc    <- cli[[ii]]
       vlab  <- valueLabels(gmd)[cc]
       potlist[[ii]] <- ptable(cc, vlab)
-      ##cat("cc:", paste(cc),"length:",length(potlist[[i]]$values), "\n")
     }
   potlist
 }
@@ -34,8 +29,8 @@
 
 ## Insert cpt's into potential list (cptlist, potlist)
 ##
-.insertCpt <- function(cptlist, potlist, rip, trace=0){
-  if (trace>=1) cat(".Inserting cpt's in potential list [.insertCpt]\n")
+.insertCpt <- function(cptlist, potlist, rip, details=0){
+  if (details>=1) cat(".Inserting cpt's in potential list [.insertCpt]\n")
   
   cli    <- rip$cliques
   lencli <- length(cli)
@@ -45,26 +40,17 @@
     {
       cptc <- cptlist[[ii]]
       vert   <- varNames(cptc)     
-      if(trace>=2) {
-        cat("..Current cpt:",varNames(cptc),"\n");
-      }
-      
+      .infoPrint(details,2,cat("..Current cpt:",varNames(cptc),"\n"))
       jj <- which(rowSums(amat[,vert,drop=FALSE])==length(vert))[1] # Host clique
-
-      if (trace>=4){
-        cat("...Insert cpt ", ii,  "     {", vert, "}","\n    into potential", jj,
-            " {", varNames(potlist[[jj]]), "} \n");         
-        cat("....Before:\n");   print(potlist[[jj]])
-        cat("....After:\n");    print(tableOp(potlist[[jj]], cptc, "*"))
-      }
       
       potlist[[jj]] <- tableOp(potlist[[jj]], cptc, "*")    
     }
-  if (trace>=4){cat("....potlist (after insertion):\n"); print(potlist) }
+  
+  .infoPrint(details, 4, {cat("....potlist (after insertion):\n"); print(potlist) })
   potlist
 }
 
 
 
-    #j      <- .findHostClique(vert, cli, lencli)
-    #j      <- which(sapply(cli, function(d) subsetof(vert, d)))[1]
+##j      <- .findHostClique(vert, cli, lencli)
+##j      <- which(sapply(cli, function(d) subsetof(vert, d)))[1]

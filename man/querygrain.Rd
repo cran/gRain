@@ -5,6 +5,7 @@
 \alias{retractFinding}
 \alias{getFinding}
 \alias{pFinding}
+\alias{print.grainFinding}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Query an independence network}
@@ -53,7 +54,7 @@ pFinding(object)
 }
 \examples{
  testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
- chest <- loadHuginNet(testfile, trace=0)
+ chest <- loadHuginNet(testfile, details=0)
 
 
  qb <- querygrain(chest)

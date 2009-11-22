@@ -1,3 +1,9 @@
+2009-10-31 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* All 'trace' arguments have been changed to 'details'
+
+	* Version 0.8.2 uploaded
+
 2009-07-31 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* In previous versions: If the normalizing constant was zero then

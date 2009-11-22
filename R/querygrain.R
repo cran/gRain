@@ -17,11 +17,11 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
   if (is.null(nodes))
     return(invisible(NULL))
   
-  if (!object$compiled){
+  if (!object$isCompiled){
     #cat("Compiling (and propagating) model ...\n")
     object <- compile(object, propagate=TRUE)
   } else {
-    if (!object$propagated){
+    if (!object$isPropagated){
       #cat("Propagating model...\n")
       object <- propagate(object)
     }
@@ -66,7 +66,7 @@ nodeJoint <- function(bn, set=NULL, normalize=TRUE,details=1){
   idxb <- sapply(cli, function(d) subsetof(set, d))
   
   if (any(idxb)){
-    if (details>=1) cat(".Calculating directly from clique\n")
+    .infoPrint(details,1, cat(".Calculating directly from clique\n"))
     tab <- bn$potlist[[which(idxb)[1]]]
     value <- tableMargin(tab, set)
     if (!normalize){

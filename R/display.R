@@ -31,7 +31,7 @@ plot.grain <- function(x, type, ...){
    }
 
   if (missing(type)){
-    if (x$compiled){
+    if (x$isCompiled){
       plot(x$ug)
     } else {
       if ("pot-grain" %in% class(x)){

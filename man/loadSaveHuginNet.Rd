@@ -10,8 +10,8 @@
 }
 
 \usage{
-loadHuginNet(file, description, trace = 0)
-saveHuginNet(gin, file, trace = 0)
+loadHuginNet(file, description, details = 0)
+saveHuginNet(gin, file, details = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,7 +19,7 @@ saveHuginNet(gin, file, trace = 0)
   \item{file}{Name of HUGIN net file. Convenient to give the file the
     extension '.net'}
   \item{description}{A text describing the network, defaults to \code{file}}
-  \item{trace}{Debugging information}
+  \item{details}{Debugging information}
 }
 % \details{
 %   ~~ If necessary, more details than the description above ~~
@@ -39,7 +39,7 @@ saveHuginNet(gin, file, trace = 0)
 
 %% Load HUGIN net file
 tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
-chest <- loadHuginNet(tf, trace=1)
+chest <- loadHuginNet(tf, details=1)
 chest 
 
 %% Save a copy
@@ -50,7 +50,7 @@ saveHuginNet(chest, paste(td,"/chest.net",sep=''))
 chest2 <- loadHuginNet(paste(td,"/chest.net",sep=''))
 
 tf <- system.file("huginex", "golf.net", package = "gRain")
-golf <- loadHuginNet(tf, trace=1)
+golf <- loadHuginNet(tf, details=1)
 
 saveHuginNet(golf, paste(td,"/golf.net",sep=''))
 golf2 <- loadHuginNet(paste(td,"/golf.net",sep=''))
