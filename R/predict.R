@@ -4,7 +4,6 @@ predict.grain <- function(object, response, predictors=setdiff(names(newdata), r
 
   if (!inherits(object, "compgrain"))
     object <- compile(object, propagate=TRUE)
-
   
   type <- match.arg(type, c("class","distribution"))
   nstate <- nodeStates(object,response)
@@ -12,16 +11,16 @@ predict.grain <- function(object, response, predictors=setdiff(names(newdata), r
     predictors  <- setdiff(names(newdata),response)
   
   p.evec <- rep(NA, nrow(newdata))
-  ans <- lapply(nstate, function(a){
-    v <- matrix(NA, nc=length(a),nr=nrow(newdata))
-    colnames(v) <- a
-    v})
-
+  ans <- lapply(nstate, function(a)
+                {
+                  v <- matrix(NA, nc=length(a),nr=nrow(newdata))
+                  colnames(v) <- a
+                  v}
+                )
 
   for (i in 1:nrow(newdata)){
-    case      <- newdata[i,predictors]
-
-    objecttmp1    <- setFinding(object,nodes=names(case), states=case)
+    case      <- newdata[i,predictors, drop=FALSE]
+    objecttmp1    <- setFinding(object, nodes=names(case), states=case)
 
     p.e       <- pFinding(objecttmp1)
     p.evec[i] <- p.e
