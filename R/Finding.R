@@ -32,10 +32,13 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     states  <- flist2[,2]
   }
 
-  netNodes   <- object$nodes 
+  netNodes       <- object$nodes 
   currFinding    <- getFinding(object)
-  len       <- length(nodes)
+  len            <- length(nodes)
 
+  ## print(netNodes)
+##   print(nodes)
+  
   for (i in 1:len){
     ev1   <- nodes[i]; 
     if (!(ev1 %in% netNodes)){

@@ -1,3 +1,9 @@
+2010-02-03 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* Bug fixed in predict.grain
+
+	* Version 0.8.3 uploaded
+
 2009-10-31 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* All 'trace' arguments have been changed to 'details'
