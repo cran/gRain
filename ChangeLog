@@ -1,3 +1,10 @@
+2010-02-11 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* compile and propagate functions have been made generic and moved
+	to gRbase
+
+	* Version 0.8.4 uploaded
+
 2010-02-03 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* Bug fixed in predict.grain

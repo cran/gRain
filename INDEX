@@ -1,6 +1,5 @@
 andtable                Conditional probability tables based on logical
                         dependcies
-compile                 Compile and propagate functions
 compile.grain           Compile a graphical independence network (a
                         Bayesian network)
 compileCPT              Compile conditional probability tables /
