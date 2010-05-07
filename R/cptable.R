@@ -1,10 +1,11 @@
-cptable <- function(v, pa=NULL, levels=NULL, values=NULL,
+cptable <- function(v, levels=NULL, values=NULL,
                 normalize=TRUE,
                 smooth=0                
                 ){
 
-  vpa <- c(.formula2character(v),.formula2character(pa))
-  ans <- list(vpa=vpa, values=values, normalize=normalize, smooth=smooth, levels=levels)
+#  vpa  <- c(.formula2char(v),.formula2char(pa))
+  vpa  <- c(.formula2char(v))
+  ans  <- list(vpa=vpa, values=values, normalize=normalize, smooth=smooth, levels=levels)
   class(ans) <- "cptable"
   return(ans)
 
@@ -20,14 +21,15 @@ print.cptable <- function(x,...){
 
 
 
-.cptable <- function(v, pa=NULL, values=NULL,
+.cptable <- function(v, values=NULL,
                 gmData=NULL, 
                 normalize=TRUE,
                 smooth=0, 
                 levels=NULL
                 ){
 
-  vpa <- c(.formula2character(v),.formula2character(pa))
+#  vpa <- c(.formula2char(v),.formula2char(pa))
+  vpa <- c(.formula2char(v))
 
   
   nvpa <- length(vpa)
@@ -64,21 +66,5 @@ print.cptable <- function(x,...){
   }
   return(ans)
 }
-
-## .cptspec <- function(x){
-##   vn <- sapply(lapply(x, varNames),    "[[", 1)
-##   vl <- lapply(lapply(x, valueLabels), "[[", 1)
-
-##   dg <- dagList(lapply(x, varNames))
-##   if (is.null(dg)){
-##     stop("Graph defined by the cpt's is not acyclical...\n");
-##   }
-
-##   ## FIXME: There could be some consistency checking here...
-##   attributes(x) <- list(nodes=vn, levels=vl, dag=dg)
-##   names(x) <- vn
-##   class(x) <- "cptspec"
-##   x
-## }
 
 

@@ -142,7 +142,7 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
 
   ev <- getFinding(object)
   evnodes   <- ev$nodes
-  evstates <- ev$states
+  evstates  <- ev$states
   
   idx<-match(intersect(evnodes,nodes), evnodes)
   if (length(idx)>0){
