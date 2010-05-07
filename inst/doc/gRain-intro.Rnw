@@ -28,7 +28,7 @@
 
 
 \author{
-  S{\o}ren H{\o}jsgaard\\Aarhus University, Denmark
+  S{\o}ren H{\o}jsgaard\\Department of Genetics and Biotechnology \\Aarhus University, Denmark
 }
 
 \title{A one--minute introduction to the \pkg{gRain} package} 
@@ -170,6 +170,13 @@ b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
 e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
 x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+@ %def 
+
+Notice that the following forms are also valid specifications
+@ 
+<<>>=
+cptable(~tub|asia, values=c(5,95,1,99),levels=yn)
+cptable(c("tub","asia"), values=c(5,95,1,99),levels=yn)
 @ %def 
 
 \item Create the \grain\ from the conditional probability tables:
