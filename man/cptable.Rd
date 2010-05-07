@@ -8,12 +8,12 @@
   Creates conditional probability tables of the form p(v|pa(v)). 
 }
 \usage{
-cptable(v,pa=NULL, levels=NULL, values = NULL, normalize = TRUE, smooth = 0)
+cptable(v, levels=NULL, values = NULL, normalize = TRUE, smooth = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{v}{A vertex}
-  \item{pa}{The parents of vertex v}
+  \item{v}{Specifications of the names in P(v|pa1,...pak). See section 'details'
+    for information about the form of the argument.}
   \item{values}{Probabilities; recycled if necessary}
 
   \item{normalize}{See 'details' below.}
@@ -27,8 +27,11 @@ cptable(v,pa=NULL, levels=NULL, values = NULL, normalize = TRUE, smooth = 0)
   If \code{smooth} is non--zero then zero entries of
   \code{values} are replaced with \code{smooth} before normalization takes place.
 
-%  If no \code{gmData} object is given, then \code{levels} (giving the
-%  levels of 'v') must be given. Otherwise  \code{levels} is ignored.
+  Regarding the form of the argument \code{v}: To specify \eqn{P(a|b,c)}
+  one may write \code{~a|b+c} or \code{~a+b+c} or
+  \code{c("a","b","c")}. Internally, the last form is used. Notice that
+  the \code{+} operator is used as a separator only. The order of the
+  variables is important so \code{+} does not commute.
 }
 
 \value{
@@ -47,7 +50,9 @@ cptable(v,pa=NULL, levels=NULL, values = NULL, normalize = TRUE, smooth = 0)
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-%\seealso{\code{\link{ctab}}}
+\seealso{
+  \code{\link{andtable}}
+}
 \examples{
 
 yn <- c("yes","no")

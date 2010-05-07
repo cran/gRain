@@ -1,5 +1,5 @@
 Package: gRain
-Version: 0.8.4
+Version: 0.8.5
 Title: Graphical Independence Networks
 Author: Søren Højsgaard <sorenh@agrsci.dk>
 Maintainer: Søren Højsgaard <sorenh@agrsci.dk>
@@ -12,6 +12,6 @@ Imports: graph
 Suggests: Rgraphviz
 URL: http://genetics.agrsci.dk/~sorenh/public/R/gRainweb/
 Encoding: latin1
-Packaged: 2010-02-11 23:05:48 UTC; shd
+Packaged: 2010-05-07 02:07:13 UTC; shd
 Repository: CRAN
-Date/Publication: 2010-02-12 08:00:35
+Date/Publication: 2010-05-07 08:57:02

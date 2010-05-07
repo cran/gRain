@@ -6,17 +6,14 @@
 loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
                          details=0){
 
-  filename <- file
-  
-  x     <-.readHuginNet(filename,details)
-  x     <-.transformHuginNet2internal(x)
-
-
-  universe <- .asUniverse(x)
-
-  pl   <- lapply(x$potentialList, .hpot2cptable, universe)
-
-  value <- grain(compileCPT(pl))
+  xxx     <-.readHuginNet(file,details)
+  yyy     <-.transformHuginNet2internal(xxx)
+##   xx <<- xxx
+##   yy <<- yyy
+  universe <- .asUniverse(yyy)
+##   uuu <<- universe
+  plist   <- lapply(yyy$potentialList, .hpot2cptable, universe)
+  value <- grain(compileCPT(plist))
   return(value)
 }
 
@@ -44,10 +41,9 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
 
 .readHuginNet <- function(file, details=0){
 
-  filename <- file
-  .infoPrint(details, 1, cat(".HUGIN netfile:", filename,"\n"))
+  .infoPrint(details, 1, cat(".HUGIN netfile:", file,"\n"))
   nodeCount <- 0
-  con <- file(filename, "rb")
+  con <- file(file, "rb")
   repeat{
     cline <- .getLine(con);  #print(cline)
     if (!length(cline))
@@ -64,7 +60,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
   ##
   nodeList <- potentialList <- as.list(rep(NA, nodeCount))
   
-  con <- file(filename, "rb")
+  con <- file(file, "rb")
   currNode <- currPotential <- 1
   state<-"start"
   repeat{
@@ -113,14 +109,13 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
                state="run1";
                .infoPrint(details,2, cat("..end POTENTIAL action\n"))
                potentialList[[currPotential]] <- wline;
-               currPotential <- currPotential + 1 
-               
+               currPotential <- currPotential + 1                
              }          
            }  
            )
   }
   close(con)
-
+  
   nodeList <- nodeList[!sapply(lapply(nodeList, is.na),all)]
   potentialList <- potentialList[!sapply(lapply(potentialList, is.na),all)]
 
@@ -140,6 +135,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
   list(nodes=ccnames, short=ccshort, levels=cclabels, nlev=di)
 }
 
+
 .hpot2cptable <- function(cpot, universe){
   idx <- match(c(cpot[c("nodeVar","parentVar")],recursive=TRUE), universe$short)
   vpa <- universe$nodes[idx]
@@ -152,6 +148,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
 printlist <- function(x,d=0) UseMethod("printlist")
 
 ##printlist.numeric <- function(x,d=0){
+
 printlist.default <- function(x,d=0){
   paste("(", paste(x,collapse=' '),")",sep='')
 }
@@ -174,7 +171,6 @@ splitVec.default <- function(val, lev){
   cval <- unlist(apply(m,2,list),recursive=FALSE)
   cval
 }
-
 
 .getLine   <- function(con) {  
   readLines(con, n=1)
@@ -277,20 +273,28 @@ splitVec.default <- function(val, lev){
   nodeVar <- tmp[1]
   parentVar <- tmp[-1]
   
-  tmp <- potSpec[-(1:(.tokenIdx("data", potSpec)-1))]
-  pot <- NULL
-  for (i in 1:length(tmp)){
-    x <- tmp[i]
-    x <- gsub(" *data *","", x)
-    x <- gsub("\\%.*","", x)
-    x <- gsub("\t","",x)
-    x <- gsub(" *= *", "",x)
-    x <- gsub("[\\(,\\),\\}]","", x)
-    x <- gsub(";","",x)
-    x <- unlist(strsplit(x," +"))
-    x <- as.numeric(x[sapply(x,nchar)>0])
-    pot <- c(pot,x)
-  }
+##   tmp <- potSpec[-(1:(.tokenIdx("data", potSpec)-1))]
+##   pot <- NULL
+##   for (i in 1:length(tmp)){
+##     x <- tmp[i]
+##     x <- gsub(" *data *","", x)
+##     x <- gsub("\\%.*","", x)
+##     x <- gsub("\t","",x)
+##     x <- gsub(" *= *", "",x)
+##     x <- gsub("[\\(,\\),\\}]","", x)
+##     x <- gsub(";","",x)
+##     x <- unlist(strsplit(x," +"))
+##     x <- as.numeric(x[sapply(x,nchar)>0])
+##     pot <- c(pot,x)
+##   }
+
+  sss  <- paste(potSpec,collapse="")
+  sss2 <- gsub("^.*data[[:space:]]*=([^;]*);(.*)", "\\1", sss)
+  sss3 <- gsub("\\)[^\\)]*\\(", ") (", sss2)
+
+  sss4 <- gsub("[^[:digit:]|[:space:]|\\.]*", "", sss3)
+  sss5 <- gsub("^[[:space:]]*","",sss4)
+  pot  <- as.numeric(strsplit(sss5, " +")[[1]])
   
   value <- list(nodeVar=nodeVar, parentVar=rev(parentVar), potential=pot)
   value
@@ -478,159 +482,9 @@ saveHuginNet <- function(gin, file, details=0){
 
 
 
-  
-## saveHuginNet <- function(bn, file, trace=0){
-  
-##   gmd     <- bn$gmData
-##   cptlist <- bn$cptlist
-
-##   vlab <- valueLabels(gmd)
-##   vnam <- names(vlab)
-##   nn   <- length(vlab)
-
-##   th     <- cumsum(c(0,rep(2*pi/nn, nn-1)))
-##   r      <- 100
-##   coords <- lapply(th, function(d) round(r+r*c(cos(d), sin(d))))
-
-##   con <- file(file, "wb")
-
-##   ## Write (trivial) net specification
-##   ##
-##   writeLines("net\n{", con)
-##   writeLines("  node_size = (100 30);", con)
-##   writeLines("\n}\n\n", con)
-  
-##   ## Write node specification
-##   ##
-##   for (i in 1:length(vlab)){
-##     st<-paste("node ", vnam[i],"\n","{","\n",sep='')
-##     writeLines(st,con,sep="")
-##     ## cat(st)
-##     st <- paste("   label = \"\";","\n")
-##     writeLines(st,con,sep="")
-##     ## cat(st)
-##     st <- paste("   position = (", paste(coords[[i]], collapse=' '), ");\n")
-##     writeLines(st,con,sep="")
-##     ## cat(st)
-    
-##     st2 <- sapply(vlab[[i]], function(d) paste('"',d,'"',sep=''))
-##     st  <- paste("   states = (", paste(st2, collapse=' '), ");\n")
-##     writeLines(st,con,sep="")
-##     ## cat(st)
-##     st <- paste("}\n")
-##     writeLines(st,con,sep="")
-##     ## cat(st)
-##   }
-
-
-##   for (ii in 1:length(cptlist)){
-
-##     cpot <- cptlist[[ii]]
-    
-##     ##nam <- cpot$varNames
-##     ##lev <- cpot$levels
-##     ##val <- cpot$values
-
-##     nam <- varNames(cpot)    ## BRIS
-
-
-
-##     lev <- valueLabels(cpot) ## BRIS
-##     val <- cpot              ## BRIS
-    
-##     v  <- nam[1]
-##     pa <- nam[-1]
-    
-##     lev   <- rev(lev[-1])
-##     wval  <- val
-##     if (length(lev)>0){
-##       for (i in 1:length(lev)){
-##         ##print("splitVec:"); print(wval); print(class(wval))
-##         wval<-splitVec(wval,length(lev[[i]]))
-##       }
-##     }
-##     ##print(wval); print(class(wval))
-##     plx <- printlist(wval)
-    
-##     if (length(pa)){
-##       st <- paste("potential (",v, "|", paste(rev(pa), collapse=' '),")\n")
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-##       st <- "{\n";
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-##       st <- paste("   data = \n")
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-##       ##a<-lapply(plx, cat, "\n")
-##       a<-lapply(plx, writeLines, con, sep="\n")
-##       st <- paste(";\n}\n")
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-      
-##     } else {
-##       st <- paste("potential (", v, ")\n")
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-##       st <- "{\n";
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-##       st <- paste("   data = ", plx, ";\n")
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-##       st <- "}\n\n";
-##       writeLines(st,con,sep="")
-##       ## cat(st)
-##     }
-##   }
- 
-##   close(con)
-  
-
-## }
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Obsolete; april 2009
-## as.gmData.huginnet <- function(from){
-  
-##   ccshort   <-sapply(from$nodeList, function(x)x$nodeVar)
-##   ccnames   <-sapply(from$nodeList, function(x)x$nodeLabel)
-##   cclabels  <-lapply(from$nodeList, function(x)x$nodeStates)
-##   names(cclabels) <- ccnames
-
-##   gmd <- newgmData(ccnames,valueLabels=cclabels,
-##                     nLevels= sapply(cclabels,length), shortNames=ccshort)
-##   return(gmd)
-## }
-
-## Obsolete, april 09
-##
-## hpot2cpt <- function(cpot,gmd){
-##   #print(cpot)
-##   v   <- varNames(gmd)[match(cpot$nodeVar,shortNames(gmd))]
-##   pa  <- varNames(gmd)[match(cpot$parentVar,shortNames(gmd))]
-##   #cat("v:", v, "\n pa:", paste(pa, collapse=' '),"\n")
-##   .cptable(v, pa=pa, values=cpot$potential, gmData=gmd)
-## }

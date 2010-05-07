@@ -17,12 +17,15 @@
 }
 
 
-.formula2character <- function(x){
+.formula2char <- function(x){
   if (class(x)=="formula"){
+    ## In principle all this can be replaced by all.vars(); but I am not sure if
+    ## all.vars() is guaranteed to preserve order.
     x2 <- deparse(x)
-    x2 <- unlist(strsplit(x2,"[~\\+]"))
+    x2 <- gsub("~","",x2)
+    x2 <- unlist(strsplit(x2,"[~\\+\\|]"))
     x2 <- gsub(" +","",x2)
-    x2 <- x2[as.logical(nchar(x2))]
+    x2
   } else {
     x
   }

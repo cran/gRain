@@ -8,19 +8,23 @@
   expressions AND and OR. 
 }
 \usage{
-andtable(v, pa = NULL, pa1 = c(TRUE, FALSE), pa2 = c(TRUE, FALSE), levels)
-ortable(v, pa = NULL, pa1 = c(TRUE, FALSE), pa2 = c(TRUE, FALSE), levels)
+andtable(v, pa1 = c(TRUE, FALSE), pa2 = c(TRUE, FALSE), levels)
+ortable(v, pa1 = c(TRUE, FALSE), pa2 = c(TRUE, FALSE), levels)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{v}{A vertex}
-  \item{pa}{The parents of vertex v}
+  \item{v}{Specifications of the names in P(v|pa1,...pak). See section 'details'
+    for information about the form of the argument.}
   \item{pa1,pa2}{The coding of the logical parents}
   \item{levels}{The levels (or rather labels) of v, see 'examples' below}
 }
-% \details{
-%   ~~ If necessary, more details than the description above ~~
-% }
+\details{
+  Regarding the form of the argument \code{v}: To specify \eqn{P(a|b,c)}
+  one may write \code{~a|b+c} or \code{~a+b+c} or
+  \code{c("a","b","c")}. Internally, the last form is used. Notice that
+  the \code{+} operator is used as a separator only. The order of the
+  variables is important so \code{+} does not commute.
+}
 \value{
   A cptable.
   }

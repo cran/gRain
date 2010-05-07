@@ -1,3 +1,15 @@
+2010-05-07 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* Error in loadHuginNet has been fixed. Thanks to Parisa Niloofar
+	for pointing this out.
+
+	* cptable() now accepts formulae of the form a|b+c
+
+	* The argument pa to cptable() has been deprecated (it was never
+	used anyway!)
+
+	* Version 0.8.5 uploaded
+
 2010-02-11 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* compile and propagate functions have been made generic and moved
