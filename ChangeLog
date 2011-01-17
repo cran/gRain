@@ -1,3 +1,11 @@
+2010-08-13 Søren Højsgaard <sorenh@agrsci.dk>	
+
+	* extractCPT and extractPOT now also works on dataframes
+
+	* An iplot method for grain objects has been added.
+
+	* Version 0.8.6 uploaded	
+	
 2010-05-07 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* Error in loadHuginNet has been fixed. Thanks to Parisa Niloofar

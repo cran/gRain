@@ -15,6 +15,7 @@
 % \alias{as.grain.huginNet}
 
 \alias{plot.grain}
+\alias{iplot.grain}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Graphical Independence Network}
@@ -43,10 +44,16 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 }
 %\references{ ~put references to the literature/web site here ~ }
 \author{Søren Højsgaard, sorenh@agrsci.dk}
-%\note{ ~~further notes~~ %
-%
-% ~Make other sections like Warning with \section{Warning }{....} ~
-%}
+\note{
+  There are two methods for displaying networks: 'plot' and 'iplot'.
+  
+  1) The 'plot' method uses the Rgraphviz package and this package requires
+  that the Graphviz program is installed. Installation of Rgraphviz and
+  Graphviz is not made automatically when gRain is installed.
+
+  2) The 'iplot' method uses the igraph package which is installed
+  automatically when gRain is installed. 
+}
 \seealso{
   \code{\link{cptable}},
   \code{\link{setFinding}},
