@@ -17,7 +17,7 @@ grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
   ans  <- c(list(universe    = universe,
                  data        = data,
                  potlist     = c(x),
-                 nodes       = nodes(ug),
+                 nodes       = unname(nodes(ug)),
                  ug          = ug),
             .setExtraComponents(control, details))
   class(ans) <- c("pot-grain","grain")    
@@ -28,14 +28,14 @@ grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
 ##
 grain.CPTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
 {
-  ## cat("grain.CPTspec\n")
+  ##cat("grain.CPTspec\n")
   control  <- .setControl(control)
   att      <- attributes(x)
   dag      <- att$dag
   universe <- att[c("nodes","levels","nlev")]
   ans  <- c(list(universe    = universe,
                  data        = data,
-                 nodes       = nodes(dag),
+                 nodes       = unname(nodes(dag)),
                  dag         = dag,
                  cptlist     = c( x )),
             .setExtraComponents(control, details))
@@ -50,8 +50,8 @@ grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...
 
   if (missing(data))
     stop("Data must be given to create grain from graph\n")
-  if (!is.array(data))
-    stop("Data must be an array\n")
+  if (!(is.array(data) || is.data.frame(data)))
+    stop("Data must be an array or a dataframe\n")
   
   switch(edgemode(x), 
          "directed"={
@@ -70,7 +70,7 @@ grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...
 print.grain <- function(x,...){
   cat("Independence network: Compiled:", x$isCompiled, "Propagated:", x$isPropagated, "\n")
   cat(" Nodes:")
-  utils::str(nodeNames(x))
+  utils::str(unname(nodeNames(x)))
   if (length(x$finding)>0){
     cat(" Findings:")
     utils::str(x$finding$nodes)

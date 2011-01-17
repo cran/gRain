@@ -44,14 +44,11 @@ propagateLS <- function(potlist, rip, initialize=TRUE, details=0){
       cpot  <- potlist[[ii]];      
       csep  <- seps[[ii]]
       cpa   <- potlist[[pa[ii]]]
-
       if (length(csep)>=1 && !is.na(csep)){
-        .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(csep))
-        
+        .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(csep))        
         septab            <- tableMargin(cpot, csep)
         potlist[[ii]]     <- tableOp2(cpot, septab, `/`)             
         potlist[[pa[ii]]] <- tableOp2(cpa,  septab, `*`) 
-
       } else{
         zzz <- sum(cpot)
         potlist[[1]]  <- potlist[[1]] * zzz
@@ -59,9 +56,13 @@ propagateLS <- function(potlist, rip, initialize=TRUE, details=0){
       }
     }
   }
-
+  
+##   cat("propagateLS\n")
+##   print(as.data.frame.table(potlist[[1]]))
+  
   normConst <- sum(potlist[[1]]) 
-
+##   print(normConst)
+  
   if (normConst==0){
     attr(potlist, "pFinding") <- normConst
   }

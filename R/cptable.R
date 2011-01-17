@@ -12,10 +12,10 @@ cptable <- function(v, levels=NULL, values=NULL,
 }
 
 print.cptable <- function(x,...){
-  cat("vpa    :", x$vpa ,"\n")
-  cat("values :", x$values, "\n")
-  cat(sprintf("levels (%s) : %s\n", x$vpa[1], paste(x$levels,collapse=' ')))
-  cat("normalize :", x$normalize, "smooth :", x$smooth,"\n")
+  cat(sprintf("v,pa(v)        : %s\n", toString(x$vpa)))
+  cat(sprintf("levels of v    : %s\n", toString(x$levels)))
+  cat(sprintf("values         : %s\n", toString(x$values)))
+  cat(sprintf("normalize=%s, smooth=%f\n", x$normalize, x$smooth))
   return(invisible(x))
 }
 
