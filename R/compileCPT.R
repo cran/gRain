@@ -17,12 +17,12 @@ compileCPT <- function(x){
              vpar <- xi$vpa
              vn   <- vpar[1]
              vlev <- xi$levels
-             tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=xi$values,
-                             normalize=if (xi$normalize) "first" else "none", smooth=xi$smooth)
+             tmp  <- list(vnam=vn, vlev=vlev, vpar=vpar, values=xi$values,
+                          normalize=if (xi$normalize) "first" else "none", smooth=xi$smooth)
            },
            "array"={
-             vpar <- names(dimnames(xi))
-             vn   <- vpar[1]
+             vpar    <- names(dimnames(xi))
+             vn      <- vpar[1]
              vparlev <- dimnames(xi)
              vlev    <- vparlev[[1]]
              values  <- as.numeric(xi)
@@ -30,30 +30,35 @@ compileCPT <- function(x){
            })
     return(tmp)
   }
+  
 
   xxx <- lapply(x, parseit)
+
   vnamList <- lapply(xxx, "[[", "vnam")
   vlevList <- lapply(xxx, "[[", "vlev")
   names(vlevList) <- vnamList
   
   ans <- vector("list", length(vnamList))      
+
   for (ii in 1:length(vnamList)){    
     vpar <- xxx[[ii]]$vpar
     lev  <- vlevList[vpar]
     val  <- xxx[[ii]]$values
+
     if (prod(c(lapply(lev, length),recursive=TRUE)) != length(val)){
       print(lev)
       print(val)
       stop("Table dimensions do not match!")
     }
-    ans[[ii]] <- ptable(vpar, 
-                        values    = val, 
-                        normalize = xxx[[ii]]$normalize,
-                        smooth    = xxx[[ii]]$smooth, 
-                        levels    = lev)
+
+    ans[[ii]] <-
+      ptable(vpar, 
+             values    = val, 
+             normalize = xxx[[ii]]$normalize,
+             smooth    = xxx[[ii]]$smooth, 
+             levels    = lev)
   }
-  names(ans) <- vnamList
-                                        #vn.ment  <- uniquePrim(unlist(vparList))    
+  
   vparList <- lapply(xxx, "[[", "vpar")
   valList  <- lapply(xxx, "[[", "values")
   
@@ -61,12 +66,13 @@ compileCPT <- function(x){
   if (is.null(dg)){
     stop("Graph defined by the cpt's is not acyclical...\n");
   }
-
+  
   vn <- c(vnamList, recursive=TRUE)
   di <- c(lapply(vlevList, length), recursive=TRUE)
   names(di) <- vn
   
-  attributes(ans) <- list(nodes=vn,
+  attributes(ans) <- list(names=vn,
+                          nodes=vn,
                           levels=vlevList,
                           nlev=di,
                           dag=dg)  ## FIXME: nodes can be removed!

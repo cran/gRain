@@ -1,8 +1,10 @@
 \name{extractCPT,extractPOT}
 \alias{extractCPT}
 \alias{extractCPT.table}
+\alias{extractCPT.data.frame}
 \alias{extractPOT}
 \alias{extractPOT.table}
+\alias{extractPOT.data.frame}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Extract conditional probabilities and clique potentials from data}
