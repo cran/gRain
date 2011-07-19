@@ -1,6 +1,6 @@
 
 pFinding <- function(object)
-  attr(object$potlist,"pFinding")
+  attr(object$equilCQpot,"pFinding")
 
 
 getFinding <- function(object){
@@ -21,6 +21,7 @@ print.grainFinding <- function(x, ...){
 
 setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE){
 
+#  cat("setFinding\n")
   if (!object$isCompiled){
     ##cat("setFinding: Compiling model ...\n")
     object <- compile(object)
@@ -43,7 +44,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     ev1   <- nodes[i]; 
     if (!(ev1 %in% netNodes)){
       nodes[i] <- states[i] <- NA
-      warning("Node ", ev1, " is not in network, skipping it...\n",call.=FALSE)
+      ##warning("Node ", ev1, " is not in network, skipping it...\n",call.=FALSE)
     }
   }
 
@@ -62,11 +63,14 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     }
   }
 
+#  print(nodes)
+#  print(states)
   ## Now insert the findings
   ##
   if (length(nodes)>0){
     t0 <- proc.time()    
-    object$potlistwork  <- .insertFinding(nodes, states, object$potlistwork, object$rip)
+    ## setFinding: findings are insertet to tempCQpot
+    object$tempCQpot      <- .insertFinding(nodes, states, object$tempCQpot, object$rip)   
     object$isInitialized  <- FALSE
 
     if (!is.null(currFinding)){
@@ -91,7 +95,9 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
   return(object)
 }
 
-.insertFinding <- function(nodes, states, potlist, rip, details=0){
+
+
+.insertFinding <- function(nodes, states, APlist, rip, details=0){
 
   .infoPrint(details, 1, cat(".insertFinding\n"))
   cli <- rip$cliques
@@ -109,21 +115,21 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
 
     ##cat("Host cliques:",paste(idx,sep=' '),"\n");
     for (j in idx){            
-      cpot <- potlist[[j]]
+      cpot <- APlist[[j]]
       ## cat("Current clique:", paste(varNames(cpot), sep=' '),"\n")
       ## lev    <- valueLabels.array(cpot)[[currn]] ## BRIS
       lev <- dimnames(cpot)[[currn]]
       evTab  <- .evidenceTable(currn, currs, lev)
-      potlist[[j]]  <- tableOp(cpot, evTab, "*")
+      APlist[[j]]  <- tableOp(cpot, evTab, "*")
     }
   }
-  potlist
+  APlist
 }
 
 .evidenceTable <- function(node, state, levels){
   pot   <- rep.int(0,length(levels))
   pot[match(state, levels)] <- 1
-  t2  <- ptable(node, list(levels), pot)
+  t2  <- parray(node, list(levels), pot)
   t2
 }
 
@@ -131,7 +137,8 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
 retractFinding <- function(object, nodes=NULL, propagate=TRUE){
 
   .resetgrain <- function(xxx){
-    xxx$potlist       <- xxx$potlistorig
+    ## retractFinding: equilCQpot is reset to origCQpot
+    xxx$equilCQpot       <- xxx$origCQpot
     xxx$finding       <- NULL
     xxx$isInitialized <- TRUE
     xxx

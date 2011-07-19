@@ -28,7 +28,7 @@
 
 
 \author{
-  S{\o}ren H{\o}jsgaard\\Department of Genetics and Biotechnology \\Aarhus University, Denmark
+  S{\o}ren H{\o}jsgaard\\Aarhus University, Denmark
 }
 
 \title{A one--minute introduction to the \pkg{gRain} package} 
@@ -47,7 +47,7 @@ The \grbn\ package implements propagation in [gra]phical [i]ndependence
 [n]etworks (hereafter abbreviated \grain). Such networks are also known
 as probabilistic networks and Bayesian networks. More
 information about the package might be available from the webpage 
-\url{http://gbi.agrsci.dk/~shd/}. 
+\url{http://gbi.agrsci.dk/~sorenh/R/gRainweb}. 
 
 
 \section{A worked example: chest clinic} 
@@ -163,20 +163,13 @@ example is as follows.
 <<>>=
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
-t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
+t.a  <- cptable(~tub|asia, values=c(5,95,1,99),levels=yn)
 s    <- cptable(~smoke, values=c(5,5), levels=yn)
-l.s  <- cptable(~lung+smoke, values=c(1,9,1,99), levels=yn)
-b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
-e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
-x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
-d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-@ %def 
-
-Notice that the following forms are also valid specifications
-@ 
-<<>>=
-cptable(~tub|asia, values=c(5,95,1,99),levels=yn)
-cptable(c("tub","asia"), values=c(5,95,1,99),levels=yn)
+l.s  <- cptable(~lung|smoke, values=c(1,9,1,99), levels=yn)
+b.s  <- cptable(~bronc|smoke, values=c(6,4,3,7), levels=yn)
+e.lt <- cptable(~either|lung:tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
+x.e  <- cptable(~xray|either, values=c(98,2,5,95), levels=yn)
+d.be <- cptable(~dysp|bronc:either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 @ %def 
 
 \item Create the \grain\ from the conditional probability tables:
@@ -184,6 +177,7 @@ cptable(c("tub","asia"), values=c(5,95,1,99),levels=yn)
 @ 
 <<>>=
 plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+plist
 in1 <- grain(plist)
 in1
 @ %def 
