@@ -26,7 +26,7 @@ propagate.grain(object, details = object$details,...)
 %\note{ ~~further notes~~ 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{\code{\link{grain}},\code{\link{compile}}}
+\seealso{\code{\link{grain}},\code{\link[gRbase]{compile}}}
 %\examples{
 %}
 % Add one or more standard keywords, see file 'KEYWORDS' in the

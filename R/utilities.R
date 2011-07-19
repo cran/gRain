@@ -31,6 +31,10 @@
   }
 }
 
+.formula2char <- function(f) {
+	unlist(rhsf2list(f))
+}
+
 
 
 

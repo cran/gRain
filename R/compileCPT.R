@@ -5,7 +5,7 @@ compileCPT <- function(x){
     else
       cls <- class(xi)[1]
     switch(cls,
-           "ptable"={
+           "parray"={
              vpar <- varNames(xi)
              vn   <- vpar[1]
              vparlev <- valueLabels(xi)
@@ -31,28 +31,41 @@ compileCPT <- function(x){
     return(tmp)
   }
   
-
   xxx <- lapply(x, parseit)
-
+  
   vnamList <- lapply(xxx, "[[", "vnam")
   vlevList <- lapply(xxx, "[[", "vlev")
   names(vlevList) <- vnamList
   
   ans <- vector("list", length(vnamList))      
 
+  vn <- as.vector(unlist(vnamList))
+##   cat("Nodes:\n")
+##   print(vn)
+  
   for (ii in 1:length(vnamList)){    
     vpar <- xxx[[ii]]$vpar
     lev  <- vlevList[vpar]
     val  <- xxx[[ii]]$values
+    #cat(sprintf("v,pa(v): %s\n", toString(vpar)))
+    #str(lev)
 
+    mm <- match(vpar, vn)
+    isna <- is.na(mm)
+    if (any(isna)){
+      sss <- sprintf("compileCPT: Distribution not specified for node(s)\n %s \n", toString(vpar[which(isna)]))
+      stop(sss, call.=FALSE)
+    }
+    
     if (prod(c(lapply(lev, length),recursive=TRUE)) != length(val)){
-      print(lev)
-      print(val)
+      cat(sprintf("Error for v,pa(v): %s\n", toString(vpar)))
+      str(lev)
+      str(val)
       stop("Table dimensions do not match!")
     }
 
     ans[[ii]] <-
-      ptable(vpar, 
+      parray(vpar, 
              values    = val, 
              normalize = xxx[[ii]]$normalize,
              smooth    = xxx[[ii]]$smooth, 
@@ -80,13 +93,12 @@ compileCPT <- function(x){
   return(ans)
 }
 
-
 compilePOT <- function(x){
 
   uug <- ugList(lapply(x, function(a) names(dimnames(a))))
   if (length(mcs(uug))==0)
     stop("Graph defined by potentals is not triangulated...\n")
-    
+  
   lll     <- unlist(lapply(x, dimnames),recursive=FALSE)
   nnn     <- names(lll)
   iii     <- match(unique(nnn), nnn)
@@ -94,14 +106,21 @@ compilePOT <- function(x){
   vn      <- nnn[iii]
   di      <- c(lapply(levels, length), recursive=TRUE)
   names(di) <- vn
-  ans <- x
-  attributes(ans) <- list(nodes=vn,
-                          levels=levels,
-                          nlev=di,
-                          ug=uug)  ## FIXME: nodes can be removed!
+  ans       <- x
+  attributes(ans) <- list(nodes  = vn,
+                          levels = levels,
+                          nlev   = di,
+                          ug     = uug,
+                          dag    = attr(x, "dag"),
+                          cptlist= attr(x, "cptlist"),
+                          rip    = attr(x, "rip")
+                          )
+  ## FIXME: nodes can be removed!
+  ## FIXME: We carry dag+cptlist here (created in extractPOT); maybe not so elegant.
   class(ans) <- "POTspec"
   return(ans)
 }
+
 
 print.CPTspec <- function(x,...){
   cat("CPTspec with probabilities:\n")

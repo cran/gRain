@@ -37,7 +37,7 @@ compile.grain(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 
 %\note{ ~~further notes~~ 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{\code{\link{grain}}, \code{\link{propagate}} }
+\seealso{\code{\link{grain}}, \code{\link[gRbase]{propagate}} }
 %\examples{
 %}
 % Add one or more standard keywords, see file 'KEYWORDS' in the

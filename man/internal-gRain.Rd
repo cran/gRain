@@ -1,14 +1,13 @@
 \name{internal-gRain}
 
+\alias{update.cpt-grain}
+
 \alias{cpt2} %% FIXME: CRAP NAME
 
 \alias{propagateLS}
 
 \alias{as.cumcounts}
 \alias{as.cumcounts.data.frame}
-
-
-
 
 \alias{checkdag}
 \alias{ctabnames}

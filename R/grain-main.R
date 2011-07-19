@@ -1,24 +1,33 @@
-##
-## Creating grain
-##
-
+### #####################################################
+###
+### Creating grain objects
+###
+### #####################################################
 grain <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
   UseMethod("grain")
 }
 
+
 ## A list of clique potentials (defined over a chordal graph)
 ## 
+## NOTICE: POTspec contains terms p(R_k|S_k) as used in 
+##    p(V)=\prod_k p(R_k|S_k)
+## i.e. the 'set chain representation'.
+
 grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
-  ##cat("grain.POTspec\n")
+  ## cat("grain.POTspec\n")
+  
   control  <- .setControl(control)
-  att      <- attributes(x)
-  ug       <- att$ug
-  universe <- att[c("nodes","levels","nlev")]
+  universe <- attributes(x)[c("nodes","levels","nlev")]
   ans  <- c(list(universe    = universe,
                  data        = data,
-                 potlist     = c(x),
-                 nodes       = unname(nodes(ug)),
-                 ug          = ug),
+                 equilCQpot= c(x),  
+                 nodes       = unname(nodes(attr(x, "ug"))),
+                 ug          = attr(x, "ug"),
+                 dag         = attr(x, "dag"),    ## FIXME: We carry this info...
+                 cptlist     = attr(x, "cptlist"),
+                 rip         = attr(x, "rip")
+                 ),
             .setExtraComponents(control, details))
   class(ans) <- c("pot-grain","grain")    
   ans
@@ -70,10 +79,10 @@ grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...
 print.grain <- function(x,...){
   cat("Independence network: Compiled:", x$isCompiled, "Propagated:", x$isPropagated, "\n")
   cat(" Nodes:")
-  utils::str(unname(nodeNames(x)))
+  str(unname(nodeNames(x)))
   if (length(x$finding)>0){
     cat(" Findings:")
-    utils::str(x$finding$nodes)
+    str(x$finding$nodes)
   }
   return(invisible(x))
 }

@@ -39,7 +39,7 @@ print.cptable <- function(x,...){
     if (any(is.na(uuu)))
       stop("Nodes {",paste(vpa[is.na(uuu)],collapse=','), "} do not exist in gmData\n")
     levels <- valueLabels(gmData)[vpa]
-    ans    <- ptable(vpa, levels, values, smooth=smooth,
+    ans    <- parray(vpa, levels, values, smooth=smooth,
                      normalize=if (normalize) "first" else "none")  
   } else {
 
@@ -60,7 +60,7 @@ print.cptable <- function(x,...){
     }
 
     values <- rep(values, length.out = vl)
-    ans <- ptable(vpa, levels=dn, values=values, smooth=smooth,
+    ans <- parray(vpa, levels=dn, values=values, smooth=smooth,
                   normalize=if (normalize) "first" else "none")
 
   }
