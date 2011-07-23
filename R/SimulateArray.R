@@ -15,7 +15,7 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
     }
   }
 
-  plist  <- object$potlist
+  plist  <- object$equilCQpot
   cqlist <- object$rip$cli
   splist <- object$rip$sep
 
@@ -33,7 +33,7 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
       ctab <- plist[[ii]]
       vn   <- names(dimnames(ctab)) # Safe
       s2   <- splist[[ii]]
-      mtab <- tableMargin(ctab,s2) ## FIXME: Check this
+      mtab <- tableMargin(ctab,s2)      ## FIXME: Check this
       ctab <- tableOp2(ctab, mtab, `/`) ## FIXME: Check this
       
       r2   <- setdiff(vn, s2)

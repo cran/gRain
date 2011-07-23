@@ -20,7 +20,7 @@ summary.grain <- function(object, type='std', ...){
     cat(sprintf(" Number of cliques:              %4d \n",  length(cl2)))
     cat(sprintf(" Maximal clique size:            %4d \n",  max(cl2)))
     cat(sprintf(" Maximal state space in cliques: %4d \n",
-        max(unlistPrim(lapply(object$potlist, length)))))
+        max(unlistPrim(lapply(object$equilCQpot, length)))))
     
     if(length(e<-getFinding(object))){
       print(e)
@@ -38,7 +38,7 @@ summary.grain <- function(object, type='std', ...){
            "configurations"={
              cat("\nConfigurations:\n")
              for (i in 1:length(cl)){
-               cat(" ", i, ":", object$potlist[[i]]$ncells, "\n")
+               cat(" ", i, ":", object$equilCQpot[[i]]$ncells, "\n")
              }
            })
   }

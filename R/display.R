@@ -2,27 +2,6 @@
 ## plot (gRain)
 ##
 
-## "plot.cpt-grain" <- function(x, ...){
-##   plot(x$dag)
-## }
-
-## "plot.dag-grain" <- function(x, ...){
-##   plot(x$dag)
-## }
-
-## "plot.ug-grain" <- function(x, ...){
-##   plot(x$ug)
-## }
-
-## plot.compgrain <- function(x, type="ug", ...){
-##   type <- match.arg(type, c("dag", "mdag", "ug"))
-##   zz <- x[[type]]
-##   if (!is.null(zz))
-##     .plot.graphsh(zz)
-##   else
-##     cat("Slot", type, "does not exist \n") 
-## }
-
 plot.grain <- function(x, type, ...){
   #cat("plot.grain; type:", type, "\n")
    if (!require("Rgraphviz")){
@@ -83,6 +62,28 @@ iplot.grain <- function(x,type, ...){
 
 
 ########################################################################
+
+
+## "plot.cpt-grain" <- function(x, ...){
+##   plot(x$dag)
+## }
+
+## "plot.dag-grain" <- function(x, ...){
+##   plot(x$dag)
+## }
+
+## "plot.ug-grain" <- function(x, ...){
+##   plot(x$ug)
+## }
+
+## plot.compgrain <- function(x, type="ug", ...){
+##   type <- match.arg(type, c("dag", "mdag", "ug"))
+##   zz <- x[[type]]
+##   if (!is.null(zz))
+##     .plot.graphsh(zz)
+##   else
+##     cat("Slot", type, "does not exist \n") 
+## }
 
 
 
