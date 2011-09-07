@@ -23,20 +23,31 @@ predict.grain <- function(object, response, predictors=setdiff(names(newdata), r
     objecttmp1    <- setFinding(object, nodes=names(case), states=case)
 
     p.e       <- pFinding(objecttmp1)
+    #print(p.e)
+
+    if (p.e<1e-32){
+      cat(sprintf("Finding for row %i has probability 0 in then model. Exiting...\n", i))
+      return(NULL)
+    }
+    
     p.evec[i] <- p.e
     for (j in 1:length(response)){
       ##pj   <- nodeMarginal(objecttmp1, response[j])[[1]]$values
-
       pj   <- nodeMarginal(objecttmp1, response[j])[[1]] ## BRIS
+      #print(pj)
       ans[[j]][i,] <- pj
     }
   } 
 
+  #print(ans)
   if (type=="class"){
     ns <- nodeStates(object, response)
     for (i in 1:length(ans)){
       a<-ans[[i]]
+      #print(a)
       mlc <- apply(a,1,which.max)
+      #print(mlc)
+      
       ans[[i]] <- ns[[i]][mlc]
     }
   }
