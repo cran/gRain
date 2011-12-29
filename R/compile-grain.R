@@ -129,12 +129,10 @@ compile.grain <-
 
 
 .createJTreeGraph <- function(rip){
-  
-  r <- rip
-  if (length(r$cliques)>1){
-    ft <-cbind(r$parents, 1:length(r$parents))
+  if (length(rip$cliques)>1){
+    ft <-cbind(rip$parents, 1:length(rip$parents))
     ft <- ft[ft[,1]!=0,, drop=FALSE]
-    V <- seq_along(r$parents)
+    V <- seq_along(rip$parents)
     if (nrow(ft)==0){
       jt <- new("graphNEL", nodes = as.character(V), edgemode = "undirected")
     } else {

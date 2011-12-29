@@ -27,7 +27,7 @@ compilePOT(x)
   \code{compilePOT} returns a list of class 'potspec'
 }
 %\references{ ~put references to the literature/web site here ~ }
-\author{Søren Højsgaard, sorenh@agrsci.dk}
+\author{Søren Højsgaard, sorenh at mail dot dk}
 %\note{ ~~further notes~~ 
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~

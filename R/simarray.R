@@ -1,5 +1,4 @@
 
-
 ## Simulate n observations from the array x conditional on
 ## the variables in margin (a vector of indices) takes values
 ## given by index

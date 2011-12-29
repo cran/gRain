@@ -26,15 +26,20 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   ctab  <- plist[[1]]
   res   <- .simarray(x=ctab,n=nsim)
   ans[,colnames(res)] <- res
-  
+
+  #print(ans)
   ## Iterate
   if (length(cqlist)>1){
     for (ii in 2:length(cqlist)){
       ctab <- plist[[ii]]
       vn   <- names(dimnames(ctab)) # Safe
       s2   <- splist[[ii]]
+      ##cat(sprintf("vn=%s s2=%s\n", toString(vn), toString(s2)))
+      ##cat("ctab:\n");  print(ctab)
       mtab <- tableMargin(ctab,s2)      ## FIXME: Check this
+      ##cat("mtab:\n"); print(mtab)
       ctab <- tableOp2(ctab, mtab, `/`) ## FIXME: Check this
+      ##cat("ctab (updated):\n"); print(ctab)
       
       r2   <- setdiff(vn, s2)
       ##cat("r:", r2, "s:", s2, "\n")    
@@ -43,12 +48,19 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
         res   <- matrix(0,nr=nsim, nc=length(r2))
         colnames(res) <- r2
         un    <- ans[,s2,drop=FALSE]
+        ##cat("un:\n"); print(un)
         vals  <- unique(un)
         sc    <- cumprod(apply(vals, 2, max) )
-        key   <- un %*% sc / sc[1]
-
-        for(k in unique(key)) 
-          res[k==key,] <- .simarray(ctab, sum(k==key), s2idx, un[match(k,key),])
+##         key   <- un %*% sc / sc[1]
+        sc    <- c(1,sc)[1:length(sc)]
+        key   <- ((un-1) %*% sc)+1
+        ##cat(sprintf("key=%s\n", toString(key)))
+        #browser()
+        for(k in unique(key)){
+          nn  <- sum(k==key)
+          idx <- un[match(k,key),]
+          res[k==key,] <- .simarray(ctab, n=nn, margin=s2idx, index=idx)
+        }
       } else {
         res <- .simarray(x=ctab,n=nsim)
       }

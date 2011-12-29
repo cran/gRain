@@ -10,7 +10,7 @@
   establishing clique potentials.
 }
 \usage{
-compile.grain(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 0, control = object$control, details = 0, ...)
+\method{compile}{grain}(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 0, control = object$control, details = 0, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -33,7 +33,7 @@ compile.grain(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 
   A compiled Bayesian network; an object of class \code{compgrain}.
 }
 %\references{ ~put references to the literature/web site here ~ }
-\author{Søren Højsgaard, sorenh@agrsci.dk}
+\author{Søren Højsgaard, sorenh at mail dot dk}
 %\note{ ~~further notes~~ 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
