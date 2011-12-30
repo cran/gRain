@@ -7,7 +7,7 @@
   that the clique potentials are consistent on their intersections
 }
 \usage{
-propagate.grain(object, details = object$details,...)
+\method{propagate}{grain}(object, details = object$details,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,7 +22,7 @@ propagate.grain(object, details = object$details,...)
   A compiled and propagated grain object.
 }
 %\references{ ~put references to the literature/web site here ~ }
-\author{Søren Højsgaard, sorenh@agrsci.dk}
+\author{Søren Højsgaard, sorenh at mail dot dk}
 %\note{ ~~further notes~~ 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}

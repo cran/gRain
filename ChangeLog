@@ -1,3 +1,12 @@
+2011-12-30 Søren Højsgaard <sorenh@mail.dk>	
+
+	* Bug in simulate fixed. Thanks to Vanessa Didelez for pointing
+	this bug out. 
+
+	* E-mail address changed
+
+	* Version 0.8.10 uploaded
+
 2011-09-07 Søren Højsgaard <sorenh@agrsci.dk>	
 
 	* A check for whether pFinding is zero added in predict method

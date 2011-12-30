@@ -28,9 +28,9 @@ systems (which includes Bayesian networks).
   A paper describing gRain is under preparation
 }
 \author{
-Søren Højsgaard <sorenh@agrsci.dk>
+Søren Højsgaard <sorenh at mail dot dk>
 
-Maintainer: Søren Højsgaard <sorenh@agrsci.dk>
+Maintainer: Søren Højsgaard <sorenh at mail dot dk>
 }
 %\references{
 %~~ Literature or other references for background information ~~
