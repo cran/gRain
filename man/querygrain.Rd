@@ -15,7 +15,7 @@
 }
 \usage{
 querygrain(object, nodes = nodeNames(object), normalize = TRUE, type =
-c("marginal", "joint", "conditional"), return="array", details = 0)
+c("marginal", "joint", "conditional"), result="array", details = 0)
 
 setFinding(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE)
 retractFinding(object, nodes=NULL, propagate=TRUE)
@@ -32,7 +32,7 @@ pFinding(object)
   \item{normalize}{Should the results be normalized to sum to one.}
   \item{type}{Should marginals (for each node), the joint for all nodes,
   or the conditional of the first node given the rest be returned.}
-  \item{return}{If "data.frame" the result is returned as a data frame
+  \item{result}{If "data.frame" the result is returned as a data frame
     (or possibly as a list of dataframes).}
   \item{details}{Debugging information}
 

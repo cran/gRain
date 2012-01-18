@@ -1,6 +1,6 @@
 querygrain <- function(object,nodes=nodeNames(object), normalize=TRUE,
                     type=c("marginal","joint","conditional"),
-                    return="array",
+                    result="array",
                     details=0)
 {
   UseMethod("querygrain")
@@ -8,10 +8,10 @@ querygrain <- function(object,nodes=nodeNames(object), normalize=TRUE,
 
 querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
                                type=c("marginal","joint","conditional"),
-                               return="array",
+                               result="array",
                                details=0){
 
-  return <- match.arg(return, c("array","data.frame"))
+  result <- match.arg(result, c("array","data.frame"))
   t0 <- proc.time()
 
   if (is.null(nodes))
@@ -35,20 +35,20 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
          "marginal"={
            ans <- nodeMarginal(object, nodes, details)
            #print(ans)
-           if (return=="data.frame")
+           if (result=="data.frame")
              ans <- lapply(ans, as.data.frame.table)
          },
          "joint"={
            ans<-nodeJoint(object, nodes, normalize, details)
-           if (return=="data.frame")
+           if (result=="data.frame")
              ans <- as.data.frame.table(ans) ## BRIS
          },
          "conditional"={
-           qobject <- querygrain(object, nodes, type="joint", return="data.frame")
+           qobject <- querygrain(object, nodes, type="joint", result="data.frame")
            nst     <- nodeStates(object)[nodes]
            ans     <- parray(nodes, nst, values=qobject$Freq, normalize="first") ## BRIS
            
-           if (return=="data.frame")
+           if (result=="data.frame")
              ans <- as.data.frame.table(ans) ## BRIS
          })
   if (object$control$timing)
