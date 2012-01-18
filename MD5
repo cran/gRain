@@ -1,5 +1,5 @@
-a42d68c3d9bececd15c3a465e6170c06 *ChangeLog
-a34bef7dad4be14fe7e45a3232aef0b8 *DESCRIPTION
+e22c07a73da2c8d9a97d4af69581eb7b *ChangeLog
+c8db905674a12f2103d4b86367cfae0d *DESCRIPTION
 71738af8404ece81952f5e5266e950cb *NAMESPACE
 9d97acfbcfa15b2f9585dc61a8708847 *R/Finding.R
 ba42cac71afab7272015b89a611942a7 *R/Generics.R
@@ -18,7 +18,7 @@ c52a9cca5855759e6d2a054ab1978040 *R/SimulateArray.R
 cabc2c4d430b1bc98a89fd526276deac *R/potentialList.R
 59cb9e459c59c0c518434c2f7c318871 *R/predict.R
 f1f1b169d42a7e36205e52e70ca05e82 *R/propagate.R
-fffac057da6e1ad9bf1eb97843243081 *R/querygrain.R
+41efedf075aaf28dcb4f2b726c6f2a47 *R/querygrain.R
 bd488ad25d3537fc2135b8a3642638c1 *R/repeatPattern.R
 6d53d8f8c921943668edaadcefcbe5fa *R/simarray.R
 b59f8504f12064c7bebd63dc89eac687 *R/summary.R
@@ -29,14 +29,8 @@ b59f8504f12064c7bebd63dc89eac687 *R/summary.R
 4a1bde6ac3c0fb073c9576321a1fe3d0 *demo/00Index
 87a1fa5289524914555898927f2f3143 *demo/gRain.R
 9b9955f012eb3c286bc0f0cb9affcc37 *gRain-Ex.R
-c5d54fc66183d93c42d744bbf11cfd7d *inst/doc/R-current.lnk
-c7c4da5356a3e2679107ebae7b32a0aa *inst/doc/fig/chest-008.eps
-6d18307a1cc6f354b9899fa095683f79 *inst/doc/fig/chest-008.pdf
-804ea869371a62967c12b558be737479 *inst/doc/fig/chest-LS2.eps
-7a2f8489f231a5dd00b1fb1e63b30084 *inst/doc/fig/chest-LS2.pdf
 988c40298447eeb73c99af28fbdce2e9 *inst/doc/gRain-intro.Rnw
-e2c6426405048e94c7a99a445ace8f12 *inst/doc/gRain-intro.pdf
-54ab54ffb13b9084c61e03d33b4888c4 *inst/doc/gRain.bib
+0fe2f5f444b3c3ccbf7cef972bec4dfd *inst/doc/gRain-intro.pdf
 b81f8dbf4d422dca45f39a4012f3ac11 *inst/huginex/chest_clinic.hlg
 9080a021559c0da015e18692a78b7c05 *inst/huginex/chest_clinic.net
 283c785805424e9edb01782c1bc147c3 *inst/huginex/golf.net
@@ -51,6 +45,12 @@ ebc7359ee45a346fa9314e789b7ec92a *man/cptable.Rd
 4f3bbbe6dfa7e1d4f15e1233b9a49a53 *man/loadSaveHuginNet.Rd
 9acabae395549a2a27381ab2167577b5 *man/predict.Rd
 14671a2cb4d590328fd8ab9adf126109 *man/propagate.grain.Rd
-9fc30f7aa66644aa67f451bba49f2ee1 *man/querygrain.Rd
+b5f25e02ea89a8671c12181d8c9a4ec2 *man/querygrain.Rd
 159e115d621a834bd8b969484d056720 *man/repeatPattern.Rd
 5ac94e2c26709672112fd2a277b8d9a4 *man/simulate.Rd
+c7c4da5356a3e2679107ebae7b32a0aa *vignettes/fig/chest-008.eps
+6d18307a1cc6f354b9899fa095683f79 *vignettes/fig/chest-008.pdf
+804ea869371a62967c12b558be737479 *vignettes/fig/chest-LS2.eps
+7a2f8489f231a5dd00b1fb1e63b30084 *vignettes/fig/chest-LS2.pdf
+988c40298447eeb73c99af28fbdce2e9 *vignettes/gRain-intro.Rnw
+54ab54ffb13b9084c61e03d33b4888c4 *vignettes/gRain.bib

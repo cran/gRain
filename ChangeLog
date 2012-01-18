@@ -1,3 +1,17 @@
+2012-01-17 Søren Højsgaard <sorenh@mail.dk>	
+	
+	* Small changes to package structure
+
+	* Version 0.8.12 uploaded
+
+2012-01-17 Søren Højsgaard <sorenh@mail.dk>	
+
+	* argument 'return' to querygrain is changed to 'result'.
+
+	* URL updated
+	
+	* Version 0.8.11 uploaded
+	
 2011-12-30 Søren Højsgaard <sorenh@mail.dk>	
 
 	* Bug in simulate fixed. Thanks to Vanessa Didelez for pointing
