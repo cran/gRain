@@ -7,7 +7,7 @@
 ## Represent list of sets in a matrix...
 ##
 .as.setmat <- function(glist,vn=unique(unlist(glist))){
-  amat <- matrix(0, nr=length(glist), nc = length(vn))
+  amat <- matrix(0, nrow=length(glist), ncol = length(vn))
   colnames(amat) <- vn
   
   for (i in 1:length(glist)){
