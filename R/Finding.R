@@ -21,7 +21,7 @@ print.grainFinding <- function(x, ...){
 
 setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE){
 
-#  cat("setFinding\n")
+  ##  cat("setFinding\n")
   if (!object$isCompiled){
     ##cat("setFinding: Compiling model ...\n")
     object <- compile(object)
@@ -33,65 +33,67 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     states  <- flist2[,2]
   }
 
-  netNodes       <- object$nodes 
-  currFinding    <- getFinding(object)
   len            <- length(nodes)
 
-  ## print(netNodes)
-##   print(nodes)
+  if (len>0){
   
-  for (i in 1:len){
-    ev1   <- nodes[i]; 
-    if (!(ev1 %in% netNodes)){
-      nodes[i] <- states[i] <- NA
-      ##warning("Node ", ev1, " is not in network, skipping it...\n",call.=FALSE)
+    netNodes       <- object$nodes 
+    currFinding    <- getFinding(object)
+    
+    
+    for (i in 1:len){
+      ev1   <- nodes[i]; 
+      if (!(ev1 %in% netNodes)){
+        nodes[i] <- states[i] <- NA
+        ##warning("Node ", ev1, " is not in network, skipping it...\n",call.=FALSE)
+      }
     }
-  }
-
-  ## Ignore NA's in the states
-  ##
-  nodes  <- nodes[!is.na(states)]
-  states <- states[!is.na(states)]
-
-  ## Drop nodes which are already given evidence in the network
-  ##
-  if (!is.null(currFinding)){
-    idx    <- match(intersect(currFinding$nodes, nodes), nodes)
-    if (length(idx)>0){
-      nodes  <- nodes[-idx]
-      states <- states[-idx]
-    }
-  }
-
-#  print(nodes)
-#  print(states)
-  ## Now insert the findings
-  ##
-  if (length(nodes)>0){
-    t0 <- proc.time()    
-    ## setFinding: findings are insertet to tempCQpot
-    object$tempCQpot      <- .insertFinding(nodes, states, object$tempCQpot, object$rip)   
-    object$isInitialized  <- FALSE
-
+    
+    ## Ignore NA's in the states
+    ##
+    nodes  <- nodes[!is.na(states)]
+    states <- states[!is.na(states)]
+    
+    ## Drop nodes which are already given evidence in the network
+    ##
     if (!is.null(currFinding)){
-      ev <- list(nodes=c(currFinding$nodes,nodes), states=c(currFinding$states,states))
-    } else {
-      ev <- list(nodes=nodes, states=states)
+      idx <- match(intersect(currFinding$nodes, nodes), nodes)
+      if (length(idx)>0){
+        nodes  <- nodes[-idx]
+        states <- states[-idx]
+      }
     }
-
-    ## Set finding slot
-    class(ev)<-"grainFinding"
-    object$finding <- ev
-
-    if (object$control$timing)
-      cat("Time: enter finding", proc.time()-t0, "\n")
-
-    if (propagate){
-      object<-propagate(object)
-    } else {
-      object$isPropagated <- FALSE
+    
+    ##  print(nodes)
+    ##  print(states)
+    ##  Now insert the findings
+    ##
+    if (length(nodes)>0){
+      t0 <- proc.time()    
+      ## setFinding: findings are insertet to tempCQpot
+      object$tempCQpot      <- .insertFinding(nodes, states, object$tempCQpot, object$rip)   
+      object$isInitialized  <- FALSE
+      
+      if (!is.null(currFinding)){
+        ev <- list(nodes=c(currFinding$nodes,nodes), states=c(currFinding$states,states))
+      } else {
+        ev <- list(nodes=nodes, states=states)
+      }
+      
+      ## Set finding slot
+      class(ev)<-"grainFinding"
+      object$finding <- ev
+      
+      if (object$control$timing)
+        cat("Time: enter finding", proc.time()-t0, "\n")
+      
+      if (propagate){
+        object<-propagate(object)
+      } else {
+        object$isPropagated <- FALSE
+      }
     }
-  } 
+  }
   return(object)
 }
 
@@ -150,13 +152,24 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
   ev <- getFinding(object)
   evnodes   <- ev$nodes
   evstates  <- ev$states
-  
+
   idx<-match(intersect(evnodes,nodes), evnodes)
+
   if (length(idx)>0){
     newevnodes  <- evnodes[-idx]
     newevstates <- evstates[-idx]
+    
     object <- .resetgrain(object)
-    object <- setFinding(object, nodes=newevnodes, states=newevstates, propagate=propagate)
+
+    if (length(newevnodes)>0){
+      object <- setFinding(object, nodes=newevnodes, states=newevstates, propagate=FALSE)
+    }
+  }
+
+  if (propagate){
+    object<-propagate(object)
+  } else {
+    object$isPropagated <- FALSE
   }
   return(object)
 }      
