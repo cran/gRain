@@ -167,7 +167,7 @@ splitVec.list <- function(val, lev){
 
 ##splitVec.numeric <- function(val, lev){
 splitVec.default <- function(val, lev){
-  m    <- matrix(val,nc=lev)
+  m    <- matrix(val,ncol=lev)
   cval <- unlist(apply(m,2,list),recursive=FALSE)
   cval
 }

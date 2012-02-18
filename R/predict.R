@@ -13,7 +13,7 @@ predict.grain <- function(object, response, predictors=setdiff(names(newdata), r
   p.evec <- rep(NA, nrow(newdata))
   ans <- lapply(nstate, function(a)
                 {
-                  v <- matrix(NA, nc=length(a),nr=nrow(newdata))
+                  v <- matrix(NA, ncol=length(a),nrow=nrow(newdata))
                   colnames(v) <- a
                   v}
                 )

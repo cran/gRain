@@ -20,7 +20,7 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   splist <- object$rip$sep
 
   ## Init
-  ans           <- matrix(0, nr=nsim, nc=length(nodeNames(object)))
+  ans           <- matrix(0, nrow=nsim, ncol=length(nodeNames(object)))
   colnames(ans) <- nodeNames(object)
 
   ctab  <- plist[[1]]
@@ -45,7 +45,7 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
       ##cat("r:", r2, "s:", s2, "\n")    
       if (length(s2)){
         s2idx <- match(s2, vn)
-        res   <- matrix(0,nr=nsim, nc=length(r2))
+        res   <- matrix(0,nrow=nsim, ncol=length(r2))
         colnames(res) <- r2
         un    <- ans[,s2,drop=FALSE]
         ##cat("un:\n"); print(un)
