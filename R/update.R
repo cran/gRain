@@ -9,7 +9,7 @@
       pot.with.1   <- .defaultPotentialList(object$rip,object$universe)     
       ## FIXME lav en .insert1 funktion og gør så:
       ## FIXME pot.with.1   <- .insert1(object$origCQpot)
-      newCQpot     <- .insertCpt(args$cptlist, pot.with.1, object$rip, details=0)
+      newCQpot            <- .insertCpt(args$cptlist, pot.with.1, object$rip, details=0)
       object$origCQpot    <- newCQpot
       object$tempCQpot    <- newCQpot
       object$equilCQpot   <- .insertNA(pot.with.1)
@@ -28,6 +28,5 @@
   }
 
   ## FIXME: pas på når objektet ikke er kompileret...
-  
   object
 }  

@@ -3,20 +3,28 @@
 ### Creating grain objects
 ###
 ### #####################################################
+
+## NOTICE:
+##
+## extractPOT() generates
+## {p(C1), p(R2|S1), ..., p(Rn|Sn)}
+## so these are clique potentials but they are not equilibrated.
+## extractPOT() also generates  {p(v|pa(v)} which is not needed except to be
+## able to save a network as a hugin net file.
+##
+## extractCPT() generates
+## {p(v|pa(v))}
+##
+## compilePOT() and compileCPT() only makes 'internal' computations/setups
+## and do not fundamentally change the above.
+##
+
 grain <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
   UseMethod("grain")
 }
 
-
-## A list of clique potentials (defined over a chordal graph)
-## 
-## NOTICE: POTspec contains terms p(R_k|S_k) as used in 
-##    p(V)=\prod_k p(R_k|S_k)
-## i.e. the 'set chain representation'.
-
 grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
   ## cat("grain.POTspec\n")
-  
   control  <- .setControl(control)
   universe <- attributes(x)[c("nodes","levels","nlev")]
   ans  <- c(list(universe    = universe,
@@ -35,8 +43,7 @@ grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
 
 ## A list of cpt's
 ##
-grain.CPTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
-{
+grain.CPTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
   ##cat("grain.CPTspec\n")
   control  <- .setControl(control)
   att      <- attributes(x)
@@ -63,11 +70,11 @@ grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...
     stop("Data must be an array or a dataframe\n")
   
   switch(edgemode(x), 
-         "directed"={
+         "directed"   = { ## Call grain.CPTspec
            ans <- grain(compileCPT(extractCPT(data, x, smooth=smooth)),
                         data=data, control=control, details=details)           
          },
-         "undirected" = {
+         "undirected" = { ## Call grain.POTspec
            ans <- grain(compilePOT(extractPOT(data, x, smooth=smooth)),
                         data=data, control=control, details=details)
          })

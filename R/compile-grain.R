@@ -6,7 +6,6 @@ compile.grain <-
   NextMethod("compile") 
 }
 
-
 "compile.cpt-grain" <- 
   function(object, method="mcwh", propagate=FALSE, root=NULL, smooth=0,
            control=object$control, details=0,...){
@@ -100,7 +99,7 @@ compile.grain <-
     
     ## Add junction tree to object
     jt <- .createJTreeGraph(object$rip)
-
+    
     ## Collect results
     ans      <- list(jt          = jt,
                      tempCQpot   = object$equilCQpot,
@@ -108,6 +107,8 @@ compile.grain <-
                      mdag        = object$ug,
                      elorder     = mcs(object$ug),
                      details     = details )
+
+    object$equilCQpot   <- .insertNA(object$equilCQpot)
     
     object$details <- NULL
     ans            <- c(object, ans)
@@ -125,6 +126,7 @@ compile.grain <-
     }  
     return(ans)
   }
+
 
 
 
