@@ -40,8 +40,7 @@ compileCPT <- function(x){
   ans <- vector("list", length(vnamList))      
 
   vn <- as.vector(unlist(vnamList))
-##   cat("Nodes:\n")
-##   print(vn)
+  ##   cat("Nodes:\n");  print(vn)
   
   for (ii in 1:length(vnamList)){    
     vpar <- xxx[[ii]]$vpar
