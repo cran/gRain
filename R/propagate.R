@@ -5,7 +5,7 @@ propagate.grain <- function(object, details=object$details, ...){
   ## propagate.grain: equilCQpot is updated after propagation on tempCQpot
   ## such that equilCQpot will contain the updated potentials. 
   object$equilCQpot <- propagateLS(object$tempCQpot,
-                                rip=object$rip, initialize=TRUE, details=details)
+                                   rip=object$rip, initialize=TRUE, details=details)
   
   object$isInitialized <- TRUE
   object$isPropagated  <- TRUE
@@ -49,7 +49,7 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
       cpa   <- APlist[[pa[ii]]]
       if (length(csep)>=1 && !is.na(csep)){
         .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(csep))        
-        septab            <- tableMargin(cpot, csep)
+        septab           <- tableMargin(cpot, csep)
         APlist[[ii]]     <- tableOp2(cpot, septab, `/`)             
         APlist[[pa[ii]]] <- tableOp2(cpa,  septab, `*`) 
       } else{
@@ -60,11 +60,8 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
     }
   }
   
-##   cat("propagateLS\n")
-##   print(as.data.frame.table(APlist[[1]]))
-  
-  normConst <- sum(APlist[[1]]) 
-  #print(normConst)
+  ## cat("propagateLS\n"); print(as.data.frame.table(APlist[[1]]))
+  normConst <- sum(APlist[[1]]) ## ;print(normConst)
   
   if (normConst==0){
     attr(APlist, "pFinding") <- normConst
@@ -76,7 +73,6 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
   
   ## Forward propagation (distribute evidence) away from root of junction tree
   ##
-  
   .infoPrint(details,2,cat("..FORWARD:\n"))
   t0 <- proc.time()
   for (ii in 1:ncliq){

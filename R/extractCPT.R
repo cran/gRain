@@ -1,3 +1,4 @@
+
 extractCPT <- function(x, graph, V=nodes(graph), smooth=0){
   UseMethod("extractCPT")
 }
@@ -28,6 +29,7 @@ extractCPT.data.frame <- function(x, graph, V=nodes(graph), smooth=0){
   return(ans)
 }
 
+
 extractPOT.table <- function(x, graph, smooth=0){
 
   if (!identical(edgemode(graph), "undirected"))
@@ -43,6 +45,7 @@ extractPOT.table <- function(x, graph, smooth=0){
   ## Not sure whether this should be made here in the future
   dg 	  <- .ug2dag(graph)
   cptlist <- extractCPT(x, dg, smooth=smooth)
+
   attr(ans, "dag")     <- dg
   attr(ans, "cptlist") <- cptlist
   attr(ans, "rip")     <- rr
@@ -62,6 +65,7 @@ extractPOT.data.frame <- function(x, graph, smooth=0){
   ## Not sure whether this should be made here in the future
   dg 	  <- .ug2dag(graph)
   cptlist <- extractCPT(x, dg, smooth=smooth)
+
   attr(ans, "dag")     <- dg
   attr(ans, "cptlist") <- cptlist
   attr(ans, "rip")     <- rr

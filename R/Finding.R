@@ -63,14 +63,11 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
         states <- states[-idx]
       }
     }
-    
-    ##  print(nodes)
-    ##  print(states)
     ##  Now insert the findings
     ##
     if (length(nodes)>0){
       t0 <- proc.time()    
-      ## setFinding: findings are insertet to tempCQpot
+      ## setFinding: findings are inserted to tempCQpot
       object$tempCQpot      <- .insertFinding(nodes, states, object$tempCQpot, object$rip)   
       object$isInitialized  <- FALSE
       
@@ -82,8 +79,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
       
       ## Set finding slot
       class(ev)<-"grainFinding"
-      object$finding <- ev
-      
+      object$finding <- ev      
       if (object$control$timing)
         cat("Time: enter finding", proc.time()-t0, "\n")
       
@@ -140,7 +136,9 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
 
   .resetgrain <- function(xxx){
     ## retractFinding: equilCQpot is reset to origCQpot
-    xxx$equilCQpot       <- xxx$origCQpot
+    #xxx$equilCQpot    <- xxx$origCQpot
+    xxx$tempCQpot    <- xxx$origCQpot
+    xxx$equilCQpot   <- .insertNA(xxx$equilCQpot)
     xxx$finding       <- NULL
     xxx$isInitialized <- TRUE
     xxx
@@ -158,19 +156,29 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
   if (length(idx)>0){
     newevnodes  <- evnodes[-idx]
     newevstates <- evstates[-idx]
-    
+
+##     cat(sprintf("newevnodes=%s\n", toString(newevnodes)))
+##     cat(sprintf("newevstates=%s\n", toString(newevstates)))
+##     print(querygrain(object,'x1',type='marginal'))
+
     object <- .resetgrain(object)
 
+##     print(querygrain(object,'x1',type='marginal'))
+    
     if (length(newevnodes)>0){
       object <- setFinding(object, nodes=newevnodes, states=newevstates, propagate=FALSE)
     }
   }
 
+##   print(querygrain(object,'x1',type='marginal'))
+  
   if (propagate){
     object<-propagate(object)
   } else {
     object$isPropagated <- FALSE
   }
+
+  #print(querygrain(object,'x1',type='marginal'))
   return(object)
 }      
 
