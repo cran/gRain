@@ -27,6 +27,16 @@
 \alias{splitVec.default}
 \alias{splitVec.list}
 
+
+\alias{print.huginNet}
+\alias{print.cptable}
+\alias{print.CPTspec}
+\alias{print.grain}
+\alias{print.grainFinding}
+\alias{print.POTspec}
+% \alias{}
+% \alias{}
+% \alias{}
 %\alias{}
 
 \title{Internal functions for the gRain package}

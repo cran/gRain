@@ -1,8 +1,8 @@
 \name{compileCPT,compilePOT}
 \alias{compileCPT}
 \alias{compilePOT}
-\alias{print.CPTspec}
-\alias{print.POTspec}
+% \alias{print.CPTspec}
+% \alias{print.POTspec}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Compile conditional probability tables / cliques potentials.}
@@ -26,7 +26,12 @@ compilePOT(x)
   \code{compileCPT} returns a list of class 'cptspec'
   \code{compilePOT} returns a list of class 'potspec'
 }
-%\references{ ~put references to the literature/web site here ~ }
+\references{
+  Søren Højsgaard (2012). Graphical Independence Networks with the
+  gRain Package for R. Journal of Statistical Software, 46(10), 1-26.
+  \url{http://www.jstatsoft.org/v46/i10/}.
+}
+
 \author{Søren Højsgaard, sorenh at mail dot dk}
 %\note{ ~~further notes~~ 
 %

@@ -1,3 +1,13 @@
+2012-02-27 Søren Højsgaard <sorenh@mail.dk>	
+
+	* Following request from Achim Zeilis, the package version has
+	been changed to 1.0-0 to signal that the JSS-paper has been
+	published.
+
+	* URLs updated
+
+	* Version 1.0-0 uploaded
+	
 2012-02-21 Søren Højsgaard <sorenh@mail.dk>	
 
 	* Bug related to resetting network fixed

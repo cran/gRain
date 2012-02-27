@@ -30,7 +30,7 @@ flush(stderr()); flush(stdout())
 
 ### Name: cptable
 ### Title: Create conditional probability tables (CPTs)
-### Aliases: cptable print.cptable
+### Aliases: cptable
 ### Keywords: models
 
 ### ** Examples
@@ -54,9 +54,8 @@ flush(stderr()); flush(stdout())
 
 ### Name: grain
 ### Title: Graphical Independence Network
-### Aliases: grain print.grain grain.CPTspec grain.POTspec grain.graphNEL
-###   nodeNames nodeStates nodeNames.grain nodeStates.grain plot.grain
-###   iplot.grain
+### Aliases: grain grain.CPTspec grain.POTspec grain.graphNEL nodeNames
+###   nodeStates nodeNames.grain nodeStates.grain plot.grain iplot.grain
 ### Keywords: models
 
 ### ** Examples
@@ -147,7 +146,7 @@ flush(stderr()); flush(stdout())
 ### Name: querygrain
 ### Title: Query an independence network
 ### Aliases: querygrain querygrain.grain setFinding retractFinding
-###   getFinding pFinding print.grainFinding
+###   getFinding pFinding
 ### Keywords: models utilities
 
 ### ** Examples

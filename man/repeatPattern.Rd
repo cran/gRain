@@ -37,9 +37,12 @@ repeatPattern(plist, instances, unlist = TRUE)
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 %}
-%\references{
-%% ~put references to the literature/web site here ~
-%}
+\references{
+  Søren Højsgaard (2012). Graphical Independence Networks with the
+  gRain Package for R. Journal of Statistical Software, 46(10), 1-26.
+  \url{http://www.jstatsoft.org/v46/i10/}.
+}
+
 \author{
   Søren Højsgaard, sorenh@mail.dk
 }
