@@ -1,6 +1,6 @@
 \name{cptable}
 \alias{cptable}
-\alias{print.cptable}
+%\alias{print.cptable}
 %- Also NEED an '\alias' for EACH other topic documented here.
 
 \title{Create conditional probability tables (CPTs)}
@@ -41,10 +41,15 @@ cptable(v, levels=NULL, values = NULL, normalize = TRUE, smooth = 0)
   If no  \code{gmData} object is given, then
   'cpt' returns an object of class 'cptTemplate'. 
 
-  'compileCPT' returns an object of class 'cptspec' (which is just a list
-  with a special class attribute).
+  'compileCPT' returns an object of class 'cptspec' (which is just a
+  list with a special class attribute).
 }
-%\references{ ~put references to the literature/web site here ~ }
+\references{
+  Søren Højsgaard (2012). Graphical Independence Networks with the
+  gRain Package for R. Journal of Statistical Software, 46(10), 1-26.
+  \url{http://www.jstatsoft.org/v46/i10/}.
+}
+
 \author{Søren Højsgaard, sorenh at mail dot dk}
 %\note{ ~~further notes~~ %
 %
