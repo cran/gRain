@@ -7,13 +7,10 @@
 }
 \description{
   Probability propagation in graphical independence networks,
-  also known as probabilistic expert
-systems (which includes Bayesian networks).
+  (also known as probabilistic expert or  Bayesian networks).
 }
 \details{
   This package implements graphical independence networks.
-  
-  The package is still at an experimental stage.
 
   The main function for building networks is \code{\link{grain}}.
   
@@ -24,17 +21,20 @@ systems (which includes Bayesian networks).
   \code{\link{predict.grain}} are available.
 
   There is a small vignette which illustrates the use of gRain.
-
-  A paper describing gRain is under preparation
 }
 \author{
 Søren Højsgaard <sorenh at mail dot dk>
 
 Maintainer: Søren Højsgaard <sorenh at mail dot dk>
 }
-%\references{
-%~~ Literature or other references for background information ~~
-%}
+
+\references{
+  Søren Højsgaard (2012). Graphical Independence Networks with the
+  gRain Package for R. Journal of Statistical Software, 46(10), 1-26.
+  \url{http://www.jstatsoft.org/v46/i10/}.
+}
+
+
 %~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
 
 \keyword{ package }
