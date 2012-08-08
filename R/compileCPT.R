@@ -1,4 +1,5 @@
-compileCPT <- function(x){
+compileCPT <- function(x, forceCheck=TRUE, details=0){
+
   parseit <- function(xi){
     if (is.array(xi))
       cls <- "array"
@@ -11,7 +12,8 @@ compileCPT <- function(x){
              vparlev <- valueLabels(xi)
              vlev    <- vparlev[[1]]
              values  <- as.numeric(xi)
-             tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values, normalize="first", smooth=0)
+             tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values,
+                             normalize="first", smooth=0)
            },
            "cptable"={
              vpar <- xi$vpa
@@ -26,43 +28,52 @@ compileCPT <- function(x){
              vparlev <- dimnames(xi)
              vlev    <- vparlev[[1]]
              values  <- as.numeric(xi)
-             tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values, normalize="first", smooth=0)
+             tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values,
+                             normalize="first", smooth=0)
            })
     return(tmp)
   }
-  
+
   xxx <- lapply(x, parseit)
-  
+
   vnamList <- lapply(xxx, "[[", "vnam")
+  vparList <- lapply(xxx, "[[", "vpar")
+  vn       <- as.vector(unlist(vnamList))
   vlevList <- lapply(xxx, "[[", "vlev")
   names(vlevList) <- vnamList
-  
-  ans <- vector("list", length(vnamList))      
+  ans      <- vector("list", length(vnamList))      
+  vn        <- c(vnamList, recursive=TRUE)
+  di        <- c(lapply(vlevList, length), recursive=TRUE)
+  names(di) <- vn
 
-  vn <- as.vector(unlist(vnamList))
-  ##   cat("Nodes:\n");  print(vn)
-  
+
+  ## FIXME: Can be parallelized
+  if (details>=1) cat(". creating probability tables ...\n")  
   for (ii in 1:length(vnamList)){    
     vpar <- xxx[[ii]]$vpar
     lev  <- vlevList[vpar]
     val  <- xxx[[ii]]$values
-    #cat(sprintf("v,pa(v): %s\n", toString(vpar)))
-    #str(lev)
+    if(details>=2)
+      if (ii %% 1000 == 0)
+        cat(sprintf(".. ii = %6i, v,pa(v): %s\n", ii, toString(vpar)))
 
-    mm <- match(vpar, vn)
-    isna <- is.na(mm)
-    if (any(isna)){
-      sss <- sprintf("compileCPT: Distribution not specified for node(s)\n %s \n", toString(vpar[which(isna)]))
-      stop(sss, call.=FALSE)
+    if (forceCheck){
+      mm <- match(vpar, vn)
+      isna <- is.na(mm)
+      if (any(isna)){
+        sss <- sprintf("compileCPT: Distribution not specified for node(s)\n %s \n",
+                       toString(vpar[which(isna)]))
+        stop(sss, call.=FALSE)
+      }
+      
+      if (prod(c(lapply(lev, length),recursive=TRUE)) != length(val)){
+        cat(sprintf("Error for v,pa(v): %s\n", toString(vpar)))
+        str(lev)
+        str(val)
+        stop("Table dimensions do not match!")
+      }
     }
     
-    if (prod(c(lapply(lev, length),recursive=TRUE)) != length(val)){
-      cat(sprintf("Error for v,pa(v): %s\n", toString(vpar)))
-      str(lev)
-      str(val)
-      stop("Table dimensions do not match!")
-    }
-
     ans[[ii]] <-
       parray(vpar, 
              values    = val, 
@@ -70,24 +81,25 @@ compileCPT <- function(x){
              smooth    = xxx[[ii]]$smooth, 
              levels    = lev)
   }
-  
-  vparList <- lapply(xxx, "[[", "vpar")
-  valList  <- lapply(xxx, "[[", "values")
-  
-  dg <- dagList(vparList)
-  if (is.null(dg)){
+
+
+  if (details>=1) cat(". creating dag and checking for acyclicity...\n")
+
+  dg  <- dagList(vparList)
+  dgM <- as(as(dg, "Matrix"),"dgCMatrix") #dagList(vparList, result="Matrix")
+
+  oo <- sp_topoSort(dgM)
+  if (oo[1]==-1)
     stop("Graph defined by the cpt's is not acyclical...\n");
-  }
-  
-  vn <- c(vnamList, recursive=TRUE)
-  di <- c(lapply(vlevList, length), recursive=TRUE)
-  names(di) <- vn
-  
+
   attributes(ans) <- list(names=vn,
                           nodes=vn,
                           levels=vlevList,
+                          vparList=vparList,
                           nlev=di,
-                          dag=dg)  ## FIXME: nodes can be removed!
+                          dag=dg,
+                          dagM=dgM ## Sparse matrix DAG
+                          )  ## FIXME: nodes can be removed!
   class(ans) <- "CPTspec"
   return(ans)
 }
@@ -120,7 +132,6 @@ compilePOT <- function(x){
   return(ans)
 }
 
-
 print.CPTspec <- function(x,...){
   cat("CPTspec with probabilities:\n")
   lapply(x,
@@ -133,6 +144,24 @@ print.CPTspec <- function(x,...){
            }
          })
   return(invisible(x))
+}
+
+summary.CPTspec <- function(object,...){
+  print(object)
+  cat(sprintf("attributes:\n %s\n", toString(names(attributes(object)))))
+  cat(sprintf("names:\n %s \n", toString(attributes(object)$names)))
+  cat(sprintf("nodes:\n %s \n", toString(attributes(object)$nodes)))
+  cat(sprintf("levels: \n"))
+  str(attributes(object)$levels)
+  cat(sprintf("vparList: \n"))
+  str(attributes(object)$vparList)
+  cat(sprintf("nlev: \n"))
+  str(attributes(object)$nlev)
+  cat(sprintf("dag: \n"))
+  print(attributes(object)$dag)
+  cat(sprintf("dagM: \n"))
+  print(attributes(object)$dagM)
+  return(invisible(object))
 }
 
 print.POTspec <- function(x,...){
