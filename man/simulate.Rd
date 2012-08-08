@@ -27,7 +27,7 @@
   \url{http://www.jstatsoft.org/v46/i10/}.
 }
 
-\author{Søren Højsgaard, sorenh at mail dot dk}
+\author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
 %\note{ ~~further notes~~ 
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~

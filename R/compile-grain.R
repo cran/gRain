@@ -11,23 +11,23 @@ compile.grain <-
            control=object$control, details=0,...){
     t00 <-  proc.time()
     
-    ##cat("compile.cpt-grain\n")
-    ## FIXME: Do we need elimination order???
-    ##
+    #cat("compile.cpt-grain\n")
+        
+### FIXME: Do we need elimination order???
     t0 <- proc.time()
-    elorder <- .eliminationOrder(object$dag)  
-    if (!is.null(control$timing) && control$timing)
-      cat("Time: elimination order:", proc.time()-t0,"\n")
+##     elorder <- .eliminationOrder(object$dag)  
+##     if (!is.null(control$timing) && control$timing)
+##       cat("Time: elimination order:", proc.time()-t0,"\n")
+    elorder <- NULL
     
-    ## Moralize DAG
-    ##
+    
+### Moralize DAG
     t0   <- proc.time()
     mdag <- moralize(object$dag)
     if (!is.null(control$timing) && control$timing)
       cat("Time: moralize:", proc.time()-t0,"\n")
     
-    ## Add edges between variables in 'root' to the moralized graph    
-    ##
+### Add edges between variables in 'root' to the moralized graph    
     if (!is.null(root) && length(root)>1){
       rootEdges <- combn(root,2)
       for (jj in 1:ncol(rootEdges)){
@@ -36,8 +36,7 @@ compile.grain <-
       }
     }  
     
-    ## Triangulate graph and create rooted junction tree
-    ##
+### Triangulate graph and create rooted junction tree
     t0    <- proc.time()
     vn    <- nodes(mdag)
     nlev  <- object$universe$nlev[vn]
@@ -45,23 +44,35 @@ compile.grain <-
     rip   <- rip(ug, nLevels = nlev)
     if (!is.null(control$timing) && control$timing)
       cat("Time: triangulate:", proc.time()-t0,"\n")
+
+    ## After this point all we really need is rip, cptlist
+        
+### Sparse version of it all
+##     mdagM <- moralizeMAT(object$dagM)
+##     if (!is.null(root) && length(root)>1){      
+##       vn <- object$universe$nodes
+##       dn <- dimnames(mdagM)    
+##       ft <- names2pairs(match(root, vn),sort=FALSE, result="matrix")
+##       ft <- rbind(ft,ft[,2:1,drop=FALSE])      
+##       mdagM <- sp_setXtf1(mdagM, ft)
+##       dimnames(mdagM) <- dn
+##     }
+##     ugM   <- triangulateMAT(mdagM, nlevels=nlev)
+##     ripM  <- ripMAT(ugM, nLevels = nlev)
     
-    ## Insert potentials
-    ##  
+### Insert potentials
     t0 <- proc.time()
-    pot.with.1   <- .defaultPotentialList(rip,object$universe)     
+    pot.with.1   <- .defaultPotentialList(rip, object$universe)     
     origCQpot    <- tempCQpot <- .insertCpt(object$cptlist, pot.with.1, rip, details)
     equilCQpot   <- .insertNA(pot.with.1)
     
     if (!is.null(control$timing) && control$timing)
       cat("Time: Insert cpt into potentials:", proc.time()-t0,"\n") 
     
-    ## Add junction tree to object
-    ##
+### Create junction tree object
     jt <- .createJTreeGraph(rip)
     
-    ## Collect results
-    ##
+### Collect results
     ans      <- list(rip         = rip,
                      jt          = jt,
                      ug          = ug,
@@ -70,8 +81,7 @@ compile.grain <-
                      origCQpot   = origCQpot, 
                      mdag        = mdag,
                      elorder     = elorder,
-                     details     = details )
-    
+                     details     = details )    
     ans        <- c(object, ans)
     class(ans) <- class(object)
     
@@ -83,7 +93,7 @@ compile.grain <-
     ## Propagate if asked to
     if (propagate){
       .infoPrint(details, 1, cat (".Initializing network\n"))
-      ans             <- propagate(ans)
+      ans <- propagate(ans)
     }  
     return(ans)
   }
@@ -92,15 +102,15 @@ compile.grain <-
   function(object, method="mcwh", propagate=FALSE, root=NULL, smooth=0,
            control=object$control, details=0,...) {
     t00 <-  proc.time()
-
+    
     ## NOTICE: the compiled object will contain a dag and a cptlist.
     ## These are not used for any calculations; only used for saving
     ## the network in Hugin format...
     
-    ## Add junction tree to object
+### Create junction tree object
     jt <- .createJTreeGraph(object$rip)
     
-    ## Collect results
+### Collect results
     ans      <- list(jt          = jt,
                      tempCQpot   = object$equilCQpot,
                      origCQpot   = object$equilCQpot, 
@@ -108,8 +118,7 @@ compile.grain <-
                      elorder     = mcs(object$ug),
                      details     = details )
 
-    object$equilCQpot   <- .insertNA(object$equilCQpot)
-    
+    object$equilCQpot   <- .insertNA(object$equilCQpot)   
     object$details <- NULL
     ans            <- c(object, ans)
     ans$isCompiled <- TRUE
@@ -152,26 +161,6 @@ compile.grain <-
            xxx[] <- NA
            xxx})
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

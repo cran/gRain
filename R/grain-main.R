@@ -46,13 +46,13 @@ grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
 grain.CPTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
   ##cat("grain.CPTspec\n")
   control  <- .setControl(control)
-  att      <- attributes(x)
-  dag      <- att$dag
-  universe <- att[c("nodes","levels","nlev")]
-  ans  <- c(list(universe    = universe,
+  ans  <- c(list(#universe    = universe,
+                 universe    = attributes(x)[c("nodes","levels","nlev")],
                  data        = data,
-                 nodes       = unname(nodes(dag)),
-                 dag         = dag,
+                 #nodes       = unname(nodes(dag)), ## already in universe
+                 #dag         = att$dag,                 
+                 dag         = attributes(x)$dag,  
+                 dagM         = attributes(x)$dagM,  ## Large networks
                  cptlist     = c( x )),
             .setExtraComponents(control, details))
 
@@ -70,11 +70,13 @@ grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...
     stop("Data must be an array or a dataframe\n")
   
   switch(edgemode(x), 
-         "directed"   = { ## Call grain.CPTspec
+         "directed"   = {
+           ##cat("Call grain.CPTspec\n")
            ans <- grain(compileCPT(extractCPT(data, x, smooth=smooth)),
                         data=data, control=control, details=details)           
          },
-         "undirected" = { ## Call grain.POTspec
+         "undirected" = {
+           ##cat("Call grain.POTspec\n")
            ans <- grain(compilePOT(extractPOT(data, x, smooth=smooth)),
                         data=data, control=control, details=details)
          })

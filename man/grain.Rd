@@ -48,7 +48,7 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
   \url{http://www.jstatsoft.org/v46/i10/}.
 }
 
-\author{Søren Højsgaard, sorenh at mail dot dk}
+\author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
 \note{
   There are two methods for displaying networks: 'plot' and 'iplot'.
   
@@ -69,8 +69,7 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 }
 \examples{
 
-%% Asia (chest clinique) example 
-%%
+## Asia (chest clinique) example:
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
 t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
@@ -80,43 +79,50 @@ b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
 e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
 x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-
-
 plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 pn <- grain(plist)
 pn
-
 summary(pn)
 plot(pn)
+pnc <- compile(pn, propagate=TRUE)
+
+## If we want to query the joint distribution of the disease nodes,
+## computations can be speeded up by forcing these nodes to be in
+## the same clique of the junction tree:
+
+pnc2 <- compile(pn, root=c("lung", "bronc", "tub"), propagate=TRUE)
+
+system.time({
+  for (i in 1:200) 
+    querygrain(pnc, nodes=c("lung","bronc", "tub"), type="joint")})
+system.time({
+  for (i in 1:200) 
+    querygrain(pnc2, nodes=c("lung","bronc", "tub"), type="joint")})
 
 
-%% Create network from gmData (with data) and graph specification.
-%% There are different ways:
-%%
+## Create network from gmData (with data) and graph specification.
+## There are different ways:
 data(HairEyeColor)
 d   <- HairEyeColor
-dag <- dagList(list(~Hair, ~Eye+Hair, ~Sex+Hair))
-class(dag)
-ug <- ugList(list(~Eye+Hair, ~Sex+Hair))
-class(ug)
+daG <- dagList(list(~Hair, ~Eye:Hair, ~Sex:Hair))
+class(daG)
+uG <- ugList(list(~Eye:Hair, ~Sex:Hair))
+class(uG)
 
-%% Create directly from dag
-%%
-b1  <- grain(dag,d)
+## Create directly from dag:
+b1  <- grain(daG,d)
 class(b1)
 
-%% 3) Build model from undirected (decomposable) graph
-b3  <- grain(ug,d)
+## Build model from undirected (decomposable) graph
+b3  <- grain(uG,d)
 class(b3)
 
-%% Simple example - one clique only in triangulated graph
-%%
+## Simple example - one clique only in triangulated graph:
 plist <- compileCPT(list(a, t.a))
 pn <- grain(plist)
 querygrain(pn)
 
-%% Simple example - disconnected network
-%% 
+## Simple example - disconnected network:
 plist <- compileCPT(list(a, t.a, s))
 pn <- grain(plist)
 querygrain(pn)

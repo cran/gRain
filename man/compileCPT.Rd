@@ -1,6 +1,8 @@
 \name{compileCPT,compilePOT}
 \alias{compileCPT}
+\alias{summary.CPTspec}
 \alias{compilePOT}
+
 % \alias{print.CPTspec}
 % \alias{print.POTspec}
 
@@ -11,13 +13,16 @@
   preprocessing step for creating a graphical independence network
 }
 \usage{
-compileCPT(x)
+compileCPT(x, forceCheck=TRUE, details=0)
 compilePOT(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{To \code{compileCPT} x is a list of conditional probability
     tables; to \code{compilePOT}, x is a list of clique potentials}
+  \item{forceCheck}{Controls if consistency checks of the probability
+    tables should be made.}
+  \item{details}{Controls amount of print out. Mainly for debugging purposes}
 }
 % \details{
 %   ~~ If necessary, more details than the description above ~~
@@ -32,7 +37,7 @@ compilePOT(x)
   \url{http://www.jstatsoft.org/v46/i10/}.
 }
 
-\author{Søren Højsgaard, sorenh at mail dot dk}
+\author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
 %\note{ ~~further notes~~ 
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~

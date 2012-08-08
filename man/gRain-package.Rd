@@ -23,9 +23,9 @@
   There is a small vignette which illustrates the use of gRain.
 }
 \author{
-Søren Højsgaard <sorenh at mail dot dk>
+Søren Højsgaard \email{sorenh@math.aau.dk}
 
-Maintainer: Søren Højsgaard <sorenh at mail dot dk>
+Maintainer: Søren Højsgaard \email{sorenh@math.aau.dk}
 }
 
 \references{
