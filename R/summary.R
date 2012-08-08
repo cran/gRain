@@ -8,7 +8,7 @@ summary.grain <- function(object, type='std', ...){
     getFinding(object)
   
   cat(" Nodes :")
-  utils::str(object$nodes)
+  utils::str(object$universe$nodes)
   
   if (object$isCompiled){
     rip <- object$rip

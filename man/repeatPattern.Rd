@@ -43,9 +43,7 @@ repeatPattern(plist, instances, unlist = TRUE)
   \url{http://www.jstatsoft.org/v46/i10/}.
 }
 
-\author{
-  Søren Højsgaard, sorenh@mail.dk
-}
+\author{  Søren Højsgaard, \email{sorenh@math.aau.dk}} 
 %\note{
 %%  ~~further notes~~
 %}

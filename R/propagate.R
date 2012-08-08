@@ -12,7 +12,7 @@ propagate.grain <- function(object, details=object$details, ...){
   
   if (!is.null(getFinding(object))){
     ev <- getFinding(object)
-    attr(ev,"pFinding")<- pFinding(object)
+    attr(ev, "pFinding") <- pFinding(object)
     object$finding <- ev    
   }     
   if (object$control$timing){
@@ -85,7 +85,7 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
         if (length(seps[[ch[jj]]])>0){
           .infoPrint2(details, 2, "Marg onto sep %i: {%s}\n", ch[jj], .colstr(seps[[ch[jj]]]))
           septab            <- tableMargin(APlist[[ii]], seps[[ch[jj]]])
-          APlist[[ch[jj]]] <- tableOp2(APlist[[ch[jj]]], septab, `*`) 
+          APlist[[ch[jj]]]  <- tableOp2(APlist[[ch[jj]]], septab, `*`) 
           .infoPrint(details, 4, { cat("Marginal:\n"); print (septab) })          
         }
       }

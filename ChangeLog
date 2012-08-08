@@ -1,4 +1,18 @@
-2012-02-27 Søren Højsgaard <sorenh@mail.dk>	
+2012-08-04 Søren Højsgaard <sorenh@math.aau.dk>	
+
+	* Minimum version of gRbase stated.
+
+	* Updates of e-mail address
+	
+	* Version 1.0-2 uploaded
+	
+2012-07-27 Søren Højsgaard <sorenh@math.aau.dk>	
+
+	* Minor changes needed to make gRain compatible with gRbase
+	
+	* Version 1.0-1 uploaded
+	
+2012-02-27 Søren Højsgaard <sorenh@math.aau.dk>	
 
 	* Following request from Achim Zeilis, the package version has
 	been changed to 1.0-0 to signal that the JSS-paper has been
@@ -8,25 +22,25 @@
 
 	* Version 1.0-0 uploaded
 	
-2012-02-21 Søren Højsgaard <sorenh@mail.dk>	
+2012-02-21 Søren Højsgaard <sorenh@math.aau.dk>	
 
 	* Bug related to resetting network fixed
 	
 	* Version 0.8.14 uploaded
 
-2012-02-17 Søren Højsgaard <sorenh@mail.dk>	
+2012-02-17 Søren Højsgaard <sorenh@math.aau.dk>	
 
 	* Bug in setFinding fixed
 	
 	* Version 0.8.13 uploaded
 
-2012-01-17 Søren Højsgaard <sorenh@mail.dk>	
+2012-01-17 Søren Højsgaard <sorenh@math.aau.dk>	
 	
 	* Small changes to package structure
 
 	* Version 0.8.12 uploaded
 
-2012-01-17 Søren Højsgaard <sorenh@mail.dk>	
+2012-01-17 Søren Højsgaard <sorenh@math.aau.dk>	
 
 	* argument 'return' to querygrain is changed to 'result'.
 
@@ -34,7 +48,7 @@
 	
 	* Version 0.8.11 uploaded
 	
-2011-12-30 Søren Højsgaard <sorenh@mail.dk>	
+2011-12-30 Søren Højsgaard <sorenh@math.aau.dk>	
 
 	* Bug in simulate fixed. Thanks to Vanessa Didelez for pointing
 	this bug out. 
