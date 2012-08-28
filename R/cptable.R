@@ -1,14 +1,9 @@
-cptable <- function(v, levels=NULL, values=NULL,
-                normalize=TRUE,
-                smooth=0                
-                ){
-
-#  vpa  <- c(.formula2char(v),.formula2char(pa))
+cptable <- function(v, levels=NULL, values=NULL, normalize=TRUE,  smooth=0 ){
+  
   vpa  <- c(.formula2char(v))
   ans  <- list(vpa=vpa, values=values, normalize=normalize, smooth=smooth, levels=levels)
   class(ans) <- "cptable"
-  return(ans)
-
+  ans
 }
 
 print.cptable <- function(x,...){
@@ -19,8 +14,42 @@ print.cptable <- function(x,...){
   return(invisible(x))
 }
 
+ortable <- function(v, pa1=c(TRUE,FALSE), pa2=c(TRUE,FALSE), levels ){
+
+  vpa <- c(.formula2char(v))
+
+  if (length(vpa)!=3)
+    stop("Must have exactly two parents!")
+  lpa1 <- length(pa1)
+  lpa2 <- length(pa2)
+  z <- rep(pa1,lpa2) | rep(pa2,each=lpa1)
+  pp <- array(c(z, !z),c(2,lpa2,lpa1))
+  values <- as.numeric(aperm(pp, c(3,1,2)))
+  ans <- list(vpa=vpa, values=values, normalize=FALSE, smooth=0, levels=levels)
+  class(ans) <- "cptable"
+  return(ans)
+}
 
 
+
+andtable <- function(v, pa1=c(TRUE,FALSE), pa2=c(TRUE,FALSE), levels ){
+
+  vpa <- c(.formula2char(v))
+
+  if (length(vpa)!=3)
+    stop("Must have exactly two parents!")
+  lpa1 <- length(pa1)
+  lpa2 <- length(pa2)
+  z    <- rep(pa1,lpa2) & rep(pa2,each=lpa1)
+  pp   <- array(c(z, !z),c(2,lpa2,lpa1))
+  values    <- as.numeric(aperm(pp, c(3,1,2)))
+  ans       <- list(vpa=vpa, values=values, normalize=FALSE, smooth=0, levels=levels)
+  class(ans) <- "cptable"
+  return(ans)
+}
+
+
+## FIXME is .cptable ever used ??
 .cptable <- function(v, values=NULL,
                 gmData=NULL, 
                 normalize=TRUE,
@@ -28,10 +57,7 @@ print.cptable <- function(x,...){
                 levels=NULL
                 ){
 
-#  vpa <- c(.formula2char(v),.formula2char(pa))
-  vpa <- c(.formula2char(v))
-
-  
+  vpa  <- c(.formula2char(v))  
   nvpa <- length(vpa)
 
   if (!is.null(gmData)){
@@ -39,10 +65,9 @@ print.cptable <- function(x,...){
     if (any(is.na(uuu)))
       stop("Nodes {",paste(vpa[is.na(uuu)],collapse=','), "} do not exist in gmData\n")
     levels <- valueLabels(gmData)[vpa]
-    ans    <- parray(vpa, levels, values, smooth=smooth,
+    ans    <- parray(vpa, levels=levels, values=values, smooth=smooth,
                      normalize=if (normalize) "first" else "none")  
   } else {
-
     if (!inherits(levels,"list")){
       dn        <- vector("list",nvpa)
       names(dn) <- vpa 
@@ -52,19 +77,19 @@ print.cptable <- function(x,...){
     } else {
       dn <- levels
     }
-    dims <- unlistPrim(lapply(dn,length))
-    
-    vl <- prod(dims)
+    dims <- unlistPrim(lapply(dn,length))    
+    vl   <- prod(dims)
     if (length(values) >1 && length(values) > vl) {
-      stop(sprintf("length of 'values' (%i) exceeds array dimension (%i) \n", length(values), vl))
+      stop(sprintf("length of 'values' (%i) exceeds array dimension (%i) \n",
+                   length(values), vl))
     }
-
+    
     values <- rep(values, length.out = vl)
-    ans <- parray(vpa, levels=dn, values=values, smooth=smooth,
-                  normalize=if (normalize) "first" else "none")
-
+    ans    <- parray(vpa, levels=dn, values=values, smooth=smooth,
+                     normalize=if (normalize) "first" else "none")
+    
   }
-  return(ans)
+  ans
 }
 
 
