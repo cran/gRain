@@ -1,5 +1,5 @@
 Package: gRain
-Version: 1.0-2
+Version: 1.0-3
 Title: Graphical Independence Networks
 Author: Søren Højsgaard <sorenh@math.aau.dk>
 Maintainer: Søren Højsgaard <sorenh@math.aau.dk>
@@ -12,6 +12,6 @@ Imports: graph
 Suggests: Rgraphviz
 URL: http://people.math.aau.dk/~sorenh/software/gR/
 Encoding: latin1
-Packaged: 2012-08-08 10:36:43 UTC; sorenh
+Packaged: 2012-08-28 12:42:14 UTC; sorenh
 Repository: CRAN
-Date/Publication: 2012-08-08 11:34:25
+Date/Publication: 2012-08-28 14:45:34
