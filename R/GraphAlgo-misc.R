@@ -1,5 +1,4 @@
 
-
 .ug2dag <- function(ug){
   m <- mcs(ug)
   if (length(m)==0)

@@ -6,7 +6,8 @@
 
 ## Represent list of sets in a matrix...
 ##
-.as.setmat <- function(glist,vn=unique(unlist(glist))){
+## FIXME glist2setMAT could go to gRbase with a matrix/Matrix argument
+glist2setMAT <- function(glist,vn=unique(unlist(glist))){
   amat <- matrix(0, nrow=length(glist), ncol = length(vn))
   colnames(amat) <- vn
   
@@ -14,21 +15,6 @@
     amat[i, glist[[i]]] <- 1
   }
   amat
-}
-
-
-.formula2char <- function(x){
-  if (class(x)=="formula"){
-    ## In principle all this can be replaced by all.vars(); but I am not sure if
-    ## all.vars() is guaranteed to preserve order.
-    x2 <- deparse(x)
-    x2 <- gsub("~","",x2)
-    x2 <- unlist(strsplit(x2,"[~\\+\\|]"))
-    x2 <- gsub(" +","",x2)
-    x2
-  } else {
-    x
-  }
 }
 
 .formula2char <- function(f) {

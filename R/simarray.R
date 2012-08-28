@@ -1,29 +1,32 @@
 
 ## Simulate n observations from the array x conditional on
 ## the variables in margin (a vector of indices) takes values
-## given by index
+## given by margin.value
 ##
-.simarray <- function(x, n=1, margin, index){
+
+## FIXME simulateArray could go to gRbase
+simulateArray <- function(x, nsim=1, margin, value.margin){
   if(missing(margin)) {
-      r <- NULL
-      dr<-dim(x)
-      cnames <- names(dimnames(x))
+    rhs       <- NULL
+    lhs.dim   <- dim(x)
+    lhs.names <- names(dimnames(x))
   } else { 
-    r <- margin
-    o <- (1:length(dim(x)))[-r]
-    dr <- (dim(x))[o]
-    cnames <- names(dimnames(x))[-r]
+    rhs       <- margin
+    idx       <- (1:length(dim(x)))[-rhs]
+    lhs.dim   <- (dim(x))[idx]
+    lhs.names <- names(dimnames(x))[-rhs]
   }
-  p <- tableSlice(x, r, index)
-  ##print(p); print(r); print(index)
-  samp <- sample(length(p),n,TRUE,p)
-  ##print(cnames)
-  ldr <-length(dr)
-  cp  <-cumprod(c(1,dr[-ldr]))
-  res <-matrix(0,n,ldr)
-  for(j in 1:n)
-    res[j,] <- 1+((samp[j]-1)%/%cp)%%dr
-  colnames(res) <- cnames
+  ##cat(sprintf("rhs=%s, lhs.dim=%s, lhs.names=%s\n",
+  ##            toString(rhs), toString(lhs.dim), toString(lhs.names)))
+  llhs.dim <- length(lhs.dim)
+  pp   <- tableSlice(x, margin=rhs, level=value.margin)
+  ##print(pp)
+  samp <- sample(length(pp), size=nsim, replace=TRUE, prob=pp)
+  ##print(samp)
+  cp   <- cumprod(c(1, lhs.dim[-llhs.dim]))
+  res  <- matrix(0, nrow=nsim, ncol=llhs.dim)
+  for(j in 1:nsim)
+    res[j,] <- 1+( (samp[j]-1) %/% cp ) %% lhs.dim
+  colnames(res) <- lhs.names
   res
 }
-

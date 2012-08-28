@@ -34,7 +34,7 @@
   
   cli    <- rip$cliques
   lencli <- length(cli)
-  amat   <- .as.setmat(cli,vn=rip$nodes)
+  amat   <- glist2setMAT(cli,vn=rip$nodes)
   
   for (ii in 1:length(cptlist))
     {

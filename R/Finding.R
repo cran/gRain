@@ -21,7 +21,7 @@ print.grainFinding <- function(x, ...){
 
 setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE){
 
-  ##  cat("setFinding\n")
+###cat("setFinding\n")
   if (!object$isCompiled){
     ##cat("setFinding: Compiling model ...\n")
     object <- compile(object)
@@ -33,14 +33,12 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     states  <- flist2[,2]
   }
 
+###print(nodes); print(states)
   len            <- length(nodes)
 
   if (len>0){
-  
-    netNodes       <- object$nodes 
-    currFinding    <- getFinding(object)
-    
-    
+    netNodes       <- nodeNames(object)# object$universe$nodes 
+    currFinding    <- getFinding(object)        
     for (i in 1:len){
       ev1   <- nodes[i]; 
       if (!(ev1 %in% netNodes)){
@@ -53,6 +51,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     ##
     nodes  <- nodes[!is.na(states)]
     states <- states[!is.na(states)]
+### print(nodes); print(states)
     
     ## Drop nodes which are already given evidence in the network
     ##
@@ -101,7 +100,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
   cli <- rip$cliques
 
   ## Note: perhaps create amat globally 
-  amat <- .as.setmat(cli,vn=rip$nodes)
+  amat <- glist2setMAT(cli,vn=rip$nodes)
   
   for (i in 1:length(nodes)){
     currn <- nodes[i]
