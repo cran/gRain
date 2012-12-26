@@ -33,8 +33,10 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
       ctab <- plist[[ii]]
       vn   <- names(dimnames(ctab)) 
       sp   <- splist[[ii]] ## What we condition on
-      mtab <- tableMargin(ctab, sp)     
-      ctab <- tableOp2(ctab, mtab, `/`) 
+      if (length(sp)>0){
+        mtab <- tableMargin(ctab, sp)                   
+        ctab <- tableOp2(ctab, mtab, `/`)
+      }
       rr   <- setdiff(vn, sp) ## Variables to be simulated
       ##cat("r:", rr, "s:", sp, "\n")    
       if (length(sp)){
@@ -61,17 +63,27 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   }
 
   ns <- nodeStates(object)
-
-  ans <- as.data.frame(ans)
-  vn <- names(ans)
-  
+  vn <- colnames(ans)
+  aaa <- vector("list", ncol(ans))
+  names(aaa) <- vn
   for (jj in 1:ncol(ans)){
-    match(vn[jj], names(ns))
-    ans[,jj] <- factor(ans[,jj], levels=seq(ns[[jj]]))
-    levels(ans[,jj]) <- ns[[jj]]
+    aaa[[jj]] <- factor(ans[,jj], levels=seq(ns[[jj]]))
+    levels(aaa[[jj]]) <- ns[[jj]]
   }
+  aaa <- as.data.frame(aaa)
+  names(aaa) <- vn
+  aaa
+  
+##   ans <- as.data.frame(ans) 
+##   vn <- names(ans)
+  
+##   for (jj in 1:ncol(ans)){
+##     #match(vn[jj], names(ns))
+##     ans[,jj] <- factor(ans[,jj], levels=seq(ns[[jj]]))
+##     levels(ans[,jj]) <- ns[[jj]]
+##   }
 
-  return(ans)
+  #return(ans)
 }
 
 

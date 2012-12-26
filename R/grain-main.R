@@ -23,17 +23,35 @@ grain <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
   UseMethod("grain")
 }
 
+## A list of cpt's
+##
+grain.CPTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
+  ##cat("grain.CPTspec\n")
+  control  <- .setControl(control)
+  ans  <- c(list(universe    = attr(x, "universe"),
+                 data        = data,
+                 dag         = attr(x, "dag"),    ## FIXME: We carry this info...
+
+                 cptlist     = c( x ),
+                 dagM        = attributes(x)$dagM  ## Large networks
+                 ),
+            .setExtraComponents(control, details))
+
+  class(ans) <- c("cpt-grain","grain")
+  return(ans)
+}
+
 grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
   ## cat("grain.POTspec\n")
   control  <- .setControl(control)
-  universe <- attributes(x)[c("nodes","levels","nlev")]
-  ans  <- c(list(universe    = universe,
+  ans  <- c(list(universe    = attr(x, "universe"),
                  data        = data,
-                 equilCQpot= c(x),  
-                 nodes       = unname(nodes(attr(x, "ug"))),
-                 ug          = attr(x, "ug"),
                  dag         = attr(x, "dag"),    ## FIXME: We carry this info...
+
+                 equilCQpot  = c(x),  
                  cptlist     = attr(x, "cptlist"),
+
+                 ug          = attr(x, "ug"),
                  rip         = attr(x, "rip")
                  ),
             .setExtraComponents(control, details))
@@ -41,27 +59,15 @@ grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
   ans
 }
 
-## A list of cpt's
-##
-grain.CPTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
-  ##cat("grain.CPTspec\n")
-  control  <- .setControl(control)
-  ans  <- c(list(#universe    = universe,
-                 universe    = attributes(x)[c("nodes","levels","nlev")],
-                 data        = data,
-                 #nodes       = unname(nodes(dag)), ## already in universe
-                 #dag         = att$dag,                 
-                 dag         = attributes(x)$dag,  
-                 dagM         = attributes(x)$dagM,  ## Large networks
-                 cptlist     = c( x )),
-            .setExtraComponents(control, details))
 
-  class(ans) <- c("cpt-grain","grain")
-  return(ans)
-}
+
+
+
+
 
 ## A graph + data (wrappers for calling grain.POTspec and grain.CPTspec)
 ##
+## FIXME: Ikke nok at checked om edgemode()="directed"; hvis alle kanter er bidirected går det galt...
 grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
 
   if (missing(data))
@@ -82,6 +88,10 @@ grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...
          })
   return(ans)
 }
+
+
+
+
 
 ## Printing grain
 ##

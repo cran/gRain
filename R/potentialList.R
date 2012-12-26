@@ -12,6 +12,25 @@
   APlist
 }
 
+.defaultPotentialList <- function(rip.order, universe){
+  cli     <- rip.order$cliques
+  APlist <- as.list(rep(NA,length(cli)))
+  for (ii in 1:length(cli))
+    {
+      cc    <- cli[[ii]]
+      vlab  <- universe$levels[cc]
+##       print(cc); print(vlab)
+##       ccc <<- cc
+##       vvv <<- vlab
+      
+      APlist[[ii]] <- parray(cc, vlab)
+    }
+  APlist
+}
+
+
+
+
 ## Create potential list (cliques, gmData)
 ##
 .createPotentialList <- function(rip, gmd){

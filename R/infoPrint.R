@@ -5,6 +5,9 @@
   }
 }
 
+.infoPrint <- function(details, limit=1, ...,  prefix='.'){}
+
+
 .infoPrint2 <- function(details, limit=1, fmt, ...,  prefix='.'){
   if (details>=limit)
     cat(paste(paste(rep(prefix, limit), collapse=''),  sprintf(fmt, ...), collapse=' '))

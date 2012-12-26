@@ -1,5 +1,18 @@
 2012-08-21 Søren Højsgaard <sorenh@math.aau.dk>	
 
+	* In moralization, triangulation and other places, graphs are now
+	represented as sparse matrices (dgCMatrix from the Matrix
+	package). This means that the package can now handle much larger
+	networks than before. 
+
+	* Substantial speedup in propagation for large networks.
+
+	* Function random_cpt added. Allows simulation of large networks.
+	
+	* Version 1.1-0 uploaded	
+
+2012-08-21 Søren Højsgaard <sorenh@math.aau.dk>	
+
 	* Bug fixed in setFindings
 	
 	* Version 1.0-3 uploaded

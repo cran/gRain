@@ -98,6 +98,17 @@ nodeJoint <- function(object, set=NULL, normalize=TRUE,details=1){
 
 nodeMarginal <- function(object, set=NULL,details=1){
 
+  .get_host <- function(cvert, cli){
+    for (ii in 1:length(cli)){
+      if (subsetof(cvert, cli[[ii]])){
+        return(ii)
+      }
+    }
+  }
+
+  .get_host2 <- function(cvert, cli) which(isin(cli, cvert, index=TRUE)>0)[1]
+
+  
   #cat("CHK: nodeMarginal\n")
   ## querygrain - nodeMarginal: Calculations based on equilCQpot
   equilCQpot  <- object$equilCQpot
@@ -114,23 +125,21 @@ nodeMarginal <- function(object, set=NULL,details=1){
   #print(nodes)
   nodes <- setdiff(nodes, getFinding(object)$nodes)
 
-
-  
   if (length(nodes)>0){
     cli    <- rip$cliques
-    mtablist <- as.list(rep(NA, length(nodes)))
+    mtablist <- vector("list",length(nodes))
+
+    names(mtablist) <- nodes
     for (i in 1:length(nodes)){
       cvert  <- nodes[i]
-      idxall <- which(sapply(cli, function(x) subsetof(cvert,x)))
-      idx    <- idxall[1]
+      ##       idx <- which(sapply(cli, function(x) subsetof(cvert,x)))[1]
+      idx    <- .get_host2(cvert, cli)
       ## querygrain - nodeMarginal: Calculations based on equilCQpot
       cpot   <- equilCQpot[[idx]]
-      ##print(cpot)
       mtab   <- tableMargin(cpot, cvert)
       mtab   <- mtab/sum(mtab)
       mtablist[[i]] <- mtab
     }
-    names(mtablist) <- nodes
     return(mtablist)
   } 
 }

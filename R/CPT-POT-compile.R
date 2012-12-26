@@ -1,51 +1,16 @@
 compileCPT <- function(x, forceCheck=TRUE, details=0){
 
-  parseit <- function(xi){
-    if (is.array(xi))
-      cls <- "array"
-    else
-      cls <- class(xi)[1]
-    switch(cls,
-           "parray"={
-             vpar <- varNames(xi)
-             vn   <- vpar[1]
-             vparlev <- valueLabels(xi)
-             vlev    <- vparlev[[1]]
-             values  <- as.numeric(xi)
-             tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values,
-                             normalize="first", smooth=0)
-           },
-           "cptable"={
-             vpar <- xi$vpa
-             vn   <- vpar[1]
-             vlev <- xi$levels
-             tmp  <- list(vnam=vn, vlev=vlev, vpar=vpar, values=xi$values,
-                          normalize=if (xi$normalize) "first" else "none", smooth=xi$smooth)
-           },
-           "array"={
-             vpar    <- names(dimnames(xi))
-             vn      <- vpar[1]
-             vparlev <- dimnames(xi)
-             vlev    <- vparlev[[1]]
-             values  <- as.numeric(xi)
-             tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values,
-                             normalize="first", smooth=0)
-           })
-    return(tmp)
-  }
-
-  xxx <- lapply(x, parseit)
+  xxx <- lapply(x, .parse.cpt)
 
   vnamList <- lapply(xxx, "[[", "vnam")
   vparList <- lapply(xxx, "[[", "vpar")
-  vn       <- as.vector(unlist(vnamList))
+  vn       <- as.vector(unlist(vnamList)) ## ???
   vlevList <- lapply(xxx, "[[", "vlev")
   names(vlevList) <- vnamList
-  ans      <- vector("list", length(vnamList))      
+  ans       <- vector("list", length(vnamList))      
   vn        <- c(vnamList, recursive=TRUE)
   di        <- c(lapply(vlevList, length), recursive=TRUE)
   names(di) <- vn
-
 
   ## FIXME: Can be parallelized
   if (details>=1) cat(". creating probability tables ...\n")  
@@ -58,56 +23,48 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
         cat(sprintf(".. ii = %6i, v,pa(v): %s\n", ii, toString(vpar)))
 
     if (forceCheck){
-      mm <- match(vpar, vn)
-      isna <- is.na(mm)
-      if (any(isna)){
+      mm   <- match(vpar, vn)
+      if (any(is.na(mm))){
         sss <- sprintf("compileCPT: Distribution not specified for node(s)\n %s \n",
-                       toString(vpar[which(isna)]))
+                       toString(vpar[which(is.na(mm))]))
         stop(sss, call.=FALSE)
       }
-      
       if (prod(c(lapply(lev, length),recursive=TRUE)) != length(val)){
         cat(sprintf("Error for v,pa(v): %s\n", toString(vpar)))
-        str(lev)
-        str(val)
-        stop("Table dimensions do not match!")
+        str(lev);  str(val); stop("Table dimensions do not match!")
       }
     }
     
-    ans[[ii]] <-
-      parray(vpar, 
-             values    = val, 
-             normalize = xxx[[ii]]$normalize,
-             smooth    = xxx[[ii]]$smooth, 
-             levels    = lev)
+    ans[[ii]] <- parray(vpar, 
+                        values    = val, 
+                        normalize = xxx[[ii]]$normalize,
+                        smooth    = xxx[[ii]]$smooth, 
+                        levels    = lev)
   }
-
 
   if (details>=1) cat(". creating dag and checking for acyclicity...\n")
 
   dg  <- dagList(vparList)
-  dgM <- as(as(dg, "Matrix"),"dgCMatrix") #dagList(vparList, result="Matrix")
 
-  oo <- sp_topoSort(dgM)
+  ## Check for acyclicity
+  dgM <- as(dg, "Matrix")
+  oo  <- sp_topoSort(dgM)
   if (oo[1]==-1)
     stop("Graph defined by the cpt's is not acyclical...\n");
 
-  attributes(ans) <- list(names=vn,
-                          nodes=vn,
-                          levels=vlevList,
-                          vparList=vparList,
-                          nlev=di,
-                          dag=dg,
-                          dagM=dgM ## Sparse matrix DAG
-                          )  ## FIXME: nodes can be removed!
+  universe <- list(nodes = vn, levels = vlevList, nlev   = di)
+  attributes(ans) <- list(universe = universe,                          
+                          dag      = dg,
+                          vparList = vparList)  
   class(ans) <- "CPTspec"
   return(ans)
 }
 
 compilePOT <- function(x){
 
+  ## FIXME: compilePOT: Need sparse matrid too
   uug <- ugList(lapply(x, function(a) names(dimnames(a))))
-  if (length(mcs(uug))==0)
+  if (!is.TUG(uug))
     stop("Graph defined by potentals is not triangulated...\n")
   
   lll     <- unlist(lapply(x, dimnames),recursive=FALSE)
@@ -118,19 +75,35 @@ compilePOT <- function(x){
   di      <- c(lapply(levels, length), recursive=TRUE)
   names(di) <- vn
   ans       <- x
-  attributes(ans) <- list(nodes  = vn,
-                          levels = levels,
-                          nlev   = di,
+  universe  <- list(nodes = vn, levels = levels, nlev   = di)
+  attributes(ans) <- list(universe=universe,
+                          dag    = attr(x, "dag"),                          
                           ug     = uug,
-                          dag    = attr(x, "dag"),
+                          ## carry over from extractPOT:
                           cptlist= attr(x, "cptlist"),
-                          rip    = attr(x, "rip")
-                          )
-  ## FIXME: nodes can be removed!
-  ## FIXME: We carry dag+cptlist here (created in extractPOT); maybe not so elegant.
+                          rip    = attr(x, "rip"))
   class(ans) <- "POTspec"
   return(ans)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 print.CPTspec <- function(x,...){
   cat("CPTspec with probabilities:\n")
@@ -174,3 +147,40 @@ print.POTspec <- function(x,...){
   
   return(invisible(x))
 }
+
+
+
+.parse.cpt <- function(xi){
+  if (is.array(xi))
+    cls <- "array"
+  else
+    cls <- class(xi)[1]
+  switch(cls,
+         "parray"={
+           vpar    <- varNames(xi)
+           vn      <- vpar[1]
+           vparlev <- valueLabels(xi)
+           vlev    <- vparlev[[1]]
+           values  <- as.numeric(xi)
+           tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values,
+                           normalize="first", smooth=0)
+         },
+         "cptable"={
+           vpar    <- xi$vpa
+           vn      <- vpar[1]
+           vlev    <- xi$levels
+           tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=xi$values,
+                           normalize=if (xi$normalize) "first" else "none", smooth=xi$smooth)
+         },
+         "array"={
+           vpar    <- names(dimnames(xi))
+           vn      <- vpar[1]
+           vparlev <- dimnames(xi)
+           vlev    <- vparlev[[1]]
+           values  <- as.numeric(xi)
+           tmp     <- list(vnam=vn, vlev=vlev, vpar=vpar, values=values,
+                           normalize="first", smooth=0)
+         })
+  return(tmp)
+}
+
