@@ -33,8 +33,10 @@
 \alias{print.grain}
 \alias{print.grainFinding}
 \alias{print.POTspec}
-% \alias{}
-% \alias{}
+
+\alias{random_cpt}
+\alias{random_dag}
+
 % \alias{}
 %\alias{}
 
