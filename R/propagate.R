@@ -26,11 +26,13 @@ propagate.grain <- function(object, details=object$details, ...){
 
 propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
 
+##  details=2
   .infoPrint(details, 1, cat(".Propagating BN: [propagateLS]\n"))
 
   cliq   <- rip$cliques
   seps   <- rip$separators
   pa     <- rip$parent
+  childList  <- rip$childList
   ncliq  <- length(cliq)
 
   ## FIXME: This is a hack introduced because RIP now returns 0 as the
@@ -73,12 +75,22 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
   
   ## Forward propagation (distribute evidence) away from root of junction tree
   ##
+  .mywhich <- function(x, idx=seq_along(x)){
+    idx[x]
+  }
+
+
+  
+##   print(child)
+##   print(ch.list)
+  
   .infoPrint(details,2,cat("..FORWARD:\n"))
   t0 <- proc.time()
   for (ii in 1:ncliq){
     .infoPrint2(details, 2, "Clique %d: {%s}\n", ii, .colstr(cliq[[ii]]))
-    ch <- which(pa[-1]==ii)+1
-
+##     ch <- which(pa[-1]==ii)+1
+##     cat(sprintf("ii=%3d, ch=%s\n", ii, toString(ch)))
+    ch <- childList[[ii]]
     if (length(ch)>0){
       .infoPrint2(details,2, "..Children: %s\n", .colstr(ch))
       for (jj in 1:length(ch)){
