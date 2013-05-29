@@ -1,9 +1,10 @@
 pkgname <- "gRain"
 source(file.path(R.home("share"), "R", "examples-header.R"))
 options(warn = 1)
+options(pager = "console")
 library('gRain')
 
-assign(".oldSearch", search(), pos = 'CheckExEnv')
+base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 cleanEx()
 nameEx("andtable")
 ### * andtable
@@ -35,12 +36,26 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 
-yn <- c("yes","no")
-ynm <- c("yes","no","maybe")
-a    <- cptable(~asia, values=c(1,99),levels=yn)
-t.a  <- cptable(~tub+asia, values=c(5,95,1,99,1,999),levels=ynm)
-d.a  <- cptable(~dia+asia, values=c(5,5,1,99,100,999),levels=ynm)
-compileCPT(list(a,t.a,d.a))
+yn   <- c("yes","no")
+ynm  <- c("yes","no","maybe")
+a    <- cptable( ~ asia, values=c(1,99), levels=yn)
+t.a  <- cptable( ~ tub : asia, values=c(5,95,1,99,1,999),  levels=ynm)
+d.a  <- cptable( ~ dia : asia, values=c(5,5,1,99,100,999), levels=ynm)
+cptlist <- compileCPT(list(a,t.a,d.a))
+grain(cptlist)
+
+## Example: Specifying conditional probabilities as a matrix
+bayes.levels  <- c('Enzyme', 'Keratine', 'unknown')
+root.node     <- cptable( ~R, values=c( 1, 1, 1 ), levels=bayes.levels)
+cond.prob.tbl <- t(matrix( c( 1, 0, 0, 0, 1, 0, 0.5, 0.5, 0 ),
+   nrow=3, ncol=3, byrow=TRUE, dimnames=list(bayes.levels, bayes.levels)))
+cond.prob.tbl
+## Notice above: Columns represent parent states; rows represent child states
+query.node    <- cptable( ~ Q | R, values=cond.prob.tbl, levels=bayes.levels )
+sister.node   <- cptable( ~ S | R, values=cond.prob.tbl, levels=bayes.levels )
+## Testing 
+compile(grain(compileCPT(list( root.node, query.node, sister.node ))), propagate=TRUE)
+
 
 
 
@@ -61,7 +76,7 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 
-## Asia (chest clinique) example:
+## Asia (chest clinic) example:
 
 ## Version 1) Specify conditional probability tables.
 yn <- c("yes","no")
@@ -79,7 +94,9 @@ q1 <- querygrain(pn1)
 
 ## Version 2) Specify DAG and data
 data(chestSim100000, package="gRbase")
-dgf   <- ~asia + tub * asia + smoke + lung * smoke + bronc * smoke + either * tub * lung + xray * either + dysp * bronc * either
+dgf   <- ~asia + tub * asia + smoke + lung * smoke +
+         bronc * smoke + either * tub * lung +
+         xray * either + dysp * bronc * either
 dg    <- dag(dgf)
 pp    <- extractCPT(chestSim100000, dg)
 cpp2  <- compileCPT(pp)
@@ -118,7 +135,7 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 
-## Asia (chest clinique) example:
+## Asia (chest clinic) example:
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
 t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
@@ -310,7 +327,8 @@ flush(stderr()); flush(stdout())
 
 ### * <FOOTER>
 ###
-cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
+options(digits = 7L)
+base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
 grDevices::dev.off()
 ###
 ### Local variables: ***

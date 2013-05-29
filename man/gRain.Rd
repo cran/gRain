@@ -69,7 +69,7 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 }
 \examples{
 
-## Asia (chest clinique) example:
+## Asia (chest clinic) example:
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
 t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)

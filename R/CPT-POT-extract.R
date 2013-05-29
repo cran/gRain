@@ -1,6 +1,6 @@
 extractCPT <- function(x, graph, smooth=0){
-  if (!inherits(x, c("data.frame","table")))
-    stop("'x' must be a dataframe or a table")      
+  if (!inherits(x, c("data.frame","table", "xtabs")))
+    stop("'x' must be one of dataframe, table, xtabs")      
   if (!inherits(graph, "graphNEL"))
     stop("'graph' must be a graphNEL object")
   if (!is.DAG(graph))
@@ -9,20 +9,15 @@ extractCPT <- function(x, graph, smooth=0){
   V   <- nodes(graph) 
   vpa <- vpar(graph)[V]
 
-  if (class(x)=="data.frame"){
+  if (class(x)[1]=="data.frame"){
     ans <- lapply(vpa, function(ss){xtabs(~., data=x[, ss, drop=FALSE])})
   } else {
     ans <- lapply(vpa, function(ss){tableMargin(x, ss)})    
   }
-
+  
   ans <- lapply(ans, as.parray, normalize="first", smooth=smooth)
   ans
 }
-
-
-## FIXME: We also create dag+cptlist here because we need these to be
-## able to save the network in Hugin format.
-## Not sure whether this should be made here in the future
 
 extractPOT <- function(x, graph, smooth=0){
   if (!inherits(x, c("data.frame","table")))
@@ -35,24 +30,22 @@ extractPOT <- function(x, graph, smooth=0){
   rr  <- rip(graph)
 
   if (class(x)=="data.frame"){
-    ans <- .extractPotentialDataFrame(x, rr$cliques, rr$sep, smooth=smooth)
+    ans <- .extractPOT_dataframe(x, rr$cliques, rr$sep, smooth=smooth)
   } else {
-    ans <- .extractPotentialTable(x, rr$cliques, rr$sep, smooth=smooth)
+    ans <- .extractPOT_table(x, rr$cliques, rr$sep, smooth=smooth)
   }
+
+  attr(ans, "rip")     <- rr
 
   dg 	  <- .ug2dag(graph)
   cptlist <- extractCPT(x, dg, smooth=smooth)
-  attr(ans, "dag")     <- dg
-  attr(ans, "cptlist") <- cptlist
-  attr(ans, "rip")     <- rr
+  attr(ans, "dag")     <- dg        ## Needed to save network in Hugin format
+  attr(ans, "cptlist") <- cptlist   ## Needed to save network in Hugin format
+
   ans 
-  
 }
 
-
-
-
-.extractPotentialTable <- function(x, cliq, seps=NULL, smooth=0){
+.extractPOT_table <- function(x, cliq, seps=NULL, smooth=0){
   ans <- vector("list", length(cliq))
   for (ii in seq_along(cliq)){
     cq    <- cliq[[ii]]
@@ -69,7 +62,7 @@ extractPOT <- function(x, graph, smooth=0){
   ans
 }
 
-.extractPotentialDataFrame <- function(x, cliq, seps=NULL, smooth=0){
+.extractPOT_dataframe <- function(x, cliq, seps=NULL, smooth=0){
   ans <- vector("list", length(cliq))
   for (ii in seq_along(cliq)){
     cq   <- cliq[[ii]]
@@ -87,74 +80,3 @@ extractPOT <- function(x, graph, smooth=0){
   }
   ans
 }
-
-## extractCPT <- function(x, graph, V=nodes(graph), smooth=0){
-##   UseMethod("extractCPT")
-## }
-
-
-## ## FIXME: Skal bruge is.DAG isf. edgemode
-## extractCPT.table <- function(x, graph, V=nodes(graph), smooth=0){
-##   if (!identical(edgemode(graph), "directed"))
-##     stop("Graph must be directed\n")
-##   vpa <- vpar(graph)[V]
-  
-##   ans <- lapply(vpa, function(s) tableMargin(x, s))
-
-##   ans <- lapply(ans, as.parray, normalize="first", smooth=smooth)
-##   return(ans)
-## }
-
-## ## FIXME: Skal bruge is.DAG isf. edgemode
-## extractCPT.data.frame <- function(x, graph, V=nodes(graph), smooth=0){
-##   if (!identical(edgemode(graph), "directed"))
-##     stop("Graph must be directed\n")
-##   vpa <- vpar(graph)[V]
-##   ans <- lapply(vpa,
-##                 function(ss){
-##                   xtabs(~., data=x[, ss, drop=FALSE])
-##                 })
-##   ans <- lapply(ans, as.parray, normalize="first", smooth=smooth)
-##   return(ans)
-## }
-
-## extractPOT <- function(x, graph, smooth=0){
-##   UseMethod("extractPOT")
-## }
-
-## extractPOT.table <- function(x, graph, smooth=0){
-
-##   if (!identical(edgemode(graph), "undirected"))
-##     stop("Graph must be undirected\n")
-##   if (length(mcs(graph))==0)
-##     stop("Notice: graph is not triangulated\n")
-  
-##   rr  <- rip(graph)
-  
-##   ans <- .extractPotentialTable(x, rr$cliques, rr$sep, smooth=smooth)
-
-##   dg 	  <- .ug2dag(graph)
-##   cptlist <- extractCPT(x, dg, smooth=smooth)
-##   attr(ans, "dag")     <- dg
-##   attr(ans, "cptlist") <- cptlist
-##   attr(ans, "rip")     <- rr
-##   ans 
-## }
-
-## extractPOT.data.frame <- function(x, graph, smooth=0){
-##   if (!identical(edgemode(graph), "undirected"))
-##     stop("Graph must be undirected\n")
-##   if (length(mcs(graph))==0)
-##     stop("Notice: graph is not triangulated\n")
-
-##   rr  <- rip(graph)
-
-##   ans <- .extractPotentialDataFrame(x, rr$cliques, rr$sep, smooth=smooth)
-
-##   dg 	  <- .ug2dag(graph)
-##   cptlist <- extractCPT(x, dg, smooth=smooth)
-##   attr(ans, "dag")     <- dg
-##   attr(ans, "cptlist") <- cptlist
-##   attr(ans, "rip")     <- rr
-##   ans 
-## }

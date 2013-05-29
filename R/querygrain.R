@@ -18,23 +18,19 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
     return(invisible(NULL))
   
   if (!object$isCompiled){
-    #cat("CHK: Compiling (and propagating) model ...\n")
+    if (details>=1) cat("  Compiling (and propagating) model ...\n")
     object <- compile(object, propagate=TRUE)
   } else {
     if (!object$isPropagated){
-      #cat("CHK: Propagating model...\n")
+      if (details>=1) cat("  Propagating model...\n")
       object <- propagate(object)
     }
   }
 
-  #print(nodes)
-
   type = match.arg(type, choices=c("marginal","joint","conditional"))
-  #print(type)
   switch(type,
          "marginal"={
-           ans <- nodeMarginal(object, nodes, details)
-           #print(ans)
+           ans <- nodeMarginal(object, nodes, details) #;print(ans)
            if (result=="data.frame")
              ans <- lapply(ans, as.data.frame.table)
          },
@@ -47,26 +43,20 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
            qobject <- querygrain(object, nodes, type="joint", result="data.frame")
            nst     <- nodeStates(object)[nodes]
            ans     <- parray(nodes, nst, values=qobject$Freq, normalize="first") ## BRIS
-           
            if (result=="data.frame")
              ans <- as.data.frame.table(ans) ## BRIS
          })
   if (object$control$timing)
-    cat("Time: query", proc.time()-t0, "\n")
-  
+    cat("Time: query", proc.time()-t0, "\n")  
   ans
 }
-
-
 
 
 nodeJoint <- function(object, set=NULL, normalize=TRUE,details=1){
 
   if (is.null(set))
     set <- object$rip$nodes
-
   cli  <- object$rip$cliques
-
   idxb <- sapply(cli, function(d) subsetof(set, d))
   
   if (any(idxb)){
@@ -98,23 +88,13 @@ nodeJoint <- function(object, set=NULL, normalize=TRUE,details=1){
 
 nodeMarginal <- function(object, set=NULL,details=1){
 
-  .get_host <- function(cvert, cli){
-    for (ii in 1:length(cli)){
-      if (subsetof(cvert, cli[[ii]])){
-        return(ii)
-      }
-    }
-  }
-
   .get_host2 <- function(cvert, cli) which(isin(cli, cvert, index=TRUE)>0)[1]
-
-  
   #cat("CHK: nodeMarginal\n")
   ## querygrain - nodeMarginal: Calculations based on equilCQpot
   equilCQpot  <- object$equilCQpot
   rip      <- object$rip
   netnodes <- rip$nodes
-  
+
   if (is.null(set))
     nodes  <- netnodes
   else
@@ -126,14 +106,20 @@ nodeMarginal <- function(object, set=NULL,details=1){
   nodes <- setdiff(nodes, getFinding(object)$nodes)
 
   if (length(nodes)>0){
-    cli    <- rip$cliques
+    vn   <- rip$nodes
+    host <- .getHost(rip)
+    ## FIXME: When gRbase 1.6-9 is uploaded, the host should be
+    ## host <- rip$host
+    
     mtablist <- vector("list",length(nodes))
-
     names(mtablist) <- nodes
+    
     for (i in 1:length(nodes)){
       cvert  <- nodes[i]
       ##       idx <- which(sapply(cli, function(x) subsetof(cvert,x)))[1]
-      idx    <- .get_host2(cvert, cli)
+      ##      idx <- .get_host2(cvert, cli)
+      idx <- host[match(cvert, vn)]
+           
       ## querygrain - nodeMarginal: Calculations based on equilCQpot
       cpot   <- equilCQpot[[idx]]
       mtab   <- tableMargin(cpot, cvert)
@@ -144,7 +130,18 @@ nodeMarginal <- function(object, set=NULL,details=1){
   } 
 }
 
+## FIXME: When gRbase 1.6-9 is uploaded, .getHost is obsolete
+.getHost <- function(rip){
 
+    vn   <- rip$nodes
+    cli  <- rip$cliques    
+    host <- rep.int(0L, length(vn))
+    ll   <- lapply(cli, match, vn)
+    for (ii in seq_along(ll)){
+      host[ll[[ii]]] <- ii
+    }
+    host
+}
 
 
 

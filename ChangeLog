@@ -1,4 +1,13 @@
-2012-08-21 Søren Højsgaard <sorenh@math.aau.dk>	
+2013-05-28 Søren Højsgaard <sorenh@math.aau.dk>	
+	
+	* simulateArray and glist2setMAT moved to gRbase
+
+	* The use of fmatch from the fastmatch package has been removed
+	because it can create trouble when a network is saved and reloaded.
+	
+	* Version 1.1-1 uploaded		
+
+2012-12-28 Søren Højsgaard <sorenh@math.aau.dk>	
 
 	* In moralization, triangulation and other places, graphs are now
 	represented as sparse matrices (dgCMatrix from the Matrix
