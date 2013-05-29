@@ -20,13 +20,14 @@ predict.grain <- function(object, response, predictors=setdiff(names(newdata), r
 
   for (i in 1:nrow(newdata)){
     case      <- newdata[i,predictors, drop=FALSE]
+    ##     no <<- names(case)
+    ##     st <<- case
+    
     objecttmp1    <- setFinding(object, nodes=names(case), states=case)
-
     p.e       <- pFinding(objecttmp1)
-    #print(p.e)
-
-    if (p.e<1e-32){
-      cat(sprintf("Finding for row %i has probability 0 in then model. Exiting...\n", i))
+    if (p.e < .Machine$double.xmin){
+      cat(sprintf("The finding for row %i has probability smaller than %f in then model. Consider using the 'smooth' argument when building the network. Exiting...\n",
+                  i, .Machine$double.xmin))
       return(NULL)
     }
     

@@ -8,11 +8,11 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
   vlevList <- lapply(xxx, "[[", "vlev")
   names(vlevList) <- vnamList
   ans       <- vector("list", length(vnamList))      
+  names(ans)<- vn
   vn        <- c(vnamList, recursive=TRUE)
   di        <- c(lapply(vlevList, length), recursive=TRUE)
   names(di) <- vn
 
-  ## FIXME: Can be parallelized
   if (details>=1) cat(". creating probability tables ...\n")  
   for (ii in 1:length(vnamList)){    
     vpar <- xxx[[ii]]$vpar
@@ -21,7 +21,6 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
     if(details>=2)
       if (ii %% 1000 == 0)
         cat(sprintf(".. ii = %6i, v,pa(v): %s\n", ii, toString(vpar)))
-
     if (forceCheck){
       mm   <- match(vpar, vn)
       if (any(is.na(mm))){
@@ -33,26 +32,23 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
         cat(sprintf("Error for v,pa(v): %s\n", toString(vpar)))
         str(lev);  str(val); stop("Table dimensions do not match!")
       }
-    }
-    
+    } 
     ans[[ii]] <- parray(vpar, 
                         values    = val, 
                         normalize = xxx[[ii]]$normalize,
                         smooth    = xxx[[ii]]$smooth, 
                         levels    = lev)
   }
-
   if (details>=1) cat(". creating dag and checking for acyclicity...\n")
 
-  dg  <- dagList(vparList)
-
   ## Check for acyclicity
+  dg  <- dagList(vparList)
   dgM <- as(dg, "Matrix")
-  oo  <- sp_topoSort(dgM)
+  oo  <- topoSort(dgM) 
   if (oo[1]==-1)
     stop("Graph defined by the cpt's is not acyclical...\n");
-
-  universe <- list(nodes = vn, levels = vlevList, nlev   = di)
+  
+  universe        <- list(nodes = vn, levels = vlevList, nlev   = di)
   attributes(ans) <- list(universe = universe,                          
                           dag      = dg,
                           vparList = vparList)  
@@ -61,48 +57,28 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
 }
 
 compilePOT <- function(x){
-
-  ## FIXME: compilePOT: Need sparse matrid too
   uug <- ugList(lapply(x, function(a) names(dimnames(a))))
   if (!is.TUG(uug))
     stop("Graph defined by potentals is not triangulated...\n")
   
-  lll     <- unlist(lapply(x, dimnames),recursive=FALSE)
-  nnn     <- names(lll)
-  iii     <- match(unique(nnn), nnn)
-  levels  <- lll[iii]
-  vn      <- nnn[iii]
-  di      <- c(lapply(levels, length), recursive=TRUE)
+  lll       <- unlist(lapply(x, dimnames),recursive=FALSE)
+  nnn       <- names(lll)
+  iii       <- match(unique(nnn), nnn)
+  levels    <- lll[iii]
+  vn        <- nnn[iii]
+  di        <- c(lapply(levels, length), recursive=TRUE)
   names(di) <- vn
-  ans       <- x
   universe  <- list(nodes = vn, levels = levels, nlev   = di)
-  attributes(ans) <- list(universe=universe,
-                          dag    = attr(x, "dag"),                          
-                          ug     = uug,
-                          ## carry over from extractPOT:
-                          cptlist= attr(x, "cptlist"),
-                          rip    = attr(x, "rip"))
+  ans       <- x
+  attributes(ans) <- list(universe = universe,
+                          ug       = uug,
+                          rip      = attr(x, "rip"),      
+                          dag      = attr(x, "dag"),      ## Needed to save network in Hugin format
+                          cptlist  = attr(x, "cptlist"))  ## Needed to save network in Hugin format
+
   class(ans) <- "POTspec"
   return(ans)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 print.CPTspec <- function(x,...){
@@ -183,4 +159,5 @@ print.POTspec <- function(x,...){
          })
   return(tmp)
 }
+
 

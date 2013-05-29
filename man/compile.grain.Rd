@@ -1,7 +1,7 @@
 \name{compile.grain}
 \alias{compile.grain}
-\alias{compile.cpt-grain}
-\alias{compile.pot-grain}
+\alias{compile.CPTgrain}
+\alias{compile.POTgrain}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Compile a graphical independence network (a Bayesian network)}
@@ -10,18 +10,20 @@
   establishing clique potentials.
 }
 \usage{
-\method{compile}{grain}(object, method = "mcwh", propagate = FALSE, root = NULL, smooth = 0, control = object$control, details = 0, ...)
+\method{compile}{grain}(object, propagate = FALSE, root = NULL, control = object$control,
+details = 0, ...) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{A grain object }
-  \item{method}{Triangulation method. Currently only "mcwh" is available}
+  \item{object}{A grain object.}
+%  \item{method}{Triangulation method. Currently only "mcwh" (minimum
+%    clique weight heuristic) is available.}
   \item{propagate}{If TRUE the network is also propagated meaning that
     the cliques of the junction tree are calibrated to each other.}
   \item{root}{A set of variables which must be in the root of the
     junction tree}
-  \item{smooth}{If non-zero this value is added to all potentials (to
-    avoid zeros in the joint distribution)}
+%  \item{smooth}{If non-zero this value is added to all potentials (to
+%    avoid zeros in the joint distribution)}
   \item{control}{Controlling the compilation process. }
   \item{details}{For debugging info. Do not use.}
   \item{\dots}{Currently not used.}
@@ -30,7 +32,7 @@
 %   ~~ If necessary, more details than the description above ~~
 % }
 \value{
-  A compiled Bayesian network; an object of class \code{compgrain}.
+  A compiled Bayesian network; an object of class \code{grain}.
 }
 \references{
   Søren Højsgaard (2012). Graphical Independence Networks with the
@@ -42,7 +44,13 @@
 %\note{ ~~further notes~~ 
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
-\seealso{\code{\link{grain}}, \code{\link[gRbase]{propagate}} }
+\seealso{
+  \code{\link{grain}},
+  \code{\link[gRbase]{propagate}},
+  \code{\link[gRbase]{triangulate}},
+  \code{\link[gRbase]{rip}},
+  \code{\link[gRbase]{junctionTree}}  
+}
 %\examples{
 %}
 % Add one or more standard keywords, see file 'KEYWORDS' in the

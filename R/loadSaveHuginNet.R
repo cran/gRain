@@ -176,7 +176,7 @@ splitVec.default <- function(val, lev){
   readLines(con, n=1)
 }
 
-.hasToken  <- function(token, cline) {  ## FIXME Not used 
+.hasToken  <- function(token, cline) { 
   ##print(cline)
   cline <- gsub("^ +","",cline)
   a <- unlist(strsplit(cline," "))[1]

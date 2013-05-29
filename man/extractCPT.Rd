@@ -47,7 +47,7 @@ extractPOT(x, graph, smooth = 0)
 \seealso{\code{\link{compileCPT}}, \code{\link{compilePOT}}, \code{\link{grain}}}
 \examples{
 
-## Asia (chest clinique) example:
+## Asia (chest clinic) example:
 
 ## Version 1) Specify conditional probability tables.
 yn <- c("yes","no")
@@ -65,7 +65,9 @@ q1 <- querygrain(pn1)
 
 ## Version 2) Specify DAG and data
 data(chestSim100000, package="gRbase")
-dgf   <- ~asia + tub * asia + smoke + lung * smoke + bronc * smoke + either * tub * lung + xray * either + dysp * bronc * either
+dgf   <- ~asia + tub * asia + smoke + lung * smoke +
+         bronc * smoke + either * tub * lung +
+         xray * either + dysp * bronc * either
 dg    <- dag(dgf)
 pp    <- extractCPT(chestSim100000, dg)
 cpp2  <- compileCPT(pp)
