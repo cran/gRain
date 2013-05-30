@@ -15,9 +15,8 @@ propagate.grain <- function(object, details=object$details, ...){
     attr(ev, "pFinding") <- pFinding(object)
     object$finding <- ev    
   }     
-  if (object$control$timing){
-    cat("Time: propagation", proc.time()-t0, "\n")
-  }
+  .timing(" Time: propagation:", object$control, t0)
+
   return(object)
 }
 
@@ -29,13 +28,13 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
 ##  details=2
   .infoPrint(details, 1, cat(".Propagating BN: [propagateLS]\n"))
 
-  cliq   <- rip$cliques
-  seps   <- rip$separators
-  pa     <- rip$parent
+  cliq       <- rip$cliques
+  seps       <- rip$separators
+  pa         <- rip$parent
   childList  <- rip$childList
-  ncliq  <- length(cliq)
-
-  ## FIXME: This is a hack introduced because RIP now returns 0 as the
+  ncliq      <- length(cliq)
+  
+  ## This assignment is needed because RIP now returns 0 as the
   ## parent index for the first clique
   pa[pa==0]<-NA
 
@@ -55,9 +54,9 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
         APlist[[ii]]     <- tableOp2(cpot, septab, `/`)             
         APlist[[pa[ii]]] <- tableOp2(cpa,  septab, `*`) 
       } else{
-        zzz <- sum(cpot)
-        APlist[[1]]  <- APlist[[1]] * zzz
-        APlist[[ii]] <- cpot / zzz
+        zzz              <- sum(cpot)
+        APlist[[1]]      <- APlist[[1]] * zzz
+        APlist[[ii]]     <- cpot / zzz
       }
     }
   }
@@ -65,31 +64,23 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
   ## cat("propagateLS\n"); print(as.data.frame.table(APlist[[1]]))
   normConst <- sum(APlist[[1]]) ## ;print(normConst)
   
-  if (normConst==0){
+  if (normConst==0){ ## FIXME: What is this???
     attr(APlist, "pFinding") <- normConst
   }
 
-  if (initialize){
+  if (initialize){ ## FIXME: What is this???
     APlist[[1]] <- APlist[[1]]/normConst 
   }
   
   ## Forward propagation (distribute evidence) away from root of junction tree
   ##
-  .mywhich <- function(x, idx=seq_along(x)){
-    idx[x]
-  }
-
-
-  
-##   print(child)
-##   print(ch.list)
   
   .infoPrint(details,2,cat("..FORWARD:\n"))
   t0 <- proc.time()
   for (ii in 1:ncliq){
     .infoPrint2(details, 2, "Clique %d: {%s}\n", ii, .colstr(cliq[[ii]]))
-##     ch <- which(pa[-1]==ii)+1
-##     cat(sprintf("ii=%3d, ch=%s\n", ii, toString(ch)))
+    ##     ch <- which(pa[-1]==ii)+1
+    ##     cat(sprintf("ii=%3d, ch=%s\n", ii, toString(ch)))
     ch <- childList[[ii]]
     if (length(ch)>0){
       .infoPrint2(details,2, "..Children: %s\n", .colstr(ch))
