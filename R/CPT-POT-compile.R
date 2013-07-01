@@ -15,9 +15,9 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
 
   if (details>=1) cat(". creating probability tables ...\n")  
   for (ii in 1:length(vnamList)){    
-    vpar <- xxx[[ii]]$vpar
-    lev  <- vlevList[vpar]
-    val  <- xxx[[ii]]$values
+    vpar  <- xxx[[ii]]$vpar
+    lev   <- vlevList[vpar]
+    val   <- xxx[[ii]]$values
     if(details>=2)
       if (ii %% 1000 == 0)
         cat(sprintf(".. ii = %6i, v,pa(v): %s\n", ii, toString(vpar)))
@@ -33,11 +33,13 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
         str(lev);  str(val); stop("Table dimensions do not match!")
       }
     } 
+
     ans[[ii]] <- parray(vpar, 
                         values    = val, 
                         normalize = xxx[[ii]]$normalize,
                         smooth    = xxx[[ii]]$smooth, 
                         levels    = lev)
+    ##print(ans[[ ii ]])
   }
   if (details>=1) cat(". creating dag and checking for acyclicity...\n")
 

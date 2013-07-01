@@ -7,7 +7,7 @@
     object$cptlist <- args$cptlist
     if (object$isCompiled){
       pot.with.1   <- .defaultPotentialList(object$rip,object$universe)     
-      ## FIXME lav en .insert1 funktion og gør så:
+      ## FIXME Create .insert1 function and then do
       ## FIXME pot.with.1   <- .insert1(object$origCQpot)
       newCQpot            <- .insertCpt(args$cptlist, pot.with.1, object$rip, details=0)
       object$origCQpot    <- newCQpot
@@ -26,7 +26,6 @@
       object$isPropagated <- FALSE		
     }
   }
-
-  ## FIXME: pas på når objektet ikke er kompileret...
+  ## FIXME: careful if object is not compiled
   object
 }  
