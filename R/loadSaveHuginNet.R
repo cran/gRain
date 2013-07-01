@@ -2,18 +2,14 @@
 ## Reading / writing Bayesian networks from / to HUGIN net files
 ##
 
-
 loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
                          details=0){
 
-  xxx     <-.readHuginNet(file,details)
-  yyy     <-.transformHuginNet2internal(xxx)
-##   xx <<- xxx
-##   yy <<- yyy
+  xxx      <-.readHuginNet(file,details)
+  yyy      <-.transformHuginNet2internal(xxx)
   universe <- .asUniverse(yyy)
-##   uuu <<- universe
-  plist   <- lapply(yyy$potentialList, .hpot2cptable, universe)
-  value <- grain(compileCPT(plist))
+  plist    <- lapply(yyy$potentialList, .hpot2cptable, universe)
+  value    <- grain(compileCPT(plist))
   return(value)
 }
 
@@ -273,56 +269,29 @@ splitVec.default <- function(val, lev){
   nodeVar <- tmp[1]
   parentVar <- tmp[-1]
   
-##   tmp <- potSpec[-(1:(.tokenIdx("data", potSpec)-1))]
-##   pot <- NULL
-##   for (i in 1:length(tmp)){
-##     x <- tmp[i]
-##     x <- gsub(" *data *","", x)
-##     x <- gsub("\\%.*","", x)
-##     x <- gsub("\t","",x)
-##     x <- gsub(" *= *", "",x)
-##     x <- gsub("[\\(,\\),\\}]","", x)
-##     x <- gsub(";","",x)
-##     x <- unlist(strsplit(x," +"))
-##     x <- as.numeric(x[sapply(x,nchar)>0])
-##     pot <- c(pot,x)
-##   }
+  sss  <- paste(potSpec,collapse="") ##; ss <<- sss
+  sss2 <- gsub("^.*data[[:space:]]*=([^;]*);(.*)", "\\1", sss) ##; ss2<<-sss2
 
-  sss  <- paste(potSpec,collapse="")
-  sss2 <- gsub("^.*data[[:space:]]*=([^;]*);(.*)", "\\1", sss)
-  sss3 <- gsub("\\)[^\\)]*\\(", ") (", sss2)
+  ##sss3: ((( 0.5 1.2E-5 ) ( 3E3 0.5 )) ( 0.5 0.5 ) ( 0.5 0.5 )))
+  sss3 <- gsub("\\)[^\\)]*\\(", ") (", sss2) ##; ss3<<-sss3
 
-  sss4 <- gsub("[^[:digit:]|[:space:]|\\.]*", "", sss3)
+  ## sss4: "  0.5 1.2E-5   3E3 0.5   0.5 0.5   0.5 0.5 "s
+  sss4 <- gsub("[\\(,\\),\\}]","", sss3)
+
+  ## sss5: remove leading white space: "0.5 1.2E-5   3E3 0.5   0.5 0.5   0.5 0.5 "
   sss5 <- gsub("^[[:space:]]*","",sss4)
-  pot  <- as.numeric(strsplit(sss5, " +")[[1]])
+  ## sss6: remove trailing white space: "0.5 1.2E-5   3E3 0.5   0.5 0.5   0.5 0.5"
+  sss6 <- gsub("[[:space:]]$*","",sss5)
+  ## sss7: split to atoms
+  sss7 <- strsplit(sss6, " +")[[1]]
+
+  ###: Now create numerical values
+  pot <- as.numeric( sss7 )
   
   value <- list(nodeVar=nodeVar, parentVar=rev(parentVar), potential=pot)
   value
 }
 
-
-## print.huginNet <- function(x,...){
-##   cat ("Specfication of BN from HUGIN .net file\n")
-##   lapply(x$nodeList, function(d) 
-##          cat(paste(d$nodeVar, d$nodeLabel, paste(d$nodeStates, collapse=' ')),"\n")
-##          )
-  
-##   lapply(x$potentialList, function(d) 
-##          cat(paste(d$nodeVar, paste(d$parentVar, collapse=' '),
-##                    paste(d$potential, collapse=' ')),"\n")
-##          )
-##   x
-## }
-
-
-
-
-
-## print.huginNet <- function(x,...){
-##   cat("Internal representation of HUGIN net file:", x$description, "\n")
-##   cat("Class: ", class(x), "\n")
-##   cat("\nAvailable components:", paste(names(x), sep=' '), "\n")
-## }
 
 
 
