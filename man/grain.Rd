@@ -27,10 +27,12 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{An argument to build an independence network from.}
+  \item{x}{An argument to build an independence network from. Typically
+    a list of conditional probability tables, a DAG or an undirected
+    graph. In the two latter cases, data must also be provided.}
   \item{data}{An optional data set (currently must be an array/table)}
   \item{control}{A list defining controls, see 'details' below.}
-  \item{smooth}{A (usuall small) number to add to the counts of a table
+  \item{smooth}{A (usually small) number to add to the counts of a table
     if the grain is built from a graph plus a dataset.}
   \item{details}{Debugging information.}
   \item{...}{Additional arguments, currently not used.}
@@ -49,19 +51,23 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 }
 
 \author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
-\note{
-  There are two methods for displaying networks: 'plot' and 'iplot'.
+% \note{
+%   There are two methods for displaying networks: 'plot' and 'iplot'.
   
-  1) The 'plot' method uses the Rgraphviz package and this package requires
-  that the Graphviz program is installed. Installation of Rgraphviz and
-  Graphviz is not made automatically when gRain is installed.
+%   1) The 'plot' method uses the Rgraphviz package and this package requires
+%   that the Graphviz program is installed. Installation of Rgraphviz and
+%   Graphviz is not made automatically when gRain is installed.
 
-  2) The 'iplot' method uses the igraph package which is installed
-  automatically when gRain is installed. 
-}
+%   2) The 'iplot' method uses the igraph package which is installed
+%   automatically when gRain is installed. 
+% }
+
 \seealso{
   \code{\link{cptable}},
+  \code{\link{compile.grain}},
+  \code{\link{propagate.grain}},
   \code{\link{setFinding}},
+  \code{\link{setEvidence}},
   \code{\link{getFinding}},
   \code{\link{pFinding}},
   \code{\link{retractFinding}}
@@ -70,17 +76,17 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 \examples{
 
 ## Asia (chest clinic) example:
-yn <- c("yes","no")
-a    <- cptable(~asia, values=c(1,99),levels=yn)
-t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
-s    <- cptable(~smoke, values=c(5,5), levels=yn)
-l.s  <- cptable(~lung+smoke, values=c(1,9,1,99), levels=yn)
-b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
-e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
-x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
+yn   <- c("yes","no")
+a    <- cptable(~asia,              values=c(1,99), levels=yn)
+t.a  <- cptable(~tub+asia,          values=c(5,95,1,99), levels=yn)
+s    <- cptable(~smoke,             values=c(5,5), levels=yn)
+l.s  <- cptable(~lung+smoke,        values=c(1,9,1,99), levels=yn)
+b.s  <- cptable(~bronc+smoke,       values=c(6,4,3,7), levels=yn)
+e.lt <- cptable(~either+lung+tub,   values=c(1,0,1,0,1,0,0,1), levels=yn)
+x.e  <- cptable(~xray+either,       values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-pn <- grain(plist)
+pn    <- grain(plist)
 pn
 summary(pn)
 plot(pn)
@@ -105,27 +111,27 @@ system.time({
 data(HairEyeColor)
 d   <- HairEyeColor
 daG <- dagList(list(~Hair, ~Eye:Hair, ~Sex:Hair))
-class(daG)
+class( daG )
 uG <- ugList(list(~Eye:Hair, ~Sex:Hair))
-class(uG)
+class( uG )
 
 ## Create directly from dag:
-b1  <- grain(daG,d)
-class(b1)
+b1  <- grain( daG, d )
+class( b1 )
 
 ## Build model from undirected (decomposable) graph
-b3  <- grain(uG,d)
-class(b3)
+b3  <- grain( uG, d )
+class( b3 )
 
 ## Simple example - one clique only in triangulated graph:
-plist <- compileCPT(list(a, t.a))
-pn <- grain(plist)
+plist <- compileCPT( list(a, t.a) )
+pn <- grain( plist )
 querygrain(pn)
 
 ## Simple example - disconnected network:
-plist <- compileCPT(list(a, t.a, s))
-pn <- grain(plist)
-querygrain(pn)
+plist <- compileCPT( list(a, t.a, s) )
+pn <- grain( plist )
+querygrain( pn )
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

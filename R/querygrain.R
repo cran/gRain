@@ -1,16 +1,13 @@
 querygrain <- function(object,nodes=nodeNames(object), normalize=TRUE,
-                    type=c("marginal","joint","conditional"),
-                    result="array",
-                    details=0)
+                    type="marginal", result="array", details=0)
 {
   UseMethod("querygrain")
 }
 
 querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
-                               type=c("marginal","joint","conditional"),
-                               result="array",
-                               details=0){
+                               type="marginal", result="array", details=0){
 
+  type <- match.arg(type, c("marginal","joint","conditional"))
   result <- match.arg(result, c("array","data.frame"))
   t0 <- proc.time()
 

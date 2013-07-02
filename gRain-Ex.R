@@ -236,9 +236,9 @@ nameEx("querygrain")
 flush(stderr()); flush(stdout())
 
 ### Name: querygrain
-### Title: Query an independence network
+### Title: Set evidence and query a network
 ### Aliases: querygrain querygrain.grain setFinding retractFinding
-###   getFinding pFinding
+###   getFinding pFinding setEvidence
 ### Keywords: models utilities
 
 ### ** Examples
@@ -253,6 +253,39 @@ flush(stderr()); flush(stdout())
  lapply(qb, as.numeric) 
  sapply(qb, as.numeric) 
 
+ ## setFinding / setEvidence
+
+yn <- c("yes","no")
+a    <- cptable(~asia, values=c(1,99),levels=yn)
+t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
+s    <- cptable(~smoke, values=c(5,5), levels=yn)
+l.s  <- cptable(~lung+smoke, values=c(1,9,1,99), levels=yn)
+b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
+e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
+x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
+d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+chest <- grain(plist)
+
+
+ ## 1) These two forms are identical
+setEvidence(chest, c("asia","xray"), c("yes", "yes"))
+setFinding(chest, c("asia","xray"), c("yes", "yes"))
+
+## 2) Suppose we do not know with certainty whether a patient has
+## recently been to Asia. We can then introduce a new variable
+## "asia.guess" with "asia" as its only parent. Suppose
+## p(asia.guess=yes|asia=yes)=.8 and p(asia.guess=yes|asia=no)=.1
+## If the patient is e.g. unusually tanned we may set
+## asia.guess=yes and propagate. This corresponds to modifying the
+## model by the likelihood (0.8, 0.1) as
+setEvidence(chest, c("asia","xray"), list(c(0.8,0.1), "yes"))
+
+## 3) Hence, the same result as in 1) can be obtained with
+setEvidence(chest, c("asia","xray"), list(c(1, 0), "yes"))
+
+## 4) An alternative specification using nslist (node-state-list) is
+setEvidence(chest, nslist=list("asia"=c(1, 0), "xray"="yes"))
 
 
 
