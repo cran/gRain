@@ -13,12 +13,6 @@
 \usepackage{Sweave}
 
 
-% \usepackage{a4wide}
-% %\usepackage[T1]{fontenc}
-% \usepackage{inputenx}
-% \usepackage{boxedminipage,color}
-% %\usepackage[utf8]{inputenc}
-
 \SweaveOpts{prefix.string=figures/graph} 
 
 \def\pkg#1{\texttt{#1}}
@@ -209,12 +203,12 @@ options("prompt"="> ","width"=85)
 \subsection{Queries to networks}
 \label{sec:xxx}
 
-Suppose we are given the finding (evidence) that a set of variables $E\subset V$
-have a specific value $e^*$. For example that a person has recently visited
-Asia and suffers from dyspnoea, i.e.\ $\alpha=\mbox{yes}$ and
-$\delta=\mbox{yes}$.
+Suppose we are given the evidence (sometimes also called ``finding'')
+that a set of variables $E\subset V$ have a specific value $e^*$. For
+example that a person has recently visited Asia and suffers from
+dyspnoea, i.e.\ $\alpha=\mbox{yes}$ and $\delta=\mbox{yes}$.
 
-With this  finding, we are often interested in the
+With this evidence, we are often interested in the
 conditional distribution $p(v|E=e^*)$ for some of the variables $v \in
 V \setminus E$ or in $p(U|E=e^*)$ for a set $U\subset V
 \setminus E$. 
@@ -225,7 +219,7 @@ $p(\lambda,\tau,\beta|e^*)$.
 
 Interest might also be in
 calculating the probability of a specific event, e.g.\ the probability
-of seeing a specific finding, i.e.\ $p(E=e^*)$.
+of seeing a specific evidence, i.e.\ $p(E=e^*)$.
 
 
 \section{A one--minute version of  \grbn{}}
@@ -251,12 +245,14 @@ x.e  <- cptable(~xray|either, values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp|bronc:either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 @ %def 
 
-\item Create the network from the conditional probability tables:
+\item Compile list of conditional probability tables and create the network:
 
 @ 
 <<>>=
 plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 plist
+plist$tub    
+plist$either ## Notice: a logical node
 net1 <- grain(plist)
 net1
 @ %def 
@@ -271,51 +267,53 @@ net1
 
 @ 
 <<>>=
-querygrain(net1,nodes=c("lung","bronc"), type="marginal")
+querygrain(net1, nodes=c("lung","bronc"), type="marginal")
 @ %def 
 
-Likewise, a joint distribution can be obtained.
+Likewise, a joint distribution can be obtained:
 
 @ 
 <<>>=
 querygrain(net1,nodes=c("lung","bronc"), type="joint")
 @ %def 
 
-\item Findings can be entered as:
+\item Evidence can be entered in one of these two equivalent forms:
 
-@ 
 <<>>=
-net12  <- setFinding(net1,nodes=c("asia","dysp"),states=c("yes","yes"))
+net12  <- setEvidence(net1, 
+                      nodes=c("asia", "dysp"), states=c("yes", "yes"))
+net12  <- setEvidence(net1, nslist=list(asia="yes", dysp="yes"))
 @ %def
 
 \item The network can be queried again:
 
 @ 
 <<>>=
-querygrain(net12,nodes=c("lung","bronc"))
-querygrain(net12,nodes=c("lung","bronc"), type="joint")
+querygrain( net12, nodes=c("lung","bronc") )
+querygrain( net12, nodes=c("lung","bronc"), type="joint" )
 @ %def 
 
 
 \item Zero probabilities
   
-  Consider setting the finding
+  Consider setting the evidence
 @ 
 <<>>=
-net13  <- setFinding(net1,nodes=c("either","tub"),states=c("no","yes"))
+net13 <- setEvidence(net1,nodes=c("either", "tub"), 
+                     states=c("no","yes"))
 @ %def
   
 Under the model, this finding has zero probability;
 @ 
 <<>>=
-pFinding(net13)
+pEvidence( net13 )
 @ %def 
 
 Therefore, all conditional probabilities are (under the model) undefined;
 
 @ 
 <<>>=
-querygrain(net13,nodes=c("lung","bronc"), type="joint")
+querygrain( net13, nodes=c("lung","bronc"), type="joint" )
 @ %def 
 
 

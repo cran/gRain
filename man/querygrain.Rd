@@ -1,11 +1,16 @@
 \name{querygrain}
 \alias{querygrain}
 \alias{querygrain.grain}
+
 \alias{setFinding}
 \alias{retractFinding}
 \alias{getFinding}
 \alias{pFinding}
+
 \alias{setEvidence}
+\alias{retractEvidence}
+\alias{getEvidence}
+\alias{pEvidence}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Set evidence and query a network}
@@ -16,13 +21,16 @@
 \usage{
 querygrain(object, nodes = nodeNames(object), normalize = TRUE,
            type = "marginal", result="array", details = 0)
+
+setEvidence(object, nodes=NULL, states=NULL, nslist=NULL, propagate=TRUE)
+retractEvidence(object, nodes=NULL, propagate=TRUE)
+getEvidence(object)
+pEvidence(object)
+
 setFinding(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE)
 retractFinding(object, nodes=NULL, propagate=TRUE)
 getFinding(object)
 pFinding(object)
-
-setEvidence(object, nodes=NULL, states=NULL, nslist=NULL, propagate=TRUE)
-
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -46,19 +54,19 @@ setEvidence(object, nodes=NULL, states=NULL, nslist=NULL, propagate=TRUE)
 
 }
 \note{
-  \code{setEvidence} is an improvement of
-  \code{setFinding} (and as such \code{setFinding} is obsolete).
+  \code{setEvidence()} is an improvement of  \code{setFinding()} (and as
+  such \code{setFinding} is obsolete). Users are recommended to use
+  \code{setEvidence()} in the future.
 
-  \code{setEvidence} allows to specification of "hard evidence"
+  \code{setEvidence()} allows to specification of "hard evidence"
   (specific values for variables) and likelihood evidence (also known as
   virtual evidence) for variables.
 
-  The name \code{setEvidence} may change in the future
-  and so may the syntax.  
+  The syntax of \code{setEvidence()} may change in the future. 
 }
 
 \value{
-  A list of tables with potentials
+  A list of tables with potentials.
 }
 
 \references{ Søren Højsgaard (2012). Graphical Independence Networks
@@ -74,17 +82,15 @@ setEvidence(object, nodes=NULL, states=NULL, nslist=NULL, propagate=TRUE)
   \code{\link{cptable}}
 }
 \examples{
- testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
- chest <- loadHuginNet(testfile, details=0)
+testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
+chest <- loadHuginNet(testfile, details=0)
+qb <- querygrain(chest)
+qb
 
+lapply(qb, as.numeric) % Safe
+sapply(qb, as.numeric) % Risky
 
- qb <- querygrain(chest)
- qb
-
- lapply(qb, as.numeric) % Safe
- sapply(qb, as.numeric) % Risky
-
- ## setFinding / setEvidence
+## setFinding / setEvidence
 
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
@@ -99,16 +105,16 @@ plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 chest <- grain(plist)
 
 
- ## 1) These two forms are identical
+## 1) These two forms are identical
 setEvidence(chest, c("asia","xray"), c("yes", "yes"))
 setFinding(chest, c("asia","xray"), c("yes", "yes"))
 
 ## 2) Suppose we do not know with certainty whether a patient has
 ## recently been to Asia. We can then introduce a new variable
-## "asia.guess" with "asia" as its only parent. Suppose
-## p(asia.guess=yes|asia=yes)=.8 and p(asia.guess=yes|asia=no)=.1
+## "guess.asia" with "asia" as its only parent. Suppose
+## p(guess.asia=yes|asia=yes)=.8 and p(guess.asia=yes|asia=no)=.1
 ## If the patient is e.g. unusually tanned we may set
-## asia.guess=yes and propagate. This corresponds to modifying the
+## guess.asia=yes and propagate. This corresponds to modifying the
 ## model by the likelihood (0.8, 0.1) as
 setEvidence(chest, c("asia","xray"), list(c(0.8,0.1), "yes"))
 

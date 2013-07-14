@@ -1,9 +1,13 @@
 pFinding <- function(object)
   attr(object$equilCQpot,"pFinding")
 
+pEvidence <- pFinding
+
 getFinding <- function(object){
   object$finding
 }
+
+getEvidence <- getFinding
 
 print.grainFinding <- function(x, ...){
   cat("Finding: \n") 
@@ -172,7 +176,7 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
   return(object)
 }      
 
-
+retractEvidence <- retractFinding
 
 
 setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=TRUE){
