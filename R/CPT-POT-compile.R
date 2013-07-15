@@ -49,13 +49,17 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
   oo  <- topoSort(dgM) 
   if (oo[1]==-1)
     stop("Graph defined by the cpt's is not acyclical...\n");
-  
+
+
   universe        <- list(nodes = vn, levels = vlevList, nlev   = di)
   attributes(ans) <- list(universe = universe,                          
                           dag      = dg,
-                          vparList = vparList)  
-  class(ans) <- "CPTspec"
-  return(ans)
+                          vparList = vparList,
+                          names =vn
+                          )  
+
+  class(ans) <- "CPTspec"  
+  ans
 }
 
 compilePOT <- function(x){

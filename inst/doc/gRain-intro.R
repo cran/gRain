@@ -2,7 +2,7 @@
 ### Encoding: ISO8859-1
 
 ###################################################
-### code chunk number 1: gRain-intro.Rnw:31-35
+### code chunk number 1: gRain-intro.Rnw:25-29
 ###################################################
 require( gRain )
 prettyVersion <- packageDescription("gRain")$Version
@@ -11,7 +11,7 @@ dir.create( "figures" )
 
 
 ###################################################
-### code chunk number 2: gRain-intro.Rnw:111-124
+### code chunk number 2: gRain-intro.Rnw:105-118
 ###################################################
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
@@ -35,14 +35,14 @@ plot(net1)
 
 
 ###################################################
-### code chunk number 4: gRain-intro.Rnw:203-205
+### code chunk number 4: gRain-intro.Rnw:197-199
 ###################################################
 library(gRain)
 options("prompt"="> ","width"=85)
 
 
 ###################################################
-### code chunk number 5: gRain-intro.Rnw:242-251
+### code chunk number 5: gRain-intro.Rnw:236-245
 ###################################################
 yn <- c("yes","no")
 a    <- cptable(~asia, values=c(1,99),levels=yn)
@@ -56,54 +56,59 @@ d.be <- cptable(~dysp|bronc:either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 
 
 ###################################################
-### code chunk number 6: gRain-intro.Rnw:257-261
+### code chunk number 6: gRain-intro.Rnw:251-257
 ###################################################
 plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 plist
+plist$tub    
+plist$either ## Notice: a logical node
 net1 <- grain(plist)
 net1
 
 
 ###################################################
-### code chunk number 7: gRain-intro.Rnw:273-274
+### code chunk number 7: gRain-intro.Rnw:269-270
 ###################################################
-querygrain(net1,nodes=c("lung","bronc"), type="marginal")
+querygrain(net1, nodes=c("lung","bronc"), type="marginal")
 
 
 ###################################################
-### code chunk number 8: gRain-intro.Rnw:280-281
+### code chunk number 8: gRain-intro.Rnw:276-277
 ###################################################
 querygrain(net1,nodes=c("lung","bronc"), type="joint")
 
 
 ###################################################
-### code chunk number 9: gRain-intro.Rnw:287-288
+### code chunk number 9: gRain-intro.Rnw:282-285
 ###################################################
-net12  <- setFinding(net1,nodes=c("asia","dysp"),states=c("yes","yes"))
+net12  <- setEvidence(net1, 
+                      nodes=c("asia", "dysp"), states=c("yes", "yes"))
+net12  <- setEvidence(net1, nslist=list(asia="yes", dysp="yes"))
 
 
 ###################################################
-### code chunk number 10: gRain-intro.Rnw:294-296
+### code chunk number 10: gRain-intro.Rnw:291-293
 ###################################################
-querygrain(net12,nodes=c("lung","bronc"))
-querygrain(net12,nodes=c("lung","bronc"), type="joint")
+querygrain( net12, nodes=c("lung","bronc") )
+querygrain( net12, nodes=c("lung","bronc"), type="joint" )
 
 
 ###################################################
-### code chunk number 11: gRain-intro.Rnw:304-305
+### code chunk number 11: gRain-intro.Rnw:301-303
 ###################################################
-net13  <- setFinding(net1,nodes=c("either","tub"),states=c("no","yes"))
+net13 <- setEvidence(net1,nodes=c("either", "tub"), 
+                     states=c("no","yes"))
 
 
 ###################################################
-### code chunk number 12: gRain-intro.Rnw:310-311
+### code chunk number 12: gRain-intro.Rnw:308-309
 ###################################################
-pFinding(net13)
+pEvidence( net13 )
 
 
 ###################################################
-### code chunk number 13: gRain-intro.Rnw:317-318
+### code chunk number 13: gRain-intro.Rnw:315-316
 ###################################################
-querygrain(net13,nodes=c("lung","bronc"), type="joint")
+querygrain( net13, nodes=c("lung","bronc"), type="joint" )
 
 
