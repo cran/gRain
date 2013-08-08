@@ -71,7 +71,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     if (length(nodes)>0){
       t0 <- proc.time()    
       ## setFinding: findings are inserted to tempCQpot
-      object$tempCQpot      <- .insertFinding(nodes, states, object$tempCQpot, object$rip)   
+      object$tempCQpot <- .insertFinding( nodes, states, object$tempCQpot, object$rip )   
       object$isInitialized  <- FALSE
       
       if (!is.null(currFinding)){
@@ -228,7 +228,7 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
       ## Maximum value of soft evidence is 1
       states <- lapply(states, function(xx) if (is.numeric(xx)) pmin(xx,1) else xx)
       
-      object$tempCQpot      <- .insertEvidence(nodes, states, object$tempCQpot, object$rip)   
+      object$tempCQpot <- .insertEvidence( nodes, states, object$tempCQpot, object$rip )   
       object$isInitialized  <- FALSE
       
       if (!is.null(currFinding)){
@@ -257,16 +257,13 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
   ##cat(".insertEvidence\n"); print(nodes); print(states)
   .infoPrint(details, 1, cat(".insertFinding\n"))
   cli <- rip$cliques
-
-  ## Note: perhaps create amat globally 
-  ## amat <- glist2setMAT(cli,vn=rip$nodes)
   
   for (ii in 1:length(nodes)){
     currn <- nodes[ ii ]
     currs <- states[[ ii ]]
     ##cat("Node:", currn, "State:", toString(currs), "\n")
     host.idx  <- rip$host[ match(currn, rip$nodes) ]
-    cpot <- APlist[[ host.idx ]]
+    cpot   <- APlist[[ host.idx ]]
     lev    <- dimnames(cpot)[[currn]]
     evTab  <- .evidenceTable(currn, currs, lev)
     ##print(evTab)

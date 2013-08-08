@@ -89,25 +89,22 @@ nodeMarginal <- function(object, set=NULL,details=1){
   #cat("CHK: nodeMarginal\n")
   ## querygrain - nodeMarginal: Calculations based on equilCQpot
   equilCQpot  <- object$equilCQpot
-  rip      <- object$rip
-  netnodes <- rip$nodes
+  .rip      <- object$rip
+  netnodes <- .rip$nodes
 
   if (is.null(set))
     nodes  <- netnodes
   else
     nodes  <- set
 
-  #print(nodes)
   nodes <- intersect(netnodes, nodes)
-  #print(nodes)
   nodes <- setdiff(nodes, getFinding(object)$nodes)
 
   if (length(nodes)>0){
-    vn   <- rip$nodes
-    host <- .getHost(rip)
-    ## FIXME: When gRbase 1.6-9 is uploaded, the host should be
-    ## host <- rip$host
-    
+    vn   <- .rip$nodes
+    ## host <- .getHost(.rip) ## Obsolete; replaced by
+    host <- .rip$host
+
     mtablist <- vector("list",length(nodes))
     names(mtablist) <- nodes
     
@@ -115,30 +112,28 @@ nodeMarginal <- function(object, set=NULL,details=1){
       cvert  <- nodes[i]
       ##       idx <- which(sapply(cli, function(x) subsetof(cvert,x)))[1]
       ##      idx <- .get_host2(cvert, cli)
-      idx <- host[match(cvert, vn)]
+      idx <- host[ match( cvert, vn ) ]
            
       ## querygrain - nodeMarginal: Calculations based on equilCQpot
-      cpot   <- equilCQpot[[idx]]
-      mtab   <- tableMargin(cpot, cvert)
-      mtab   <- mtab/sum(mtab)
+      cpot   <- equilCQpot[[ idx ]]
+      mtab   <- tableMargin( cpot, cvert )
+      mtab   <- mtab/sum( mtab ) 
       mtablist[[i]] <- mtab
     }
     return(mtablist)
   } 
 }
 
-## FIXME: When gRbase 1.6-9 is uploaded, .getHost is obsolete
-.getHost <- function(rip){
-
-    vn   <- rip$nodes
-    cli  <- rip$cliques    
-    host <- rep.int(0L, length(vn))
-    ll   <- lapply(cli, match, vn)
-    for (ii in seq_along(ll)){
-      host[ll[[ii]]] <- ii
-    }
-    host
-}
+## .getHost <- function(rip){
+##     vn   <- rip$nodes
+##     cli  <- rip$cliques    
+##     host <- rep.int(0L, length(vn))
+##     ll   <- lapply(cli, match, vn)
+##     for (ii in seq_along(ll)){
+##       host[ll[[ii]]] <- ii
+##     }
+##     host
+## }
 
 
 

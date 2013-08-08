@@ -6,10 +6,8 @@
   if ("cptlist" %in% arg.names){
     object$cptlist <- args$cptlist
     if (object$isCompiled){
-      pot.with.1   <- .defaultPotentialList(object$rip,object$universe)     
-      ## FIXME Create .insert1 function and then do
-      ## FIXME pot.with.1   <- .insert1(object$origCQpot)
-      newCQpot            <- .insertCpt(args$cptlist, pot.with.1, object$rip, details=0)
+      pot.with.1          <- .createPotList( object$rip, object$universe )     
+      newCQpot            <- .insertCpt(args$cptlist, pot.with.1, details=0)
       object$origCQpot    <- newCQpot
       object$tempCQpot    <- newCQpot
       object$equilCQpot   <- .insertNA(pot.with.1)

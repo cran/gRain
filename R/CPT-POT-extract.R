@@ -27,15 +27,15 @@ extractPOT <- function(x, graph, smooth=0){
   if (!is.TUG(graph))
     stop("'graph' must be a triangulated undirected graph")
 
-  rr  <- rip(graph)
+  .rip  <- rip( graph )
 
   if (class(x)=="data.frame"){
-    ans <- .extractPOT_dataframe(x, rr$cliques, rr$sep, smooth=smooth)
+    ans <- .extractPOT_dataframe(x, .rip$cliques, .rip$sep, smooth=smooth)
   } else {
-    ans <- .extractPOT_table(x, rr$cliques, rr$sep, smooth=smooth)
+    ans <- .extractPOT_table(x, .rip$cliques, .rip$sep, smooth=smooth)
   }
 
-  attr(ans, "rip")     <- rr
+  attr(ans, "rip")     <- .rip
 
   dg 	  <- .ug2dag(graph)
   cptlist <- extractCPT(x, dg, smooth=smooth)
