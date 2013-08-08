@@ -44,19 +44,24 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
   t0 <- proc.time()
   if (ncliq>1){
     for (ii in ncliq:2){      
-      .infoPrint2(details, 2, "Clique %d: {%s}\n", ii, .colstr(cliq[[ii]]))
-      cpot  <- APlist[[ii]];      
-      csep  <- seps[[ii]]
-      cpa   <- APlist[[pa[ii]]]
-      if (length(csep)>=1 && !is.na(csep)){
-        .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(csep))        
-        septab           <- tableMargin(cpot, csep)
-        APlist[[ii]]     <- tableOp2(cpot, septab, `/`)             
-        APlist[[pa[ii]]] <- tableOp2(cpa,  septab, `*`) 
+      cq       <- cliq[[ii]]
+      sp   <- seps[[ii]]      
+      .infoPrint2(details, 2, "Clique %d: {%s}\n", ii, .colstr( cq ))
+      cq.pot   <- APlist[[ii]];      
+      pa.pot   <- APlist[[pa[ii]]]
+      if (length(sp)>=1 && !is.na(sp)){
+        .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(sp))                
+        sp.pot           <- tableMargin(cq.pot, sp)
+        ## str(list(cliq.no=ii, cliq.pa.no=pa[ii],
+        ##                  cq=cq, sp=sp,
+        ##                  cq.pot=cq.pot, pa.pot=pa.pot, sp.pot=sp.pot))
+        
+        APlist[[ii]]     <- tableOp2(cq.pot, sp.pot, `/`)
+        APlist[[pa[ii]]] <- tableOp2(pa.pot, sp.pot, `*`) 
       } else{
-        zzz              <- sum(cpot)
+        zzz              <- sum(cq.pot)
         APlist[[1]]      <- APlist[[1]] * zzz
-        APlist[[ii]]     <- cpot / zzz
+        APlist[[ii]]     <- cq.pot / zzz
       }
     }
   }
@@ -87,9 +92,9 @@ propagateLS <- function(APlist, rip, initialize=TRUE, details=0){
       for (jj in 1:length(ch)){
         if (length(seps[[ch[jj]]])>0){
           .infoPrint2(details, 2, "Marg onto sep %i: {%s}\n", ch[jj], .colstr(seps[[ch[jj]]]))
-          septab            <- tableMargin(APlist[[ii]], seps[[ch[jj]]])
-          APlist[[ch[jj]]]  <- tableOp2(APlist[[ch[jj]]], septab, `*`) 
-          .infoPrint(details, 4, { cat("Marginal:\n"); print (septab) })          
+          sp.pot            <- tableMargin(APlist[[ii]], seps[[ch[jj]]])
+          APlist[[ch[jj]]]  <- tableOp2(APlist[[ch[jj]]], sp.pot, `*`) 
+          .infoPrint(details, 4, { cat("Marginal:\n"); print (sp.pot) })          
         }
       }
     }
