@@ -1,2 +1,4 @@
 import(methods)
 exportPattern("^[^\\.]")
+
+importFrom(igraph, igraph.from.graphNEL, V, "V<-", layout.graphopt)

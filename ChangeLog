@@ -1,3 +1,9 @@
+2013-08-08 Søren Højsgaard <sorenh@math.aau.dk>	
+
+	* NAMESPACE file updated
+	
+	* Version 1.2-1 uploaded				
+	
 2013-07-14 Søren Højsgaard <sorenh@math.aau.dk>	
 	
 	* setEvidence function added. This function allows to insert
