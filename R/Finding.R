@@ -10,7 +10,7 @@ getFinding <- function(object){
 getEvidence <- getFinding
 
 print.grainFinding <- function(x, ...){
-  cat("Finding: \n") 
+  cat("Finding: \n")
 
   n.nodes <- length(x$nodes)
   len <- min(10, max(unlist(lapply(x$nodes, nchar))))
@@ -30,7 +30,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     ##cat("setFinding: Compiling model ...\n")
     object <- compile(object)
   }
-    
+
   if (!is.null(flist)){
     flist2 <- do.call("rbind",flist)
     nodes   <- flist2[,1]
@@ -41,22 +41,22 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
   len            <- length(nodes)
 
   if (len>0){
-    netNodes       <- nodeNames(object)# object$universe$nodes 
-    currFinding    <- getFinding(object)        
+    netNodes       <- nodeNames(object)# object$universe$nodes
+    currFinding    <- getFinding(object)
     for (i in 1:len){
-      ev1   <- nodes[i]; 
+      ev1   <- nodes[i];
       if (!(ev1 %in% netNodes)){
         nodes[i] <- states[i] <- NA
         ##warning("Node ", ev1, " is not in network, skipping it...\n",call.=FALSE)
       }
     }
-    
+
     ## Ignore NA's in the states
     ##
     nodes  <- nodes[!is.na(states)]
     states <- states[!is.na(states)]
 ### print(nodes); print(states)
-    
+
     ## Drop nodes which are already given evidence in the network
     ##
     if (!is.null(currFinding)){
@@ -69,23 +69,23 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     ##  Now insert the findings
     ##
     if (length(nodes)>0){
-      t0 <- proc.time()    
+      t0 <- proc.time()
       ## setFinding: findings are inserted to tempCQpot
-      object$tempCQpot <- .insertFinding( nodes, states, object$tempCQpot, object$rip )   
+      object$tempCQpot <- .insertFinding( nodes, states, object$tempCQpot, object$rip )
       object$isInitialized  <- FALSE
-      
+
       if (!is.null(currFinding)){
         ev <- list(nodes=c(currFinding$nodes,nodes), states=c(currFinding$states,states))
       } else {
         ev <- list(nodes=nodes, states=states)
       }
-      
+
       ## Set finding slot
       class(ev)<-"grainFinding"
-      object$finding <- ev      
+      object$finding <- ev
       if (object$control$timing)
         cat("Time: enter finding", proc.time()-t0, "\n")
-      
+
       if (propagate){
         object<-propagate(object)
       } else {
@@ -102,9 +102,9 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
   .infoPrint(details, 1, cat(".insertFinding\n"))
   cli <- rip$cliques
 
-  ## Note: perhaps create amat globally 
+  ## Note: perhaps create amat globally
   amat <- glist2setMAT(cli,vn=rip$nodes)
-  
+
   for (i in 1:length(nodes)){
     currn <- nodes[i]
     currs <- states[i]
@@ -112,7 +112,7 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     idx <- which(amat[,currn]==1)#[1]
 
     ##cat("Host cliques:",paste(idx,sep=' '),"\n");
-    for (j in idx){            
+    for (j in idx){
       cpot <- APlist[[j]]
       ## cat("Current clique:", paste(varNames(cpot), sep=' '),"\n")
       ## lev    <- valueLabels.array(cpot)[[currn]] ## BRIS
@@ -159,22 +159,22 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
     newevstates <- evstates[-idx]
     ##     cat(sprintf("newevnodes=%s\n", toString(newevnodes)))
     ##     cat(sprintf("newevstates=%s\n", toString(newevstates)))
-    ##     print(querygrain(object,'x1',type='marginal'))    
+    ##     print(querygrain(object,'x1',type='marginal'))
     object <- .resetgrain(object)
-    ##     print(querygrain(object,'x1',type='marginal'))    
+    ##     print(querygrain(object,'x1',type='marginal'))
     if (length(newevnodes)>0){
       object <- setFinding(object, nodes=newevnodes, states=newevstates, propagate=FALSE)
     }
   }
-  
+
   if (propagate){
     object<-propagate(object)
   } else {
     object$isPropagated <- FALSE
   }
-  
+
   return(object)
-}      
+}
 
 retractEvidence <- retractFinding
 
@@ -185,7 +185,7 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
   if (!object$isCompiled){  ##cat("setFinding: Compiling model ...\n")
     object <- compile(object)
   }
-    
+
   if (!is.null(nslist)){
     nodes   <- names(nslist)
     states  <- nslist
@@ -193,14 +193,14 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
 
   if (!is.list(states))
     states <- as.list( states )
-  
+
   n.nodes            <- length(nodes)
   if (n.nodes>0){
-    
+
     ## Skip nodes not in network
-    netNodes       <- nodeNames(object) 
-    for (ii in 1:n.nodes){ 
-      ev1   <- nodes[ii]; 
+    netNodes       <- nodeNames(object)
+    for (ii in 1:n.nodes){
+      ev1   <- nodes[ii];
       if (!(ev1 %in% netNodes)){
         nodes[ ii ] <- states[ ii ] <- NA
         ##warning("Node ", ev1, " is not in network, skipping it...\n",call.=FALSE)
@@ -208,11 +208,11 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
     }
 
     ## Ignore NA's in the states
-    nodes  <- nodes[!is.na(states)]
-    states <- states[!is.na(states)]
-    
+    nodes  <- nodes[ !is.na(states) ]
+    states <- states[ !is.na(states) ]
+
     ## Drop nodes which are already given evidence in the network
-    currFinding    <- getFinding(object)        
+    currFinding    <- getFinding(object)
     if (!is.null(currFinding)){
       idx <- match(intersect(currFinding$nodes, nodes), nodes)
       if ( length(idx) > 0 ){
@@ -220,17 +220,17 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
         states <- states[-idx]
       }
     }
-    
+
     ##  Insert the findings to tempCQpot
     if (length(nodes)>0){
-      t0 <- proc.time()    
+      t0 <- proc.time()
 
       ## Maximum value of soft evidence is 1
       states <- lapply(states, function(xx) if (is.numeric(xx)) pmin(xx,1) else xx)
-      
-      object$tempCQpot <- .insertEvidence( nodes, states, object$tempCQpot, object$rip )   
+
+      object$tempCQpot <- .insertEvidence( nodes, states, object$tempCQpot, object$rip )
       object$isInitialized  <- FALSE
-      
+
       if (!is.null(currFinding)){
         ev <- list(nodes=c(currFinding$nodes, nodes), states=c(currFinding$states, states))
       } else {
@@ -238,10 +238,10 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
       }
       ## Set finding slot
       class(ev)      <- "grainFinding"
-      object$finding <- ev      
+      object$finding <- ev
       if (object$control$timing)
         cat("Time: enter finding", proc.time()-t0, "\n")
-      
+
       if (propagate){
         object<-propagate(object)
       } else {
@@ -257,7 +257,7 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
   ##cat(".insertEvidence\n"); print(nodes); print(states)
   .infoPrint(details, 1, cat(".insertFinding\n"))
   cli <- rip$cliques
-  
+
   for (ii in 1:length(nodes)){
     currn <- nodes[ ii ]
     currs <- states[[ ii ]]
@@ -267,7 +267,7 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
     lev    <- dimnames(cpot)[[currn]]
     evTab  <- .evidenceTable(currn, currs, lev)
     ##print(evTab)
-    APlist[[ host.idx ]]  <- tableOp(cpot, evTab, "*")    
+    APlist[[ host.idx ]]  <- tableOp(cpot, evTab, "*")
   }
   APlist
 }
@@ -275,7 +275,7 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
 
 .evidenceTable <- function(node, state, levels){
   ##print(node); print(state)
-  if (is.numeric(state) && length(state)==length(levels)){    
+  if (is.numeric(state) && length(state)==length(levels)){
     parray(node, list(levels), pmin(state,1) )
   } else {
     if (is.character(state)){
@@ -286,7 +286,7 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
       pot[ ii ] <- 1
       parray(node, list(levels), pot)
     } else {
-      cat("Node:", node, "State:", toString(state), "\n")      
+      cat("Node:", node, "State:", toString(state), "\n")
       stop("Can not create evidence table...\n")
     }
   }
@@ -295,8 +295,8 @@ setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=
 
 
 ## print.grainFinding <- function(x, ...){
-##   cat("Finding: \n") 
-##   v<-do.call("cbind",x) 
+##   cat("Finding: \n")
+##   v<-do.call("cbind",x)
 ##   colnames(v) <- c("variable", "state")
 ##   print(v, quote=FALSE)
 ##   if (!is.null(attr(x,"pFinding")))

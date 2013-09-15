@@ -19,7 +19,7 @@ grain.CPTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
                  cptlist     = c(x)              ## Needed to save network in Hugin format
                  ),
             .setExtraComponents(control, details))
-  
+
   class(ans) <- c("CPTgrain","grain")
   return(ans)
 }
@@ -31,43 +31,33 @@ grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
                  data        = data,
                  equilCQpot  = c(x),
                  ug          = attr(x, "ug"),
-                 rip         = attr(x, "rip"),                
+                 rip         = attr(x, "rip"),
                  dag         = attr(x, "dag"),    ## Needed to save network in Hugin format
                  cptlist     = attr(x, "cptlist") ## Needed to save network in Hugin format
                  ),
             .setExtraComponents(control, details))
-  class(ans) <- c("POTgrain","grain")    
+  class(ans) <- c("POTgrain","grain")
   ans
 }
 
 ## A graph + data (wrappers for calling grain.POTspec and grain.CPTspec)
 grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
-  if (missing(data))
-    stop("Data must be given to create grain from graph\n")
-  if (!(is.array(data) || is.data.frame(data)))
-    stop("Data must be an array or a dataframe\n")
+    if (missing(data))
+        stop("Data must be given to create grain from graph\n")
+    if (!(is.array(data) || is.data.frame(data)))
+        stop("Data must be an array or a dataframe\n")
 
   if (is.DAG(x)){
     ans <- grain(compileCPT(extractCPT(data, x, smooth=smooth)),
-                 data=data, control=control, details=details)           
+                 data=data, control=control, details=details)
   } else {
     if (is.TUG(x)){
       ans <- grain(compilePOT(extractPOT(data, x, smooth=smooth)),
-                   data=data, control=control, details=details)      
+                   data=data, control=control, details=details)
     } else {
       stop("graph 'x' is neither a directed acyclic graph or a triangulated undirected graph")
     }
   }
-  
-##   switch(edgemode(x), 
-##          "directed"   = { ##cat("Call grain.CPTspec\n")
-##            ans <- grain(compileCPT(extractCPT(data, x, smooth=smooth)),
-##                         data=data, control=control, details=details)           
-##          },
-##          "undirected" = { ##cat("Call grain.POTspec\n")
-##            ans <- grain(compilePOT(extractPOT(data, x, smooth=smooth)),
-##                         data=data, control=control, details=details)
-##          })
   return(ans)
 }
 
@@ -92,7 +82,7 @@ print.grain <- function(x,...){
   list(isInitialized = FALSE,
        isCompiled    = FALSE,
        isPropagated  = FALSE,
-       finding       = NULL, 
+       finding       = NULL,
        control       = .setControl(control),
        details       = details
      )

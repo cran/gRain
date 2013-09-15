@@ -27,7 +27,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
   }
 
   nodeList2 <- nl$nodeList
-  
+
   value <- structure(list(nodeList=nodeList2, potentialList=potentialList2))
   class(value)<- "huginnet"
 
@@ -55,7 +55,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
   ## Data structure for holding specification (possibly too long)
   ##
   nodeList <- potentialList <- as.list(rep(NA, nodeCount))
-  
+
   con <- file(file, "rb")
   currNode <- currPotential <- 1
   state<-"start"
@@ -77,7 +77,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
                state="run1"
                .infoPrint(details,2,cat("..end NET action\n"))
              }
-           }, 
+           },
            "run1"={
              if (.hasToken("node", cline)){
                state="node"
@@ -96,8 +96,8 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
                state="run1";
                .infoPrint(details,2,cat("..end NODE action\n"))
                nodeList[[currNode]] <- wline;
-               currNode <- currNode + 1 
-             }     
+               currNode <- currNode + 1
+             }
            },
            "potential"={
              wline <- c(wline, cline)
@@ -105,13 +105,13 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
                state="run1";
                .infoPrint(details,2, cat("..end POTENTIAL action\n"))
                potentialList[[currPotential]] <- wline;
-               currPotential <- currPotential + 1                
-             }          
-           }  
+               currPotential <- currPotential + 1
+             }
+           }
            )
   }
   close(con)
-  
+
   nodeList <- nodeList[!sapply(lapply(nodeList, is.na),all)]
   potentialList <- potentialList[!sapply(lapply(potentialList, is.na),all)]
 
@@ -141,38 +141,12 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
 
 
 
-printlist <- function(x,d=0) UseMethod("printlist")
 
-##printlist.numeric <- function(x,d=0){
-
-printlist.default <- function(x,d=0){
-  paste("(", paste(x,collapse=' '),")",sep='')
-}
-printlist.list <- function(x,d=0){
-  tmp     <- unlist(lapply(x, printlist, d+2),recursive=FALSE)
-  prefix  <- as.list(c("(",rep(" ",length(tmp)-1)))
-  posfix  <- as.list(c(rep(" ",length(tmp)-1),")"))
-  as.list(mapply(function(l,x,r) {paste(l,x,r,sep='')}, prefix, tmp, posfix))
-}
-
-splitVec <- function(val, lev) UseMethod("splitVec")
-
-splitVec.list <- function(val, lev){
-  lapply(val, splitVec, lev)
-}
-
-##splitVec.numeric <- function(val, lev){
-splitVec.default <- function(val, lev){
-  m    <- matrix(val,ncol=lev)
-  cval <- unlist(apply(m,2,list),recursive=FALSE)
-  cval
-}
-
-.getLine   <- function(con) {  
+.getLine   <- function(con) {
   readLines(con, n=1)
 }
 
-.hasToken  <- function(token, cline) { 
+.hasToken  <- function(token, cline) {
   ##print(cline)
   cline <- gsub("^ +","",cline)
   a <- unlist(strsplit(cline," "))[1]
@@ -216,44 +190,44 @@ splitVec.default <- function(val, lev){
   tmp <- nodeSpec[.tokenIdx("node", nodeSpec)]
   nodeVar <- gsub("node +","",tmp)[1]
   nodeVar <- gsub(" +","",nodeVar)
-  
-  
+
+
   tmp <- nodeSpec[.tokenIdx("label", nodeSpec)]
-  nodeLabel <- gsub(" +label += +","",tmp); 
+  nodeLabel <- gsub(" +label += +","",tmp);
   nodeLabel <- gsub(";", "", nodeLabel)
   nodeLabel <- gsub('"',"", nodeLabel)
 
   nodeLabel <- gsub(" +"," ",nodeLabel)
 
   if (length(nodeLabel) && nchar(nodeLabel)>0){
-    
+
     nodeLabel <- .toCamel(nodeLabel)
-    
+
     nl <- gsub("[^[:alnum:]]","",nodeLabel)
     nodeLabel <- gsub("[^[:alnum:]|\\.]","",nodeLabel)
-    
+
     base<-as.character(0:9)
     if(subsetof(unlist(strsplit(nl,"")), base)){
       nodeLabel <- paste("X",nodeLabel,sep='')
-    }    
+    }
   } else {
     ##if (nchar(nodeLabel)==0)
     nodeLabel <- nodeVar
   }
-    
+
   tmp <- nodeSpec[.tokenIdx("states", nodeSpec)]
-  nodeStates <- gsub(" +states += +","",tmp); 
-  nodeStates <- gsub("[\\(,\\);]","",nodeStates); 
+  nodeStates <- gsub(" +states += +","",tmp);
+  nodeStates <- gsub("[\\(,\\);]","",nodeStates);
   nodeStates <- unlist(strsplit(nodeStates, '\\"'))
   nodeStates <- sapply(nodeStates, function(d) gsub("^ +","",d))
   nodeStates <- nodeStates[sapply(nodeStates, nchar)>0]
 
   nodeStates <- sapply(nodeStates, .toCamel)
-  
+
   nodeStates <- gsub(" +",".", nodeStates)
   names(nodeStates)<-NULL
 
-  
+
   value <- list(nodeVar=nodeVar, nodeLabel=nodeLabel, nodeStates=nodeStates)
   value
 }
@@ -265,10 +239,10 @@ splitVec.default <- function(val, lev){
   tmp <- gsub(" +"," ", tmp)
   tmp <- unlist(strsplit(tmp," "))
   tmp <- tmp[sapply(tmp, nchar)>0]
-  
+
   nodeVar <- tmp[1]
   parentVar <- tmp[-1]
-  
+
   sss  <- paste(potSpec,collapse="") ##; ss <<- sss
   sss2 <- gsub("^.*data[[:space:]]*=([^;]*);(.*)", "\\1", sss) ##; ss2<<-sss2
 
@@ -287,7 +261,7 @@ splitVec.default <- function(val, lev){
 
   ###: Now create numerical values
   pot <- as.numeric( sss7 )
-  
+
   value <- list(nodeVar=nodeVar, parentVar=rev(parentVar), potential=pot)
   value
 }
@@ -297,9 +271,9 @@ splitVec.default <- function(val, lev){
 
 .makeNodeNamesUnique <- function(nodeList2){
   nl<-t(sapply(nodeList2, function(d)unlist(d[1:2])))
-  
+
   nonunique <- names(which(table(nl[,2])>1))
-  
+
   if (length(nonunique)){
     cat ("Label(s): {", nonunique, "} appears mode than once in NET file\n")
     for (i in 1:length(nonunique)){
@@ -308,11 +282,11 @@ splitVec.default <- function(val, lev){
       for (j in idx){
         a <- nodeList2[[j]]$nodeVar
         cat("  Replacing label", cnu, " with node name", a, "\n")
-        nodeList2[[j]]$nodeLabel <- a 
+        nodeList2[[j]]$nodeLabel <- a
       }
     }
   }
-  
+
   return(list(nodeList=nodeList2, nonunique=nonunique))
 }
 
@@ -350,7 +324,7 @@ saveHuginNet <- function(gin, file, details=0){
     st <- paste("   position = (", paste(coords[[ii]], collapse=' '), ");\n")
     writeLines(st,con,sep="")
     ## cat(st)
-    
+
     st2 <- sapply(vlab[[ii]], function(d) paste('"',d,'"',sep=''))
     st  <- paste("   states = (", paste(st2, collapse=' '), ");\n")
     writeLines(st,con,sep="")
@@ -367,10 +341,10 @@ saveHuginNet <- function(gin, file, details=0){
     nam <- varNames(cpot)    ## BRIS
     lev <- valueLabels(cpot) ## BRIS
     val <- cpot              ## BRIS
-    
+
     v  <- nam[1]
     pa <- nam[-1]
-    
+
     lev   <- rev(lev[-1])
     wval  <- val
     if (length(lev)>0){
@@ -381,7 +355,7 @@ saveHuginNet <- function(gin, file, details=0){
     }
     ##print(wval); print(class(wval))
     plx <- printlist(wval)
-    
+
     if (length(pa)){
       st <- paste("potential (",v, "|", paste(rev(pa), collapse=' '),")\n")
       writeLines(st,con,sep="")
@@ -397,7 +371,7 @@ saveHuginNet <- function(gin, file, details=0){
       st <- paste(";\n}\n")
       writeLines(st,con,sep="")
       ## cat(st)
-      
+
     } else {
       st <- paste("potential (", v, ")\n")
       writeLines(st,con,sep="")
