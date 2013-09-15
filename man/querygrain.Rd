@@ -2,6 +2,8 @@
 \alias{querygrain}
 \alias{querygrain.grain}
 
+
+
 \alias{setFinding}
 \alias{retractFinding}
 \alias{getFinding}
@@ -16,7 +18,7 @@
 \title{Set evidence and query a network}
 \description{
   Query an independence network, i.e. obtain the conditional
-  distribution of a set of variables given finding (evidence) on other variables. 
+  distribution of a set of variables given finding (evidence) on other variables.
 }
 \usage{
 querygrain(object, nodes = nodeNames(object), normalize = TRUE,
@@ -62,7 +64,7 @@ pFinding(object)
   (specific values for variables) and likelihood evidence (also known as
   virtual evidence) for variables.
 
-  The syntax of \code{setEvidence()} may change in the future. 
+  The syntax of \code{setEvidence()} may change in the future.
 }
 
 \value{
@@ -74,7 +76,7 @@ pFinding(object)
   1-26.  \url{http://www.jstatsoft.org/v46/i10/}.  }
 
 \author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
-%\note{ ~~further notes~~ 
+%\note{ ~~further notes~~
 %
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}

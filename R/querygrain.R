@@ -13,7 +13,7 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
 
   if (is.null(nodes))
     return(invisible(NULL))
-  
+
   if (!object$isCompiled){
     if (details>=1) cat("  Compiling (and propagating) model ...\n")
     object <- compile(object, propagate=TRUE)
@@ -27,12 +27,12 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
   type = match.arg(type, choices=c("marginal","joint","conditional"))
   switch(type,
          "marginal"={
-           ans <- nodeMarginal(object, nodes, details) #;print(ans)
+           ans <- .nodeMarginal(object, nodes, details) #;print(ans)
            if (result=="data.frame")
              ans <- lapply(ans, as.data.frame.table)
          },
          "joint"={
-           ans<-nodeJoint(object, nodes, normalize, details)
+           ans<-.nodeJoint(object, nodes, normalize, details)
            if (result=="data.frame")
              ans <- as.data.frame.table(ans) ## BRIS
          },
@@ -44,21 +44,21 @@ querygrain.grain <- function(object, nodes=nodeNames(object), normalize=TRUE,
              ans <- as.data.frame.table(ans) ## BRIS
          })
   if (object$control$timing)
-    cat("Time: query", proc.time()-t0, "\n")  
+    cat("Time: query", proc.time()-t0, "\n")
   ans
 }
 
 
-nodeJoint <- function(object, set=NULL, normalize=TRUE,details=1){
+.nodeJoint <- function(object, set=NULL, normalize=TRUE,details=1){
 
   if (is.null(set))
     set <- object$rip$nodes
   cli  <- object$rip$cliques
   idxb <- sapply(cli, function(d) subsetof(set, d))
-  
+
   if (any(idxb)){
     .infoPrint(details,1, cat(".Calculating directly from clique\n"))
-    ## querygrain - nodeJoin: Calculations based on equilCQpot
+    ## querygrain - .nodeJoin: Calculations based on equilCQpot
     tab <- object$equilCQpot[[which(idxb)[1]]]
     value <- tableMargin(tab, set)
     if (!normalize){
@@ -80,14 +80,14 @@ nodeJoint <- function(object, set=NULL, normalize=TRUE,details=1){
     value <- p
   }
   return(value)
-}  
+}
 
 
-nodeMarginal <- function(object, set=NULL,details=1){
+.nodeMarginal <- function(object, set=NULL,details=1){
 
   .get_host2 <- function(cvert, cli) which(isin(cli, cvert, index=TRUE)>0)[1]
-  #cat("CHK: nodeMarginal\n")
-  ## querygrain - nodeMarginal: Calculations based on equilCQpot
+  #cat("CHK: .nodeMarginal\n")
+  ## querygrain - .nodeMarginal: Calculations based on equilCQpot
   equilCQpot  <- object$equilCQpot
   .rip      <- object$rip
   netnodes <- .rip$nodes
@@ -107,33 +107,24 @@ nodeMarginal <- function(object, set=NULL,details=1){
 
     mtablist <- vector("list",length(nodes))
     names(mtablist) <- nodes
-    
+
     for (i in 1:length(nodes)){
       cvert  <- nodes[i]
       ##       idx <- which(sapply(cli, function(x) subsetof(cvert,x)))[1]
       ##      idx <- .get_host2(cvert, cli)
       idx <- host[ match( cvert, vn ) ]
-           
-      ## querygrain - nodeMarginal: Calculations based on equilCQpot
+
+      ## querygrain - .nodeMarginal: Calculations based on equilCQpot
       cpot   <- equilCQpot[[ idx ]]
       mtab   <- tableMargin( cpot, cvert )
-      mtab   <- mtab/sum( mtab ) 
+      mtab   <- mtab/sum( mtab )
       mtablist[[i]] <- mtab
     }
     return(mtablist)
-  } 
+  }
 }
 
-## .getHost <- function(rip){
-##     vn   <- rip$nodes
-##     cli  <- rip$cliques    
-##     host <- rep.int(0L, length(vn))
-##     ll   <- lapply(cli, match, vn)
-##     for (ii in seq_along(ll)){
-##       host[ll[[ii]]] <- ii
-##     }
-##     host
-## }
+
 
 
 

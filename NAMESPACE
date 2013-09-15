@@ -1,4 +1,6 @@
 import(methods)
 exportPattern("^[^\\.]")
 
+import(gRbase)
+import(graph)
 importFrom(igraph, igraph.from.graphNEL, V, "V<-", layout.graphopt)
