@@ -1,5 +1,7 @@
 \name{propagate.grain}
 \alias{propagate.grain}
+\alias{propagateLS}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Propagate a graphical independence network (a Bayesian network)}
 \description{
@@ -28,7 +30,7 @@
 }
 
 \author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
-%\note{ ~~further notes~~ 
+%\note{ ~~further notes~~
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 \seealso{\code{\link{grain}},\code{\link[gRbase]{compile}}}
