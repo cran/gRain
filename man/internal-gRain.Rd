@@ -9,7 +9,6 @@
 \alias{print.grainFinding}
 \alias{print.POTspec}
 
-\alias{update.cpt-grain}
 \alias{random_cpt}
 \alias{getgrain}
 
@@ -20,6 +19,12 @@
 \alias{splitVec}
 \alias{splitVec.default}
 \alias{splitVec.list}
+
+\alias{valueLabels.cptable}
+\alias{varNames.cptable}
+\alias{valueLabels.table}
+\alias{varNames.table}
+
 
 %\alias{}
 %\alias{}

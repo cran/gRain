@@ -11,7 +11,7 @@
 }
 \usage{
 \method{compile}{grain}(object, propagate = FALSE, root = NULL, control = object$control,
-details = 0, ...) 
+details = 0, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -41,7 +41,7 @@ details = 0, ...)
 }
 
 \author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
-%\note{ ~~further notes~~ 
+%\note{ ~~further notes~~
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 \seealso{
@@ -49,7 +49,7 @@ details = 0, ...)
   \code{\link[gRbase]{propagate}},
   \code{\link[gRbase]{triangulate}},
   \code{\link[gRbase]{rip}},
-  \code{\link[gRbase]{junctionTree}}  
+  \code{\link[gRbase]{junctionTree}}
 }
 %\examples{
 %}

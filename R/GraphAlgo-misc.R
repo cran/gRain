@@ -3,16 +3,16 @@
   m <- mcs(ug)
   if (length(m)==0)
     return(NULL)
-  adjList <- adj(ug, m)
+  adjList <- graph::adj(ug, m)
   vparList <- vector("list",length(m))
   names(vparList) <- m
-  
+
   ii <- 2
   vparList[[1]] <- m[1]
   for (ii in 2:length(m)){
     vparList[[ii]] <- c(m[ii],intersectPrim(adjList[[ii]], m[1:ii]))
   }
-  
+
   dg <- dagList(vparList)
   dg
 }
@@ -31,7 +31,7 @@
     }
     elorder <- c(elorder, idx)
     amat <- amat[-idx,-idx]
-  
+
     if(all(c(0,0)==dim(amat))){
       break()
     }

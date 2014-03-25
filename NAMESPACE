@@ -1,6 +1,10 @@
-import(methods)
+
 exportPattern("^[^\\.]")
+import(methods)
 
 import(gRbase)
-import(graph)
+
+importFrom(graph, edges, nodes, adj)
+importMethodsFrom(graph, plot)
+
 importFrom(igraph, igraph.from.graphNEL, V, "V<-", layout.graphopt)

@@ -26,8 +26,7 @@ print.grainFinding <- function(x, ...){
 setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE){
 
 ###cat("setFinding\n")
-  if (!object$isCompiled){
-    ##cat("setFinding: Compiling model ...\n")
+  if (!object$isCompiled){  ##cat("setFinding: Compiling model ...\n")
     object <- compile(object)
   }
 
@@ -37,11 +36,9 @@ setFinding <- function(object, nodes=NULL, states=NULL, flist=NULL, propagate=TR
     states  <- flist2[,2]
   }
 
-###print(nodes); print(states)
   len            <- length(nodes)
-
   if (len>0){
-    netNodes       <- nodeNames(object)# object$universe$nodes
+    netNodes       <- nodeNames(object) # object$universe$nodes
     currFinding    <- getFinding(object)
     for (i in 1:len){
       ev1   <- nodes[i];
@@ -137,9 +134,8 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
 
   .resetgrain <- function(xxx){
     ## retractFinding: equilCQpot is reset to origCQpot
-    #xxx$equilCQpot    <- xxx$origCQpot
-    xxx$tempCQpot    <- xxx$origCQpot
-    xxx$equilCQpot   <- .insertNA(xxx$equilCQpot)
+    xxx$tempCQpot     <- xxx$origCQpot
+    xxx$equilCQpot    <- .insertNA(xxx$equilCQpot)
     xxx$finding       <- NULL
     xxx$isInitialized <- TRUE
     xxx
@@ -177,7 +173,6 @@ retractFinding <- function(object, nodes=NULL, propagate=TRUE){
 }
 
 retractEvidence <- retractFinding
-
 
 setEvidence <- function(object, nodes=NULL, states=NULL, nslist=NULL, propagate=TRUE){
 ###cat("setFinding\n")
