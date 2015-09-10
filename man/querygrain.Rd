@@ -1,18 +1,19 @@
 \name{querygrain}
 \alias{querygrain}
 \alias{querygrain.grain}
-
-
-
-\alias{setFinding}
-\alias{retractFinding}
-\alias{getFinding}
-\alias{pFinding}
+\alias{qgrain}
 
 \alias{setEvidence}
 \alias{retractEvidence}
 \alias{getEvidence}
 \alias{pEvidence}
+\alias{absorbEvidence}
+
+\alias{print.evidence_}
+\alias{retractEvidence_internal}
+\alias{setEvidence_}
+\alias{setEvidence_internal}
+
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Set evidence and query a network}
@@ -21,27 +22,26 @@
   distribution of a set of variables given finding (evidence) on other variables.
 }
 \usage{
-querygrain(object, nodes = nodeNames(object), normalize = TRUE,
-           type = "marginal", result="array", details = 0)
-
-setEvidence(object, nodes=NULL, states=NULL, nslist=NULL, propagate=TRUE)
-retractEvidence(object, nodes=NULL, propagate=TRUE)
+setEvidence(object, nodes=NULL, states=NULL, evidence=NULL, nslist=NULL,
+  propagate=TRUE, details=0)
 getEvidence(object)
 pEvidence(object)
+retractEvidence(object, nodes=NULL, propagate=TRUE)
 
-setFinding(object, nodes=NULL, states=NULL, flist=NULL, propagate=TRUE)
-retractFinding(object, nodes=NULL, propagate=TRUE)
-getFinding(object)
-pFinding(object)
+querygrain(object, nodes = nodeNames(object), type = "marginal",
+  evidence = NULL, exclude = TRUE, normalize = TRUE,
+  result="array", details = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{A "grain" object}
-  \item{nodes}{A vector of nodes}
+  \item{nodes}{A vector of nodes; those nodes for which the
+  (conditional) distribution is requested. }
   \item{states}{A vector of states (of the nodes given by 'nodes')}
-  \item{flist}{An alternative way of specifying findings (evidence), see
-    examples below.}
-  \item{nslist}{An alternative way of specifying findings (evidence), see examples below.}
+  \item{evidence}{An alternative way of specifying findings (evidence), see examples below.}
+  \item{nslist}{deprecated}
+  \item{exclude}{If \code{TRUE} then nodes on which evidence is given
+	will be excluded from \code{nodes} (see above).}
   \item{propagate}{Should the network be propagated?}
   \item{normalize}{Should the results be normalized to sum to one.}
   \item{type}{Valid choices are \code{"marginal"} which gives the
@@ -53,7 +53,6 @@ pFinding(object)
   \item{result}{If "data.frame" the result is returned as a data frame
     (or possibly as a list of dataframes).}
   \item{details}{Debugging information}
-
 }
 \note{
   \code{setEvidence()} is an improvement of  \code{setFinding()} (and as
@@ -81,7 +80,10 @@ pFinding(object)
 % ~Make other sections like Warning with \section{Warning }{....} ~
 %}
 \seealso{
-  \code{\link{cptable}}
+  \code{\link{setFinding}}
+  \code{\link{getFinding}}
+  \code{\link{retractFinding}}
+  \code{\link{pFinding}}
 }
 \examples{
 testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
@@ -123,8 +125,8 @@ setEvidence(chest, c("asia","xray"), list(c(0.8,0.1), "yes"))
 ## 3) Hence, the same result as in 1) can be obtained with
 setEvidence(chest, c("asia","xray"), list(c(1, 0), "yes"))
 
-## 4) An alternative specification using nslist (node-state-list) is
-setEvidence(chest, nslist=list("asia"=c(1, 0), "xray"="yes"))
+## 4) An alternative specification using evidence is
+setEvidence(chest, evidence=list("asia"=c(1, 0), "xray"="yes"))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

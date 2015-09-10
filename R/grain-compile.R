@@ -5,21 +5,6 @@ compile.grain <-
     NextMethod("compile")
 }
 
-    ## object has slots:
-    ## [1] "universe"      "data"          "dag"           "cptlist"       "isInitialized"
-    ## [6] "isCompiled"    "isPropagated"  "finding"       "control"       "details"
-
-
-.setRoot <- function(mdagM, root){
-    vn    <- colnames(mdagM)
-    dn <- dimnames(mdagM)
-    ft <- names2pairs(match(root, vn),sort=FALSE, result="matrix")
-    ft <- rbind(ft,ft[,2:1,drop=FALSE])
-    mdagM <- sp_setXtf1(mdagM, ft)
-    dimnames(mdagM) <- dn
-    mdagM
-}
-
 compile.CPTgrain <-
   function(object, propagate=FALSE, root=NULL, control=object$control, details=0, ...){
 
@@ -39,21 +24,22 @@ compile.CPTgrain <-
 
 ### Insert potentials; ## Input: rip, universe, cptlist
     pot.with.1   <- .createPotList( .rip, object$universe )
-    origCQpot    <- tempCQpot <- .insertCpt(object$cptlist, pot.with.1, details)
-    equilCQpot   <- .insertNA(pot.with.1)
+    origpot    <- temppot <- .insertCPT(object$cptlist, pot.with.1, details)
+    equipot   <- .insertNA(pot.with.1)
 
 ### Collect results
     ans  <- list(rip         = .rip,
                  ug          = ug,
-                 equilCQpot  = equilCQpot,
-                 tempCQpot   = tempCQpot,
-                 origCQpot   = origCQpot,
+                 equipot     = equipot,
+                 temppot     = temppot,
+                 origpot     = origpot,
                  details     = details )
     ans        <- c(object, ans)
     class(ans) <- class(object)
 
-    ans$isCompiled <- TRUE
-    ans$control    <- control
+    ans$isCompiled   <- TRUE
+    ans$isPropagated <- FALSE
+    ans$control      <- control
 
     if (propagate){     ## Propagate if asked to
       .infoPrint(details, 1, cat (".Initializing network\n"))
@@ -70,36 +56,43 @@ compile.POTgrain <-
   function(object, propagate=FALSE, root=NULL,
            control=object$control, details=0,...) {
 
-    ## object has slots
-    ## [1] "universe"      "data"          "equilCQpot"    "ug"            "rip"
-    ## [6] "dag"           "cptlist"       "isInitialized" "isCompiled"    "isPropagated"
-    ## [11] "finding"       "control"       "details"
-    t00 <-  proc.time()
-    ##FAST jt  <- .createJTreeGraph(object$rip)
-    ans     <- list(## FAST jt          = jt,
-                    tempCQpot   = object$equilCQpot,
-                    origCQpot   = object$equilCQpot,
-                    ## FAST mdag        = object$ug,
-                    details     = details )
+      t00 <-  proc.time()
+      ##FAST jt  <- .createJTreeGraph(object$rip)
+      ans     <- list(## FAST jt          = jt,
+                      temppot   = object$equipot,
+                      origpot   = object$equipot,
+                      ## FAST mdag        = object$ug,
+                      details     = details )
 
-    object$equilCQpot   <- .insertNA(object$equilCQpot)
-    #object$details <- NULL
-    ans            <- c(object, ans)
-    class(ans)     <- class(object)
+      object$equipot   <- .insertNA(object$equipot)
+                                        #object$details <- NULL
+      ans            <- c(object, ans)
+      class(ans)     <- class(object)
 
-    ans$control    <- control
-    ans$isCompiled <- TRUE
-    .timing(" Time: (total) compile:", control, t00)
+      ans$isCompiled   <- TRUE
+      ans$isPropagated <- FALSE
+      ans$control      <- control
+      .timing(" Time: (total) compile:", control, t00)
 
-    if (propagate){     ## Propagate if asked to
-      .infoPrint(details, 1, cat(".Initializing network\n"))
-      ans             <- propagate(ans)
-    }
-    ans$dag <- NULL
-    return(ans)
+      if (propagate){     ## Propagate if asked to
+          .infoPrint(details, 1, cat(".Initializing network\n"))
+          ans             <- propagate(ans)
+      }
+      ans$dag <- NULL
+      return(ans)
   }
 
 
+
+.setRoot <- function(mdagM, root){
+    vn    <- colnames(mdagM)
+    dn <- dimnames(mdagM)
+    ft <- names2pairs(match(root, vn),sort=FALSE, result="matrix")
+    ft <- rbind(ft,ft[,2:1,drop=FALSE])
+    mdagM <- .sparse_setXtf1(mdagM, ft)
+    dimnames(mdagM) <- dn
+    mdagM
+}
 
 
 .createJTreeGraph <- function(rip){
@@ -110,7 +103,7 @@ compile.POTgrain <-
     if (nrow(ft)==0){
       jt <- new("graphNEL", nodes = as.character(V), edgemode = "undirected")
     } else {
-      jt <- ftM2graphNEL(ft, V=as.character(V), edgemode="undirected")
+      jt <- graph::ftM2graphNEL(ft, V=as.character(V), edgemode="undirected")
     }
   } else {
     jt <- new("graphNEL", nodes = "1", edgemode = "undirected")
@@ -125,67 +118,10 @@ compile.POTgrain <-
 
 }
 
-## compile.CPTgrain <-
-##   function(object, propagate=FALSE, root=NULL,
-##            control=object$control, details=0,...){
-##     ## object has slots:
-##     ## [1] "universe"      "data"          "dag"           "cptlist"       "isInitialized"
-##     ## [6] "isCompiled"    "isPropagated"  "finding"       "control"       "details"
 
-##     t0 <- t00 <-  proc.time()
-##     mdagM <- moralizeMAT(as(object$dag,"Matrix"))
-##     .timing(" Time: moralize:", control, t0)
-##     vn    <- colnames(mdagM)
-##     nlev  <- object$universe$nlev[vn]
 
-##     if (!is.null(root) && length(root)>1){
-##       t0 <- proc.time()
-##       dn <- dimnames(mdagM)
-##       ft <- names2pairs(match(root, vn),sort=FALSE, result="matrix")
-##       ft <- rbind(ft,ft[,2:1,drop=FALSE])
-##       mdagM <- sp_setXtf1(mdagM, ft)
-##       dimnames(mdagM) <- dn
-##       .timing(" Time: setting root:", control, t0)
-##     }
 
-##     t0    <- proc.time()
-##     ugM   <- triangulateMAT(mdagM)
-##     .timing(" Time: triangulate:", control, t0); t0 <- proc.time()
 
-##     .rip   <- ripMAT( ugM )
-##     .timing(" Time: rip:", control, t0); t0 <- proc.time()
 
-##     ## FAST jt    <- .createJTreeGraph(.rip)
-##     .timing(" Time: create junction tree:", control, t0); t0 <- proc.time()
 
-## ### Insert potentials; ## Input: rip, universe, cptlist
-##     pot.with.1   <- .createPotList( .rip, object$universe )
-##     origCQpot    <- tempCQpot <- .insertCpt(object$cptlist, pot.with.1, details)
-##     equilCQpot   <- .insertNA(pot.with.1)
-##     .timing(" Time: insert cpt into potentials:", control, t0)
 
-##     ug    <- as(ugM,   "graphNEL")
-##     mdag  <- as(mdagM, "graphNEL")
-
-## ### Collect results
-##     ans  <- list(rip         = .rip,
-##                  ## FAST jt          = jt,
-##                  ug          = ug,
-##                  equilCQpot  = equilCQpot,
-##                  tempCQpot   = tempCQpot,
-##                  origCQpot   = origCQpot,
-##                  ## FAST  mdag        = mdag,
-##                  details     = details )
-##     ans        <- c(object, ans)
-##     class(ans) <- class(object)
-
-##     ans$isCompiled <- TRUE
-##     ans$control    <- control
-##     .timing(" Time: (total) compile:", control, t00)
-
-##     if (propagate){     ## Propagate if asked to
-##       .infoPrint(details, 1, cat (".Initializing network\n"))
-##       ans <- propagate(ans)
-##     }
-##     return(ans)
-##   }

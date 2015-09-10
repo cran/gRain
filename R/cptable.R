@@ -67,3 +67,19 @@ print.cptable <- function(x,...){
   return(invisible(x))
 }
 
+
+print.cptable <- function(x,...){
+    v <- x$values
+    dim(v) <- c(length(x$levels),length(v)/length(x$levels))
+    rownames(v) <- x$levels
+    colnames(v) <- rep(NA, ncol(v))
+    cat(sprintf("{v,pa(v)} :"))
+    str(x$vpa)
+    print(v)
+    ## cat(sprintf("{v,pa(v)}      : %s\n", toString(x$vpa)))
+  ## cat(sprintf("levels of v    : %s\n", toString(x$levels)))
+  ## cat(sprintf("values         : %s\n", toString(x$values)))
+  ## cat(sprintf("normalize=%s, smooth=%f\n", x$normalize, x$smooth))
+  return(invisible(x))
+}
+

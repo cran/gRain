@@ -3,7 +3,7 @@
 % \VignetteKeyword{Graphical Models}
 % \VignetteKeyword{Probabilistic networks}
 
-\documentclass[12pt]{article}
+\documentclass[10pt]{article}
 \usepackage{boxedminipage,color,a4wide,url}
 \usepackage[latin1]{inputenc}
 
@@ -66,12 +66,7 @@ dir.create( "figures" )
 \renewenvironment{Schunk}{\linespread{.90}}{}
 %% ------------------------
 
-
-
-
-
 \maketitle
-
 
 
 \tableofcontents
@@ -127,6 +122,7 @@ net1
 
 @
 <<LS,fig=T,include=F,echo=F>>=
+require(Rgraphviz)
 plot(net1)
 @ %def
 
@@ -294,7 +290,7 @@ querygrain(net1,nodes=c("lung","bronc"), type="joint")
 \item Evidence can be entered in one of these two equivalent forms:
 
 <<>>=
-net12  <- setEvidence(net1, nslist=list(asia="yes", dysp="yes"))
+net12  <- setEvidence(net1, evidence=list(asia="yes", dysp="yes"))
 net12  <- setEvidence(net1,
                       nodes=c("asia", "dysp"), states=c("yes", "yes"))
 @ %def
@@ -360,10 +356,10 @@ different in a different setting. Consider this example
 @
 <<>>=
 yn <- c("yes","no")
-ss <- 1e-100
-a    <- cptable(~a,   values=c(1,ss),levels=yn)
-b.a  <- cptable(~b+a, values=c(1,ss,ss,1),levels=yn)
-c.b  <- cptable(~c+b, values=c(1,ss,ss,1),levels=yn)
+eps <- 1e-100
+a    <- cptable(~a,   values=c(1,eps),levels=yn)
+b.a  <- cptable(~b+a, values=c(1,eps,eps,1),levels=yn)
+c.b  <- cptable(~c+b, values=c(1,eps,eps,1),levels=yn)
 plist <- compileCPT(list(a, b.a, c.b))
 bn   <- grain(plist)
 ( tt   <- querygrain(bn, type="joint") )
@@ -374,22 +370,19 @@ bn   <- grain(plist)
 querygrain(setEvidence(bn, nodes=c("a","c"), state=c("no", "yes")))
 @ %def
 
-No problem so far, but if \code{ss} is made smaller things go
-numerically wrong:
+No problem so far, but if \code{eps} is made smaller numerical
+problems arise:
 @
 <<>>=
-ss <- 1e-200
-a    <- cptable(~a,   values=c(1,ss),levels=yn)
-b.a  <- cptable(~b+a, values=c(1,ss,ss,1),levels=yn)
-c.b  <- cptable(~c+b, values=c(1,ss,ss,1),levels=yn)
+eps <- 1e-200
+a    <- cptable(~a,   values=c(1,eps),levels=yn)
+b.a  <- cptable(~b+a, values=c(1,eps,eps,1),levels=yn)
+c.b  <- cptable(~c+b, values=c(1,eps,eps,1),levels=yn)
 plist <- compileCPT(list(a, b.a, c.b))
 bn   <- grain(plist)
 ( tt   <- querygrain(bn, type="joint") )
 querygrain(setEvidence(bn, nodes=c("a","c"), state=c("no", "yes")))
 @ %def
-
-
-
 
 
 
@@ -401,10 +394,44 @@ querygrain(setEvidence(bn, nodes=c("a","c"), state=c("no", "yes")))
 
 Below we describe  how to work with virtual evidence (also known
 as likelihood evidence) in \grbn. This is done via the function
-\code{setEvidence()}. The \code{setEvidence()} function is an
-extension of the function \code{setFinding()} (but with a slightly
-different syntax). Users of \grbn\ are recommended to use
-\code{setEvidence()} instead of \code{setFinding()} in the future.
+\code{setEvidence()}.
+
+The clique potential representation in a Bayesian network gives
+\begin{displaymath}
+  p(x) \propto \psi(x) = \prod_{C} \psi_C(x_C)
+\end{displaymath}
+where we recall that the whole idea in computations with Bayesian
+networks is to avoid calculation the product on the right hand
+side. Instead computations are based on propagation (multiplying,
+dividing and summing clique potentials $\psi_C$ in an appropriate
+order, and such an appropriate order comes from a junction tree).
+The normalizing constant, say $c=\sum_x \psi(x)$, comes out of
+propagation as a ``by product''.
+
+Suppose a set of nodes $E$ are known to have a specific value,
+i.e. $x_E=x^*_E$. This is called hard evidence. The probability of
+the event $x_E=x^*_E$ is
+\begin{displaymath}
+  p(x_E=x^*_E)=E_p\{I(x_E=x^*_E)\} = \sum_x I(x_E=x^*_E) p(x)
+  = \frac{1}{c} \sum_x I(x_E=x^*_E) \psi(x)
+\end{displaymath}
+
+The computations are based on modifying the clique potentials $\psi_C$
+by giving value zero to states in $\psi_C$ which are not consistent
+with $x_E=x^*_E$. This can be achieved with an indicator function, say
+$L_C(x_C)$ such that we obtain a set of new potentials $\tilde \psi_C
+= L_C(x_C) \psi_C(x_C)$. Propagation with these new potentials gives,
+as a by product, $\tilde c=\sum \tilde \psi(x)$ where
+$\tilde\psi(x)= \prod_C \tilde\psi_C(x_C)$. Consequently, we have
+$p(x_E=x^*_E)=\tilde c / c$.
+
+In a more general setting we may have non--negative weights $L(x)$ for
+each value of $x$. We may calculate
+\begin{displaymath}
+  E_p\{L(X)\} = \sum_x L(x)p(x)
+\end{displaymath}
+If $L(X)$ factorizes as $L(X)=L_C(X_C)$ then the computations are
+carried out as outlined above, i.e.\ by the message passing scheme.
 
 
 \subsection{An excerpt of the chest clinic network}
@@ -413,10 +440,7 @@ different syntax). Users of \grbn\ are recommended to use
 
 Consider the following excerpt of
 the chest clinic network which is described in the paper mentioned
-above.\footnote{Think of a better example.}
-(We
-admit that a better example for illustrating the various type of
-evidence would be desirable.)
+above.
 
 @
 <<>>=
@@ -445,12 +469,12 @@ purpose. The following forms are equivalent.
 <<>>=
 setFinding(  chest1, nodes="asia", states="yes")
 setEvidence( chest1, nodes="asia", states="yes")
-setEvidence( chest1, nslist=list(asia="yes"))
+setEvidence( chest1, evidence=list(asia="yes"))
 @ %def
 
 @
 <<>>=
-querygrain( setEvidence( chest1, nslist=list(asia="yes")) )
+querygrain( setEvidence( chest1, evidence=list(asia="yes")) )
 @ %def
 
 \subsection{What is virtual evidence (also called likelihood evidence)
@@ -495,7 +519,7 @@ to Asia:
 
 @
 <<>>=
-querygrain( setEvidence( chest2, nslist=list(guess.asia="yes")) )
+querygrain( setEvidence( chest2, evidence=list(guess.asia="yes")) )
 @ %def
 
 \subsection{Specifying virtual evidence}
@@ -506,15 +530,43 @@ The same guess or judgment can be specified as virtual evidence
 
 @
 <<>>=
-querygrain( setEvidence( chest1, nslist=list(asia=c(.8, .1))) )
+querygrain( setEvidence( chest1, evidence=list(asia=c(.8, .1))) )
 @ %def
 
 This also means that specifying that specifying \code{asia='yes'} can
 be done as
 @
 <<>>=
-querygrain( setEvidence( chest1, nslist=list(asia=c(1, 0))) )
+querygrain( setEvidence( chest1, evidence=list(asia=c(1, 0))) )
 @ %def
+
+
+\subsection{A mixture of a discrete and a continuous variable}
+\label{sec:ixture}
+
+\grain\ only handles discrete variables with a finite state space, but
+using likelihood evidence it is possible to work with networks with
+both discrete and continuous variables (or other types of variables).
+This is possible only when he networks
+have a specific structure. This is possible when no discrete variable
+has non--discrete parents.
+
+Take a simple example: $x$ is a discrete variable with levels $1$ and
+$2$; $y_1|x=k \sim N(\mu_k, \sigma^2_k)$ and $y_2|x=k \sim
+Poi(\lambda_k)$ where $k=1,2$. The joint distribution is
+\begin{displaymath}
+  p(x,y_1, y_2) = p(x)p(y_1|x)p(y_2|x)
+\end{displaymath}
+
+Suppose the interest is in the distribution of $x$ given
+$y_1=y_1^*$ and $y_2=y_2^*$. We then have
+\begin{displaymath}
+  p(x|y_1^*, y_2^*) \propto p(x) p(y_1^*|x)p(y_2^*|x) =
+  p(x) L_1(x) L_2(x)
+\end{displaymath}
+
+
+
 
 
 

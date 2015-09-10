@@ -15,7 +15,7 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
     }
   }
 
-  plist  <- object$equilCQpot
+  plist  <- object$equipot
   cqlist <- object$rip$cli
   splist <- object$rip$sep
 
@@ -31,14 +31,14 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   if (length(cqlist)>1){
     for (ii in 2:length(cqlist)){
       ctab <- plist[[ii]]
-      vn   <- names(dimnames(ctab)) 
+      vn   <- names(dimnames(ctab))
       sp   <- splist[[ii]] ## What we condition on
       if (length(sp)>0){
-        mtab <- tableMargin(ctab, sp)                   
+        mtab <- tableMargin(ctab, sp)
         ctab <- tableOp2(ctab, mtab, `/`)
       }
       rr   <- setdiff(vn, sp) ## Variables to be simulated
-      ##cat("r:", rr, "s:", sp, "\n")    
+      ##cat("r:", rr, "s:", sp, "\n")
       if (length(sp)){
         spidx <- match(sp, vn)
         res   <- matrix(0, nrow=nsim, ncol=length(rr))
@@ -73,10 +73,13 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
   aaa <- as.data.frame(aaa)
   names(aaa) <- vn
   aaa
-  
-##   ans <- as.data.frame(ans) 
+}
+
+
+
+##   ans <- as.data.frame(ans)
 ##   vn <- names(ans)
-  
+
 ##   for (jj in 1:ncol(ans)){
 ##     #match(vn[jj], names(ns))
 ##     ans[,jj] <- factor(ans[,jj], levels=seq(ns[[jj]]))
@@ -84,12 +87,9 @@ simulate.grain <- function(object, nsim=1, seed=NULL, ...){
 ##   }
 
   #return(ans)
-}
 
 
-
-      
       ##cat(sprintf("vn=%s sp=%s\n", toString(vn), toString(sp)))
       ##cat("ctab:\n");  print(ctab)
       ##cat("mtab:\n"); print(mtab)
-      ##cat("ctab (updated):\n"); print(ctab)      
+      ##cat("ctab (updated):\n"); print(ctab)

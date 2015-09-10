@@ -5,6 +5,7 @@
 \alias{grain.CPTspec}
 \alias{grain.POTspec}
 \alias{grain.graphNEL}
+\alias{grain.dModel}
 
 \alias{nodeNames}
 \alias{nodeStates}
@@ -23,7 +24,7 @@
   The 'grain' builds a graphical independence network.
 }
 \usage{
-grain(x, data, control=list(), smooth=0, details=0, ...) 
+grain(x, data, control=list(), smooth=0, details=0, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -39,7 +40,7 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 }
 \details{
   If 'smooth' is  non-zero then entries of 'values' which a zero are
-  replaced by the value of 'smooth' - BEFORE any normalization takes place. 
+  replaced by the value of 'smooth' - BEFORE any normalization takes place.
 }
 \value{
   An object of class "grain"
@@ -53,13 +54,13 @@ grain(x, data, control=list(), smooth=0, details=0, ...)
 \author{Søren Højsgaard, \email{sorenh@math.aau.dk}}
 % \note{
 %   There are two methods for displaying networks: 'plot' and 'iplot'.
-  
+
 %   1) The 'plot' method uses the Rgraphviz package and this package requires
 %   that the Graphviz program is installed. Installation of Rgraphviz and
 %   Graphviz is not made automatically when gRain is installed.
 
 %   2) The 'iplot' method uses the igraph package which is installed
-%   automatically when gRain is installed. 
+%   automatically when gRain is installed.
 % }
 
 \seealso{
@@ -99,10 +100,10 @@ pnc <- compile(pn, propagate=TRUE)
 pnc2 <- compile(pn, root=c("lung", "bronc", "tub"), propagate=TRUE)
 
 system.time({
-  for (i in 1:200) 
+  for (i in 1:200)
     querygrain(pnc, nodes=c("lung","bronc", "tub"), type="joint")})
 system.time({
-  for (i in 1:200) 
+  for (i in 1:200)
     querygrain(pnc2, nodes=c("lung","bronc", "tub"), type="joint")})
 
 

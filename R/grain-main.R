@@ -29,7 +29,7 @@ grain.POTspec <- function(x, data=NULL, control=list(), smooth=0, details=0,...)
   control  <- .setControl(control)
   ans  <- c(list(universe    = attr(x, "universe"),
                  data        = data,
-                 equilCQpot  = c(x),
+                 equipot     = c(x),
                  ug          = attr(x, "ug"),
                  rip         = attr(x, "rip"),
                  dag         = attr(x, "dag"),    ## Needed to save network in Hugin format
@@ -61,15 +61,30 @@ grain.graphNEL <- function(x, data=NULL, control=list(), smooth=0, details=0,...
   return(ans)
 }
 
+grain.dModel <- function(x, data=NULL, control=list(), smooth=0, details=0,...){
+
+    if (!x$isDecomposable)
+        stop("Model must be decompsable graphical model\n")
+    g <- ugList( terms( x ) )
+    if (is.null(data))
+        data <- x$datainfo$data
+    grain(g, data=data, smooth=smooth, details=details, ...)
+}
+
+
 ## Printing grain
 ##
 print.grain <- function(x,...){
-  cat("Independence network: Compiled:", x$isCompiled, "Propagated:", x$isPropagated, "\n")
-  cat("  Nodes:"); str(unname(nodeNames(x)))
-  if (length(x$finding)>0){
-    cat("  Findings:"); str(x$finding$nodes)
-  }
-  return(invisible(x))
+    cat("Independence network: Compiled:", x$isCompiled,
+        "Propagated:", x$isPropagated, "\n")
+    cat("  Nodes:"); str(unname(nodeNames(x)))
+    if ( !is.null(x$evidence) ){
+        cat("  Evidence:\n");
+        print(as.data.frame( getEvidence(x)$summary) )
+        if (!is.null((p <- pEvidence(x))))
+            cat(sprintf("  pEvidence: %f\n", p))
+    }
+    return(invisible(x))
 }
 
 .setControl <- function(control){
@@ -79,13 +94,15 @@ print.grain <- function(x,...){
 }
 
 .setExtraComponents <- function(control, details){
-  list(isInitialized = FALSE,
-       isCompiled    = FALSE,
-       isPropagated  = FALSE,
-       finding       = NULL,
-       control       = .setControl(control),
-       details       = details
-     )
+  list(
+      ## FIXME Do we isInitialized? I doubt! Status: Now removed!
+      ## isInitialized = FALSE,
+      isCompiled    = FALSE,
+      isPropagated  = FALSE,
+      evidence      = NULL,
+      control       = .setControl(control),
+      details       = details
+      )
 }
 
 

@@ -9,7 +9,7 @@
 \alias{print.grainFinding}
 \alias{print.POTspec}
 
-\alias{random_cpt}
+\alias{randomCPT}
 \alias{getgrain}
 
 \alias{printlist}
@@ -26,6 +26,15 @@
 \alias{varNames.table}
 
 
+% FIXME: Should go to gRbase
+\alias{setSliceValue}
+\alias{tableListProd}
+\alias{print.grainEvidence_}
+\alias{print.grainJEvidence_}
+\alias{setJointEvidence}
+\alias{retractJointEvidence}
+
+%%\alias{propagateLS__}
 %\alias{}
 %\alias{}
 
