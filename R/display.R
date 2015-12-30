@@ -8,8 +8,7 @@ plot.grain <- function(x, type, ...){
    #'   cat("The Rgraphviz package (from Bioconductor) must be installed to display the models\n")
    #'   return()
    #' }
-
-
+    
    if (!requireNamespace("Rgraphviz", quietly = TRUE)) {
        cat("The Rgraphviz package (from Bioconductor) must be installed to display the models\n")
        return()
@@ -26,6 +25,8 @@ plot.grain <- function(x, type, ...){
            }
        }
    } else {
+       if (type=="jt") ## For backward compatibility; p 57 in GMwR-book
+           type="rip"
        zz <- x[[type]]
        if (!is.null(zz))
            Rgraphviz::plot(zz)

@@ -1,3 +1,10 @@
+2015-12-30 Søren Højsgaard <sorenh@math.aau.dk>
+
+	* plot(network, type="jt") now works again (same as plot(network,
+	type="rip"), but the "jt" is mentioned in the GMwR-book, p 57).
+
+	* Version 1.2-5 uploaded.
+
 2015-06-28 Søren Højsgaard <sorenh@math.aau.dk>
 
 	* many minor improvements
