@@ -1,30 +1,39 @@
+## FIXME compileCPT: Det skal rettes...
+## compileCPT( list(p1, p2) )
+## p1 <- cptable(~a|b, levels=uni2, values=c(7, 3, 9, 1))
+## p2 <- cptable(~b, levels=uni2, values=c(7, 3))
+## compileCPT( list(p1, p1, p2) )
 
-.parseCPTlist <- function(xi){ ## Create intermediate form of CPTs
-  if (is.array(xi))
-    cls <- "array"
-  else
-    cls <- class(xi)[1]
 
-  vpar <- varNames(xi)
-  vlev <- valueLabels(xi)[[1]]
 
-  switch(cls,
-         "cptable"={
-             tmp     <- list(vnam=vpar[1], vlev=vlev, vpar=vpar, values=xi$values,
-                             ##normalize="first", smooth=0)
-                             normalize=if (xi$normalize) "first" else "none", smooth=xi$smooth)
-         },
-         "parray"={
-             tmp     <- list(vnam=vpar[1], vlev=vlev, vpar=vpar, values=as.numeric(xi),
-                             normalize="first", smooth=0)
-         },
-         "array"={
-             tmp     <- list(vnam=vpar[1], vlev=vlev, vpar=vpar, values=as.numeric(xi),
-                             normalize="first", smooth=0)
-         })
-  tmp
-}
-
+#' @title Compile conditional probability tables / cliques potentials.
+#' 
+#' @description Compile conditional probability tables / cliques
+#'     potentials as a preprocessing step for creating a graphical
+#'     independence network
+#'
+#' @name compile-cpt
+#' 
+#' @aliases compileCPT summary.CPTspec compilePOT print.CPTspec
+#'     summary.CPTspec
+#' @param x To \code{compileCPT} x is a list of conditional
+#'     probability tables; to \code{compilePOT}, x is a list of clique
+#'     potentials
+#' @param forceCheck Controls if consistency checks of the probability
+#'     tables should be made.
+#' @param details Controls amount of print out. Mainly for debugging
+#'     purposes
+#' @return \code{compileCPT} returns a list of class 'cptspec'
+#'     \code{compilePOT} returns a list of class 'potspec'
+#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
+#' @seealso \code{\link{extractCPT}}, \code{\link{extractPOT}}
+#' 
+#' @references Søren Højsgaard (2012). Graphical Independence Networks
+#'     with the gRain Package for R. Journal of Statistical Software,
+#'     46(10), 1-26.  \url{http://www.jstatsoft.org/v46/i10/}.
+#'
+#' @keywords utilities
+#' 
 compileCPT <- function(x, forceCheck=TRUE, details=0){
 
     ## if (class(x)[1] != "extractCPT")
@@ -87,6 +96,8 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
     if (oo[1]==-1)
         stop("Graph defined by the cpt's is not acyclical...\n");
 
+    ## FIXME: topoSort returnerer character(0) så der skal checkes på length==0
+    
     universe        <- list(nodes = vn, levels = vlevList, nlev = di)
     attributes(out) <- list(universe = universe,
                             dag      = dg,
@@ -97,9 +108,7 @@ compileCPT <- function(x, forceCheck=TRUE, details=0){
     out
 }
 
-
-
-
+#' @rdname compile-cpt
 compilePOT <- function(x){
     if (class(x)[1] != "extractPOT")
         stop("can not compile 'x'\n")
@@ -125,6 +134,34 @@ compilePOT <- function(x){
     class(ans) <- "POTspec"
     return(ans)
 }
+
+.parseCPTlist <- function(xi){ ## Create intermediate form of CPTs
+
+    if (is.array(xi))
+        cls <- "array"
+    else
+        cls <- class(xi)[1]
+    
+    vpar <- varNames(xi)
+    vlev <- valueLabels(xi)[[1]]
+    
+  switch(cls,
+         "cptable"={
+             tmp     <- list(vnam=vpar[1], vlev=vlev, vpar=vpar, values=xi$values,
+                             ##normalize="first", smooth=0)
+                             normalize=if (xi$normalize) "first" else "none", smooth=xi$smooth)
+         },
+         "parray"={
+             tmp     <- list(vnam=vpar[1], vlev=vlev, vpar=vpar, values=as.numeric(xi),
+                             normalize="first", smooth=0)
+         },
+         "array"={
+             tmp     <- list(vnam=vpar[1], vlev=vlev, vpar=vpar, values=as.numeric(xi),
+                             normalize="first", smooth=0)
+         })
+  tmp
+}
+
 
 print.CPTspec <- function(x,...){
   cat("CPTspec with probabilities:\n")

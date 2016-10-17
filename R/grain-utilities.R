@@ -38,7 +38,6 @@ setSliceValue <- function(x, slice, complement=FALSE, value=0){
 
 getgrain <- function(object, name=c("universe", "data", "dag", "ug", "cptlist",
                                  "origpot", "temppot", "equipot", "rip",
-                                 ## "isInitialized",
                                  "isCompiled", "isPropagated",
                                  "evidence", "pEvidence",
                                  "control", "details")){
@@ -55,16 +54,18 @@ getgrain <- function(object, name=c("universe", "data", "dag", "ug", "cptlist",
            equipot          = object$equipot,
            rip              = object$rip,
 
-           ## isInitialised    = object$isInitialized,
            isCompiled       = object$isCompiled,
            isPropagated     = object$isPropagated,
-
+           
            evidence         = object$evidence,
            pEvidence        = object$pEvidence,
            control          = object$control,
            details          = object$details
            )
 }
+
+## getgin <- getgrain
+
 
 
 .infoPrint <- function(details, limit=1, ...,  prefix='.'){

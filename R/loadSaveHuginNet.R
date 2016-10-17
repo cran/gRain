@@ -2,6 +2,51 @@
 ## Reading / writing Bayesian networks from / to HUGIN net files
 ##
 
+#' @title Load and save Hugin net files
+#' 
+#' @description These functions can load a net file saved in the
+#'     'Hugin format' into R and save a network in R as a file in the
+#'     'Hugin format'.
+#'
+#' @name load-save-hugin
+#' 
+#' @aliases loadHuginNet saveHuginNet
+#' @param gin An independence network
+#' @param file Name of HUGIN net file. Convenient to give the file the
+#'     extension '.net'
+#' @param description A text describing the network, defaults to
+#'     \code{file}
+#' @param details Debugging information
+#' @return An object (a list) of class "huginNet".
+#' @author S<f8>ren H<f8>jsgaard, \email{sorenh@@math.aau.dk}
+#' @seealso \code{\link{grain}}
+#' @references S<f8>ren H<f8>jsgaard (2012). Graphical Independence
+#'     Networks with the gRain Package for R. Journal of Statistical
+#'     Software, 46(10), 1-26.
+#'     \url{http://www.jstatsoft.org/v46/i10/}.
+#' @keywords utilities
+#' @examples
+#' 
+#' 
+#' ## Load HUGIN net file
+#' tf <- system.file("huginex", "chest_clinic.net", package = "gRain")
+#' chest <- loadHuginNet(tf, details=1)
+#' chest 
+#' 
+#' ## Save a copy
+#' td <- tempdir()
+#' saveHuginNet(chest, paste(td,"/chest.net",sep=''))
+#' 
+#' ## Load the copy
+#' chest2 <- loadHuginNet(paste(td,"/chest.net",sep=''))
+#' 
+#' tf <- system.file("huginex", "golf.net", package = "gRain")
+#' golf <- loadHuginNet(tf, details=1)
+#' 
+#' saveHuginNet(golf, paste(td,"/golf.net",sep=''))
+#' golf2 <- loadHuginNet(paste(td,"/golf.net",sep=''))
+#' 
+#' @export loadHuginNet
 loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
                          details=0){
 
@@ -291,6 +336,7 @@ loadHuginNet <- function(file, description=rev(unlist(strsplit(file, "/")))[1],
 }
 
 
+#' @rdname load-save-hugin
 saveHuginNet <- function(gin, file, details=0){
 
   cptlist <- gin$cptlist

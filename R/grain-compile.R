@@ -1,10 +1,39 @@
-
+#' @title Compile a graphical independence network (a Bayesian network)
+#' 
+#' @description Compiles a Bayesian network. This means creating a
+#'     junction tree and establishing clique potentials.
+#'
+#' @name grain-compile
+#' 
+#' @aliases compile.grain compile.CPTgrain compile.POTgrain
+#' @param object A grain object.
+#' @param propagate If TRUE the network is also propagated meaning
+#'     that the cliques of the junction tree are calibrated to each
+#'     other.
+#' @param root A set of variables which must be in the root of the
+#'     junction tree
+#' @param control Controlling the compilation process.
+#' @param details For debugging info. Do not use.
+#' @param \dots Currently not used.
+#' @return A compiled Bayesian network; an object of class
+#'     \code{grain}.
+#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
+#' @seealso \code{\link{grain}}, \code{\link[gRbase]{propagate}},
+#'     \code{\link[gRbase]{triangulate}}, \code{\link[gRbase]{rip}},
+#'     \code{\link[gRbase]{junctionTree}}
+#' @references Søren Højsgaard (2012). Graphical Independence
+#'     Networks with the gRain Package for R. Journal of Statistical
+#'     Software, 46(10), 1-26.
+#'     \url{http://www.jstatsoft.org/v46/i10/}.
+#' @keywords utilities models
+#' @export compile.grain
 compile.grain <-
   function(object, propagate=FALSE, root=NULL,
            control=object$control, details=0,...) {    #method <- match.arg(tolower(method), c("mcwh","r"))
     NextMethod("compile")
 }
 
+#' @rdname grain-compile
 compile.CPTgrain <-
   function(object, propagate=FALSE, root=NULL, control=object$control, details=0, ...){
 
@@ -52,6 +81,7 @@ compile.CPTgrain <-
 ## These are not used for any calculations; only used for saving
 ## the network in Hugin format...
 
+#' @rdname grain-compile
 compile.POTgrain <-
   function(object, propagate=FALSE, root=NULL,
            control=object$control, details=0,...) {

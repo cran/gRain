@@ -4,10 +4,10 @@
 
 plot.grain <- function(x, type, ...){
   #cat("plot.grain; type:", type, "\n")
-   #' if (!require("Rgraphviz")){
-   #'   cat("The Rgraphviz package (from Bioconductor) must be installed to display the models\n")
-   #'   return()
-   #' }
+   ## if (!require("Rgraphviz")){
+   ##   cat("The Rgraphviz package (from Bioconductor) must be installed to display the models\n")
+   ##   return()
+   ## }
     
    if (!requireNamespace("Rgraphviz", quietly = TRUE)) {
        cat("The Rgraphviz package (from Bioconductor) must be installed to display the models\n")

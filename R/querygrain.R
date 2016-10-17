@@ -1,3 +1,91 @@
+#' @title Query a network
+#' 
+#' @description Query an independence network, i.e. obtain the
+#'     conditional distribution of a set of variables - possibly (and
+#'     typically) given finding (evidence) on other variables.
+#' 
+#' @name querygrain
+#' 
+#' @aliases querygrain querygrain.grain qgrain
+#' @param object A "grain" object
+#' @param nodes A vector of nodes; those nodes for which the
+#'     (conditional) distribution is requested.
+#' @param evidence An alternative way of specifying findings
+#'     (evidence), see examples below.
+#' @param exclude If \code{TRUE} then nodes on which evidence is given
+#'     will be excluded from \code{nodes} (see above).
+#' @param normalize Should the results be normalized to sum to one.
+#' @param type Valid choices are \code{"marginal"} which gives the
+#'     marginal distribution for each node in \code{nodes};
+#'     \code{"joint"} which gives the joint distribution for
+#'     \code{nodes} and \code{"conditional"} which gives the
+#'     conditional distribution for the first variable in \code{nodes}
+#'     given the other variables in \code{nodes}.
+#' @param result If "data.frame" the result is returned as a data
+#'     frame (or possibly as a list of dataframes).
+#' @param details Debugging information
+#' @return A list of tables with potentials.
+#' @note \code{setEvidence()} is an improvement of \code{setFinding()}
+#'     (and as such \code{setFinding} is obsolete). Users are
+#'     recommended to use \code{setEvidence()} in the future.
+#' 
+#' \code{setEvidence()} allows to specification of "hard evidence" (specific
+#' values for variables) and likelihood evidence (also known as virtual
+#' evidence) for variables.
+#' 
+#' The syntax of \code{setEvidence()} may change in the future.
+#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
+#' @seealso \code{\link{setEvidence}}, \code{\link{getEvidence}},
+#'     \code{\link{retractEvidence}}, \code{\link{pEvidence}}
+#' @references Søren Højsgaard (2012). Graphical Independence Networks
+#'     with the gRain Package for R. Journal of Statistical Software,
+#'     46(10), 1-26.  \url{http://www.jstatsoft.org/v46/i10/}.
+#' @keywords models utilities
+#' @examples
+#' 
+#' testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
+#' chest <- loadHuginNet(testfile, details=0)
+#' qb <- querygrain(chest)
+#' qb
+#' 
+#' lapply(qb, as.numeric) # Safe
+#' sapply(qb, as.numeric) # Risky
+#' 
+#' ## setFinding / setEvidence
+#' 
+#' yn <- c("yes","no")
+#' a    <- cptable(~asia, values=c(1,99),levels=yn)
+#' t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
+#' s    <- cptable(~smoke, values=c(5,5), levels=yn)
+#' l.s  <- cptable(~lung+smoke, values=c(1,9,1,99), levels=yn)
+#' b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
+#' e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
+#' x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
+#' d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+#' plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+#' chest <- grain(plist)
+#' 
+#' 
+#' ## 1) These two forms are identical
+#' setEvidence(chest, c("asia","xray"), c("yes", "yes"))
+#' setFinding(chest, c("asia","xray"), c("yes", "yes"))
+#' 
+#' ## 2) Suppose we do not know with certainty whether a patient has
+#' ## recently been to Asia. We can then introduce a new variable
+#' ## "guess.asia" with "asia" as its only parent. Suppose
+#' ## p(guess.asia=yes|asia=yes)=.8 and p(guess.asia=yes|asia=no)=.1
+#' ## If the patient is e.g. unusually tanned we may set
+#' ## guess.asia=yes and propagate. This corresponds to modifying the
+#' ## model by the likelihood (0.8, 0.1) as
+#' setEvidence(chest, c("asia","xray"), list(c(0.8,0.1), "yes"))
+#' 
+#' ## 3) Hence, the same result as in 1) can be obtained with
+#' setEvidence(chest, c("asia","xray"), list(c(1, 0), "yes"))
+#' 
+#' ## 4) An alternative specification using evidence is
+#' setEvidence(chest, evidence=list("asia"=c(1, 0), "xray"="yes"))
+#' 
+#' @export querygrain
 querygrain <- function(object, nodes=nodeNames(object), type="marginal",
                        evidence=NULL, exclude=TRUE, normalize=TRUE,
                        result="array", details=0)
@@ -7,6 +95,7 @@ querygrain <- function(object, nodes=nodeNames(object), type="marginal",
 
 qgrain <- querygrain
 
+#' @rdname querygrain
 querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal",
                              evidence=NULL, exclude=TRUE, normalize=TRUE,
                              result="array", details=0){
@@ -48,16 +137,15 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
                    ans <- as.data.frame.table(ans)
          },
            "conditional"={
-               #' qobject <- querygrain.grain(object, nodes=nodes,
-               #'                             type="joint", exclude=exclude,
-               #'                             result="data.frame")
-               #' nst     <- nodeStates(object)[nodes]
-               #' ans     <- parray(nodes, nst, values=qobject$Freq,
-               #'                   normalize="first")
+               ## qobject <- querygrain.grain(object, nodes=nodes,
+               ##                             type="joint", exclude=exclude,
+               ##                             result="data.frame")
+               ## nst     <- nodeStates(object)[nodes]
+               ## ans     <- parray(nodes, nst, values=qobject$Freq,
+               ##                   normalize="first")
 
                qobject <- querygrain.grain(object, nodes=nodes,
                                            type="joint", exclude=exclude)
-               #' qq<<- qobject
 
                ans <- tabDiv( qobject, tabMarg(qobject, nodes[-1]) )
 
@@ -86,11 +174,8 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
 
 
     cliq  <- object$rip$cliques
-    ## FIXME: This is potentially slow:
-    ## FIXME: gRbase (1.7-1) introduces is_subsetof_ to be used instead.
-    ## FIXME: Has been fixed but not checked!!!
     ##idxb <- sapply(cliq, function(cq) subsetof(nodes, cq))
-    idxb <- sapply(cliq, function(cq) is_subsetof_(nodes, cq))
+    idxb <- sapply(cliq, function(cq) gRbase::is_subsetof_(nodes, cq))
 
     if (any(idxb)){
         ## cat(".Calculating directly from clique\n")

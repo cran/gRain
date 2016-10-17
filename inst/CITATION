@@ -11,9 +11,9 @@ citEntry(entry = "Article",
   url          = "http://www.jstatsoft.org/v46/i10/",
 
   textVersion  =
-  paste("Søren Højsgaard (2012).",
-        "Graphical Independence Networks with the gRain Package for R.",
-        "Journal of Statistical Software, 46(10), 1-26.",
-        "URL http://www.jstatsoft.org/v46/i10/.")
+      paste("SÃ¸ren HÃ¸jsgaard (2012).",
+            "Graphical Independence Networks with the gRain Package for R.",
+            "Journal of Statistical Software, 46(10), 1-26.",
+            "URL http://www.jstatsoft.org/v46/i10/.")
 )
 

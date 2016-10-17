@@ -1,16 +1,21 @@
 \name{internal-gRain}
 
+%\alias{mendel}
+
+\alias{Curry}
+
 \alias{summary.grain}
 
 \alias{print.huginNet}
 \alias{print.cptable}
-\alias{print.CPTspec}
+%%\alias{print.CPTspec}
 \alias{print.grain}
 \alias{print.grainFinding}
 \alias{print.POTspec}
 
 \alias{randomCPT}
 \alias{getgrain}
+\alias{getgin}
 
 \alias{printlist}
 \alias{printlist.default}
@@ -31,11 +36,15 @@
 \alias{tableListProd}
 \alias{print.grainEvidence_}
 \alias{print.grainJEvidence_}
-\alias{setJointEvidence}
-\alias{retractJointEvidence}
+
+%\alias{setJointEvidence}
+%\alias{retractJointEvidence}
+
+\alias{\%>\%}
+
+
 
 %%\alias{propagateLS__}
-%\alias{}
 %\alias{}
 
 \title{Internal functions for the gRain package}

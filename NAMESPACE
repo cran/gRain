@@ -13,6 +13,11 @@ import(gRbase)
 importFrom(graph, edges, nodes)
 #importMethodsFrom(graph, plot)
 
+importFrom(magrittr,"%>%")
+export("%>%")
+
+importFrom("functional", "Curry")
+export("Curry")
 
 importFrom("graphics", "plot")
 importFrom("stats", "runif", "terms", "xtabs")
@@ -36,12 +41,14 @@ S3method(predict, grain)
 S3method(print, CPTspec)
 S3method(print, POTspec)
 
+
 S3method(print, cptable)
 S3method(print, grain)
-S3method(print, grainEvidence_)
-S3method(print, grainJEvidence_)
 S3method(printlist, default)
 S3method(printlist, list)
+
+S3method(evidence, grain)
+S3method("evidence<-", grain)
 
 S3method(propagate, grain)
 S3method(querygrain, grain)
@@ -52,11 +59,18 @@ S3method(summary, CPTspec)
 S3method(summary, grain)
 S3method(update, CPTgrain)
 S3method(valueLabels, cptable)
-S3method(valueLabels, table)
-S3method(varNames, cptable)
-S3method(varNames, table)
 
+S3method(varNames, cptable)
 
 S3method(simulate, grain)
+
+S3method( as.data.frame, grain_ev)
+S3method( print, grain_jev )
+S3method( print, grain_ev )
+
+S3method( subset, grain_ev)
+S3method( universe, grain)
+S3method( varNames, grainEvidence_)
+S3method( varNames, grain_ev)
 
 

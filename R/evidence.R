@@ -1,537 +1,430 @@
 ## #################################################################
 ##
-## Everything is about setEvidence etc here. The old setFinding type
-## functions (in the Finding.R file) are just remapped.
+## setEvidence etc.
+## 
+## The old setFinding type functions (in the Finding.R file) are just
+## remapped.
 ##
-## Distinguish between (marginal) evidence on single nodes
-## (written evidence) and (joint) evidence on several nodels
-## (j.evidence).
+## setEvidence with the syntax below is used in Scutari's bnlearn
+## book.
+##
+## As of August 2016, these functions call a new implementation.
 ##
 #################################################################
 
-pEvidence <- function(object)
-  attr(object$equipot,"pEvidence")
+## FIXME: setEvidence: Could check that invalid nodes and/or invalid states are not given.
+## FIXME: setEvidence: Functions .evidenceHasValidStates and .evidenceHasValidNodes
+## FIXME: setEvidence: Does the checking. For now it has just been noted in the .Rd files
+## FIXME: setEvidence: invalid states / nodes are ignored
 
-getEvidence <- function(object){
-    object$evidence
-}
+#' @title Set evidence.
+#' 
+#' @description Set, update and remove evidence..
+#' 
+#' @name grain-evidence
+#' 
+#' @aliases setEvidence retractEvidence absorbEvidence
+#' @param object A "grain" object
+#' @param nodes A vector of nodes; those nodes for which the
+#'     (conditional) distribution is requested.
+#' @param states A vector of states (of the nodes given by 'nodes')
+#' @param evidence An alternative way of specifying findings
+#'     (evidence), see examples below.
+#' @param nslist deprecated
+#' @param propagate Should the network be propagated?
+#' @param details Debugging information
+#' @return A list of tables with potentials.
+#' @note \code{setEvidence()} is an improvement of \code{setFinding()}
+#'     (and as such \code{setFinding} is obsolete). Users are
+#'     recommended to use \code{setEvidence()} in the future.
+#' 
+#' \code{setEvidence()} allows to specification of "hard evidence" (specific
+#' values for variables) and likelihood evidence (also known as virtual
+#' evidence) for variables.
+#' 
+#' The syntax of \code{setEvidence()} may change in the future.
+#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
+#' @seealso \code{\link{setFinding}} \code{\link{getFinding}}
+#'     \code{\link{retractFinding}} \code{\link{pFinding}}
+#' @references Søren Højsgaard (2012). Graphical Independence Networks
+#'     with the gRain Package for R. Journal of Statistical Software,
+#'     46(10), 1-26.  \url{http://www.jstatsoft.org/v46/i10/}.
+#' @keywords models utilities
+#' @examples
+#' 
+#' testfile <- system.file("huginex", "chest_clinic.net", package = "gRain")
+#' chest <- loadHuginNet(testfile, details=0)
+#' qb <- querygrain(chest)
+#' qb
+#' 
+#' lapply(qb, as.numeric) # Safe
+#' sapply(qb, as.numeric) # Risky
+#' 
+#' ## setFinding / setEvidence
+#' 
+#' yn <- c("yes","no")
+#' a    <- cptable(~asia, values=c(1,99),levels=yn)
+#' t.a  <- cptable(~tub+asia, values=c(5,95,1,99),levels=yn)
+#' s    <- cptable(~smoke, values=c(5,5), levels=yn)
+#' l.s  <- cptable(~lung+smoke, values=c(1,9,1,99), levels=yn)
+#' b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
+#' e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1),levels=yn)
+#' x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
+#' d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+#' plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+#' chest <- grain(plist)
+#' 
+#' 
+#' ## 1) These two forms are identical
+#' setEvidence(chest, c("asia","xray"), c("yes", "yes"))
+#' setFinding(chest, c("asia","xray"), c("yes", "yes"))
+#' 
+#' ## 2) Suppose we do not know with certainty whether a patient has
+#' ## recently been to Asia. We can then introduce a new variable
+#' ## "guess.asia" with "asia" as its only parent. Suppose
+#' ## p(guess.asia=yes|asia=yes)=.8 and p(guess.asia=yes|asia=no)=.1
+#' ## If the patient is e.g. unusually tanned we may set
+#' ## guess.asia=yes and propagate. This corresponds to modifying the
+#' ## model by the likelihood (0.8, 0.1) as
+#' setEvidence(chest, c("asia","xray"), list(c(0.8,0.1), "yes"))
+#' 
+#' ## 3) Hence, the same result as in 1) can be obtained with
+#' setEvidence(chest, c("asia","xray"), list(c(1, 0), "yes"))
+#' 
+#' ## 4) An alternative specification using evidence is
+#' setEvidence(chest, evidence=list("asia"=c(1, 0), "xray"="yes"))
+#' 
 
-## #################################################################
-##
-## setEvidence: With this syntax (nodes/states) setEvidence has been
-## used in the bnlearn book
-##
-## #################################################################
-
-
+#' @name grain-evidence
 setEvidence <- function(object, nodes=NULL, states=NULL, evidence=NULL, nslist=NULL,
                         propagate=TRUE, details=0){
+    
     if (!is.null(nslist))
         stop("Argument 'nslist' has been deprecated; please use 'evidence' instead\n")
 
-    .setEvidence_wrap( object, nodes=nodes,
-                 states=states, evidence=evidence, propagate=propagate, details=details)
+    if ( is.null( evidence ) && is.null( nodes ) )
+        stop( "Evidence is not given; nothing to do...")
+    
+    if ( is.null( evidence ) ) ## Then 'nodes' must be given
+        evidence <- .nodes.states2evidence( nodes, states )      
+    
+    ##setEvidence_(object, evidence, propagate=propagate, details=details)
+    setEvi_(object, evidence, propagate=propagate, details=details)
+    
 }
 
-
-.setEvidence_wrap <- function(object, nodes=NULL, states=NULL, evidence=NULL, propagate=TRUE, details=0){
-    if (!is.null( evidence )){
-        setEvidence_(object, evidence, propagate=propagate, details=details)
-    } else {
-        if ( !is.null( nodes ) ){
-            if (!is.null( states ) && length( nodes )==length( states )){
-                evidence <- as.vector(states, "list")
-                names(evidence) <- nodes
-                setEvidence_(object, evidence, propagate=propagate, details=details)
-            } else {
-                stop( "Either states are not given or nodes and states do not have same length" )
-            }
-        }  else {
-            stop( "Evidence is not given; nothing to do...")
-        }
-    }
-}
-
-
-## setEvidence_: The workhorse
-setEvidence_ <- function(object, evidence=NULL, propagate=TRUE, details=0){
-
-    #' details=1
-    #' cat("++++ setEvidence_\n"); print(evidence)
-
-    old.ev <- getEvidence(object)
-
-    if (.is.JointEvidence( old.ev ))
-        stop("JointEvidence (multivariate evidence) has been given;\n   to update evidence use setJointEvidence\n")
-
-    if ( !.is.Evidence(evidence) ){
-
-        ## Relevant if someone sticks in a row of a dataframe; not sure if this is a good solution.
-        if (class(evidence)=="data.frame"){
-            if (nrow(evidence)>1)
-                stop("evidence is a data.frame with more than one row; only one row is allowed\n")
-            evidence <- lapply(evidence, as.character)
-        }
-
-        ## Strip any NA's in the evidence; hmmm - maybe I do this twice ?? FIXME ??
-        idx <- !unlist(lapply(evidence, function(e) any(is.na(e))), use.names = FALSE)
-        if (length(idx)>0)
-            evidence <- evidence[ idx ]
-
-        new.ev <- .evidence2parray(evidence, object$universe$levels)
-    } else {
-        new.ev <- evidence
-    }
-
-    #' cat("Evidence - later\n"); print(new.ev)
-
-    tot.ev <- new.ev # can be changed below
-
-    if (details>0){
-        cat("new.ev (nodes):"); print(new.ev$summary$nodes)
-        cat("old.ev (nodes):"); print(old.ev$summary$nodes)
-    }
-
-    if (!object$isCompiled){
-        object <- compile(object)
-    }
-    object$isInitialized  <- FALSE
-    object$isPropagated   <- FALSE
-
-    if ( length(old.ev) > 0 ){
-        ## nodes on which there is already evidence will not be given
-        ## new evidence
-        idx <- match( intersect(new.ev$summary$nodes, old.ev$summary$nodes), new.ev$summary$nodes)
-        if ( length( idx ) > 0 ){
-            new.ev <- .delete.evidence( new.ev, idx)
-            if (details>0){
-                cat("new.ev (nodes - updated):"); print(new.ev$summary$nodes)
-            }
-        }
-        tot.ev <- .append.evidence( old.ev, new.ev )
-    }
-
-    if ( length( new.ev ) > 0 ){
-        if (details>0){
-            cat("tot.ev (nodes):"); print(tot.ev$summary$nodes)
-            cat("new.ev (to be inserted):"); print(new.ev$summmary$nodes)
-        }
-        host  <- .get.host.clique( new.ev$evidence, object$rip )
-        object$temppot <- .insert.evidence.in.potential( object$temppot, new.ev, host )
-        object$evidence <- tot.ev
-    }
-
-    if(details>0){
-        cat("after insertion:\n"); print( object$evidence )
-    }
-
-    if (propagate){
-        propagate(object)
-    } else {
-        object
-    }
-}
-
-
-.insert.evidence.in.potential <- function( pot, evi.list, hostclique ){
-    #' if (any(is.na(hostclique))) stop("NAs in hostclique...")
-    for (i in seq_along( evi.list$evidence ) ){
-        j <- hostclique[ i ]
-        p <- evi.list$evidence[[ i ]]
-        pot[[j]] <- tabMult__( pot[[ j ]], p )
-    }
-    pot
-}
-
+#' @name grain-evidence
 retractEvidence <- function(object, nodes=NULL, propagate=TRUE){
-    .retractEvidence_internal(object, nodes=nodes, propagate=propagate)
+    ##.retractEvidence_internal(object, nodes=nodes, propagate=propagate)
+    retractEvi_(object, items=nodes, propagate=propagate)
 }
 
-.retractEvidence_internal <- function(object, nodes=NULL, propagate=TRUE){
-    #cat("++++ retractEvidence_\n")
-    .resetgrain <- function(x){
-        x$temppot       <- x$origpot
-        x$evidence       <- NULL
-        ## FIXME Do we isInitialized? I doubt! Status: Now removed!
-        ## x$isInitialized <- TRUE
-        x$isPropagated  <- FALSE
-        x
-    }
-
-    if ( is.null( nodes ) ){
-        object <- .resetgrain( object )
-    } else {
-        old.ev <- getEvidence(object)
-        if ( .is.JointEvidence(old.ev) )
-            stop("JointEvidence (Multivariate evidence) has been set;\n   to retract retractJointEvidence instead...")
-
-        #cat("old.ev:\n"); print(old.ev)
-        idx <- match(intersect(old.ev$summary$nodes, nodes), old.ev$summary$nodes)
-        #print(idx)
-        if (length(idx)>0){
-            new.ev <- .delete.evidence( old.ev, idx )
-            #cat("new.ev:\n"); print(new.ev)
-            object <- .resetgrain(object)
-            if ( length(new.ev$summary$nodes) > 0 ){
-                object <- setEvidence_(object, evidence=new.ev, propagate=FALSE)
-            }
-        }
-    }
-
-    if (propagate){
-        propagate(object)
-    } else {
-        object
-    }
-}
-
-## #################################################################
-##
-## setJointEvidence EXPERIMENTAL - MULTIDIMENSIONAL EVIDENCE
-##
-## #################################################################
-
-setJointEvidence <- function(object, evidence=NULL, propagate=TRUE, details=0){
-
-    #print(evidence)
-    if (!object$isCompiled){
-        object <- compile(object)
-    }
-    object$isInitialized <- FALSE
-    object$isPropagated  <- FALSE
-
-    new.ev <- if (!.is.JointEvidence(evidence))
-        .j.evidence2parray(evidence, object$universe$levels)
-    else
-        evidence
-
-    #print(new.ev)
-    if( details>0 ){
-        cat("new.ev:\n"); print( new.ev )
-    }
-
-    n.nodes <- length( new.ev$evidence )
-    if (n.nodes>0){
-        curr.evidence    <- getEvidence( object )
-        ##  Insert new.ev to temppot
-        if (length(nodes)>0){
-            object$temppot <- .insert.jevi.in.potential( new.ev, #new.ev$nodes, new.ev$evidence,
-                                                   object$temppot, object$rip )
-            total.evidence <- .append.j.evidence( curr.evidence, new.ev )
-            object$evidence <- total.evidence
-        }
-    }
-
-    if (propagate){
-        propagate(object)
-    } else {
-        object
-    }
-}
-
-.insert.jevi.in.potential <- function(j.evi.list, pot, rip, details=0){
-    host.idx <- .get.host.clique(j.evi.list$evidence, rip)
-    #' cat("host.idx: \n"); print(host.idx)
-    #' nodes <- lapply(j.evi.list$evidence, .namesDimnames)
-    #' cat("nodes  : \n"); print( nodes )
-
-    for (i in seq_along(j.evi.list$evidence)){
-        j <- host.idx[ i ]
-        #' cat("j.evi.list[i]: "); print( j.evi.list$evidence[[i]] );
-        #' cat("pot: "); print( ftable( pot[[h.idx]] ))
-        pot[[ j ]]  <- tabMult__( pot[[ j ]], j.evi.list$evidence[[ i ]] )
-    }
-    pot
-}
-
-retractJointEvidence <- function(object, items=NULL, propagate=TRUE){
-    ##cat("++++ retractJointEvidence_\n")
-    .resetgrain <- function(x){
-        x$temppot       <- x$origpot
-        x$evidence       <- NULL
-        ## FIXME Do we isInitialized? I doubt! Status: Now removed!
-        ## x$isInitialized <- TRUE
-        x$isPropagated  <- FALSE
-        x
-    }
-
-    if (is.null(items)){
-        object <- .resetgrain( object )
-    } else {
-        old.ev <- getEvidence(object)
-        if ( .is.Evidence(old.ev) )
-            stop("Evidence (univariate evidence) has been set;\n   to retract retractEvidence instead...")
-        if ( !is.numeric(items) ){
-            cat(sprintf("Invalid items: %s\n", toString(items)))
-            stop( "items must be numeric" )
-        }
-        idx <- items
-        new.ev <- .delete.j.evidence( old.ev, idx )
-
-        object <- .resetgrain(object)
-        if ( length(new.ev$summary$nodes) > 0 ){
-            object <- setJointEvidence(object, evidence=new.ev, propagate=FALSE)
-        }
-    }
-
-    if (propagate){
-        propagate(object)
-    } else {
-        object
-    }
-}
-
-
-.evidence2parray <- function(evi.list, levels){
-
-    ## First remove all evidence specified as NA
-    not.na <- !unlist(lapply(lapply(evi.list,is.na), any), use.names=FALSE)
-    if (length( not.na ) > 0)
-        evi.list <- evi.list[ not.na ]
-
-    evidence           <- vector("list", length(evi.list))
-    is.hard.evidence   <- rep.int(TRUE,  length(evi.list))
-    hard.state         <- rep.int(NA,    length(evi.list))
-
-    #' cat(".evidence2parray\n"); print(evi.list)
-
-    for (i in seq_along(evi.list)){
-        ev <- evi.list[i]
-        v <- ev[[1]]
-
-        if( is.array(v)){
-            n <- names(dimnames(v))
-            is.hard.evidence[i]    <- FALSE
-            evidence[[i]] <- v
-            next
-        }
-
-        if (is.character(v)){
-            n <- names(evi.list)[i]
-            hard.state[i]  <- v
-            evidence[[i]]  <- .hard.state2parray(n, v, levels[[n]])
-            next
-        }
-
-        if (is.numeric(v)){
-            n <- names(evi.list)[i]
-            is.hard.evidence[i] <- FALSE
-            evidence[[i]] <- .soft.state2parray(n, v, levels[[n]])
-        }
-    }
-
-    ## print(evidence)
-    ## If evidence is zero on all states or negative on some (or all) states then it is invalid
-    keep <- unlist(lapply(evidence, function(e){ sum(e) !=0 && all(e>=0) }), use.names=FALSE)
-    ## print(keep)
-
-    nodes <- unique.default( unlist(lapply(evidence, .namesDimnames)),
-                            use.names=FALSE )
-
-    out <- list(summary=list(
-                    nodes=nodes[keep],
-                    is.hard.evidence=is.hard.evidence[keep],
-                    hard.state=hard.state[keep]),
-                evidence=evidence[keep])
-
-    class( out ) <- "grainEvidence_"
-    ## print.default( out )
-    out
-}
-
-.j.evidence2parray <- function(evi.list, levels){
-
-    ## First we remove all evidence specified as NA
-    not.na <- !unlist(lapply(lapply(evi.list,is.na), any), use.names=FALSE)
-    if (length( not.na ) > 0)
-        evi.list <- evi.list[not.na]
-
-    evidence         <- vector("list", length(evi.list))
-    is.hard.evidence <- rep.int(TRUE, length(evi.list))
-    hard.state       <- rep.int(NA_character_, length(evi.list))
-
-    for (i in seq_along(evi.list)){
-        n <- names(evi.list)[i]
-        v <- evi.list[[i]]
-
-        if (is.array( v )){
-            is.hard.evidence[i]  <- FALSE
-            evidence[[i]]  <- v
-            next
-        }
-
-        if (is.character(v)){
-            hard.state[i]  <- v
-            evidence[[i]]  <- .hard.state2parray(n, v, levels[[n]])
-            next
-        }
-
-        if (is.numeric(v)){
-            is.hard.evidence[i]  <- FALSE
-            ## Maximum value of soft evidence is 1, minimum is 0
-            v[ v>1 ] <- 1
-            v[ v<0 ] <- 0
-            evidence[[i]]  <- .soft.state2parray(n, v, levels[[n]])
-        }
-    }
-
-    nodes <- unique.default( unlist(lapply(evidence, .namesDimnames)), use.names=FALSE )
-    #out <- list(nodes=nodes, evidence=evidence)
-    out <- list(summary=list(nodes=nodes), evidence=evidence)
-
-    class( out ) <- "grainJEvidence_"
-    out
-}
-
-
+#' @name grain-evidence
 absorbEvidence <- function(object, propagate=TRUE ){
-    # Update 'object' as
-    # 1) set origpot <- temppot
-    # 2) ignore any finding
-    object$origpot <- object$temppot
-    object$evidence <- NULL
-    object$isPropagated <- FALSE
-
-    if (propagate){
-        propagate(object)
-    } else {
-        object
-    }
+    absorbEvi( object, propagate=propagate )
 }
 
 
-print.grainEvidence_ <- function(x, ...){
-    cat("Univariate evidence\n")
-    cat(sprintf("pEvidence=%f\n", x$pEvidence))
-    print(as.data.frame(x$summary))
-    print(x$evidence)
-    #print(list(overview=as.data.frame(x[c(1,3,4)]), evidence=x[[2]]) )
-    invisible( x )
-}
-
-print.grainJEvidence_ <- function(x, ...){
-    cat("General (multinode) evidence\n")
-    print(x$evidence)
-}
 
 
-## ####################################################################
+### #############################################################
 ##
-## Evidence related utility functions
+##  PROBABLY OBSOLETE BELOW HERE
 ##
-## ####################################################################
-
-
-.is.Evidence <- function(x){
-    !is.null(x) && class(x)=="grainEvidence_"
-}
-
-.is.JointEvidence <- function(x){
-    !is.null(x) && class(x)=="grainJointEvidence_"
-}
-
-.hard.state2parray <- function(n, v, lev){
-    #str(list(n,v,lev))
-    tab <- .fast.parray(n, list(lev), rep.int(0, length(lev)))
-    tab[ match( v, lev )] <- 1
-    tab
-}
-
-.soft.state2parray <- function(n, v, lev){
-    #str(list(n,v,lev))
-    .fast.parray(n, list(lev), v)
-}
-
-.fast.parray <- function(varNames, levels, values=1){
-    #str(list(varNames, levels, values))
-    dn <- if(is.list(levels)) levels else list(levels)
-    names(dn) <- varNames
-    array(values, dimnames=dn)
-}
-
-.append.evidence <- function(ev1, ev2){
-    if (is.null(ev1))
-        return (ev2)
-    if (is.null(ev2))
-        return (ev1)
-
-    #cat(".append.evidence:\n"); cat("ev1:\n"); print(ev1); cat("ev2:\n"); print(ev2)
-    summary <- lapply(seq_along(ev1$summary),
-                      function(i) c(ev1$summary[[i]], ev2$summary[[i]]))
-    names(summary) <- names(ev1$summary)
-    evidence <- c(ev1$evidence, ev2$evidence)
-    out <- list(summary=summary, evidence=evidence)
-    class(out) <- "grainEvidence_"
-    out
-}
-
-.append.j.evidence <- function(ev1, ev2){
-    if (is.null(ev1))
-        return (ev2)
-    if (is.null(ev2))
-        return (ev1)
-
-    #cat(".append.j.evidence\n"); print(ev1); print(ev2)
-
-    evidence <- c(ev1$evidence, ev2$evidence)
-    nodes <- unique.default( unlist(lapply(evidence, .namesDimnames)) )
-    out   <- list(summary=list(nodes=nodes), evidence=evidence)
-    class(out) <- "grainJointEvidence_"
-    out
-}
-
-.delete.evidence <- function(ev, idx){
-    if (length(idx)>0){
-        summary <- lapply(ev$summary, function(x) x[-idx])
-        names(summary) <- names(ev$summary)
-        ev <- list(summary=summary, evidence=ev$evidence[-idx])
-        #ev <- lapply(ev, function(x) x[-idx])
-        class(ev) <- "grainEvidence_"
-    }
-    ev
-}
-
-.delete.j.evidence <- function(ev, idx){
-    if (length(idx)>0){
-        summary <- lapply(ev$summary, function(x) x[-idx])
-        names(summary) <- names(ev$summary)
-        ev <- list(summary=summary, evidence=ev$evidence[-idx])
-        #ev <- lapply(ev, function(x) x[-idx])
-        class(ev) <- "grainJointEvidence_"
-    }
-    ev
-}
+### #############################################################
 
 
 
+## ## @rdname grain-evidence
+## ## @param evi.list A list of evidence.
+## ## @param levels A list of levels of variables.
+## newEvidence <- function(evi.list, levels){
 
-## ####################################################################
-##
-## Ting der skal omdøbes / et andet sted hen ved lejlighed
-##
-## ####################################################################
+##     ## First remove all evidence specified as NA
+##     not.na <- !unlist(lapply(lapply(evi.list,is.na), any), use.names=FALSE)
+##     if (length( not.na ) > 0)
+##         evi.list <- evi.list[ not.na ]
 
-## FIXME: .get.host.clique: ineffektiv implementation;
-## FIXME: gRbase (1.7-1) introduces get_superset_ to be used instead
-## FIXME: Has been fixed but not checked!!!
+##     evidence           <- vector("list", length(evi.list))
+##     is.hard.evidence   <- rep.int(TRUE,  length(evi.list))
+##     hard.state         <- rep.int(NA,    length(evi.list))
 
-#' .get.host.clique <- function(evidence, rip){
-#'     unlist(lapply(evidence,
-#'                   function(x){
-#'                       n <- names(dimnames(x))
-#'                       which( isin( rip$cliques, n, index=TRUE) !=0 )[1]} ),
-#'            use.names = FALSE)
-#' }
+##     ## cat("newEvidence\n"); print(evi.list)
+
+##     for (i in seq_along(evi.list)){
+##         ev <- evi.list[i]
+##         v <- ev[[1]]
+
+##         if( is.array(v)){
+##             n <- names(dimnames(v))
+##             is.hard.evidence[i]    <- FALSE
+##             evidence[[i]] <- v
+##             next
+##         }
+        
+##         if (is.character(v)){
+##             n <- names(evi.list)[i]
+##             hard.state[i]  <- v
+##             evidence[[i]]  <- .hard.state2parray(n, v, levels[[n]])
+##             next
+##         }
+        
+##         if (is.numeric(v)){
+##             n <- names(evi.list)[i]
+##             is.hard.evidence[i] <- FALSE
+##             evidence[[i]] <- .soft.state2parray(n, v, levels[[n]])
+##         }
+##     }
+
+##     ## print(evidence)
+##     ## If evidence is zero on all states or negative on some (or all) states then it is invalid
+##     keep <- unlist(lapply(evidence, function(e){ sum(e) !=0 && all(e>=0) }), use.names=FALSE)
+##     ## print(keep)
+
+##     nodes <- unique.default( unlist(lapply(evidence, .namesDimnames)),
+##                             use.names=FALSE )
+
+##     out <- list(summary=list(
+##                     nodes=nodes[keep],
+##                     is.hard.evidence=is.hard.evidence[keep],
+##                     hard.state=hard.state[keep]),
+##                 evidence=evidence[keep])
+
+##     class( out ) <- "grainEvidence_"
+##     ## print.default( out )
+##     out
+## }
 
 
-.get.host.clique <- function(evidence, rip){
-    unlist(lapply(evidence,
-                  function(x){
-                      n <- names(dimnames(x))
-                      gRbase::get_superset_(n, rip$cliques, all=FALSE)
-                  }),
-                  use.names = FALSE)
-}
+
+## ## setEvidence_: The workhorse
+## setEvidence_ <- function(object, evidence=NULL, propagate=TRUE, details=0){
+##                                         #
+##     #details=1
+##     # cat("++++ setEvidence_\n"); print(evidence)
+    
+##     old.ev <- getEvidence(object)
+    
+##     if (.is.JointEvidence( old.ev ))
+##         stop("JointEvidence (multivariate evidence) has been given;\n   to update evidence use setJointEvidence\n")
+    
+##     if ( !.is.Evidence(evidence) ){
+##         ## Relevant if someone sticks in a row of a dataframe; not sure if this is a good solution.
+##         if (class(evidence)=="data.frame"){
+##             if (nrow(evidence)>1)
+##                 stop("evidence is a data.frame with more than one row; only one row is allowed\n")
+##             evidence <- lapply(evidence, as.character)
+##         }
+        
+##         ## Strip any NA's in the evidence; hmmm - maybe I do this twice ?? FIXME ??
+##         idx <- !unlist(lapply(evidence, function(e) any(is.na(e))), use.names = FALSE)
+##         if (length(idx)>0)
+##             evidence <- evidence[ idx ]
+        
+##         new.ev <- newEvidence(evidence, object$universe$levels)
+##     } else {
+##         new.ev <- evidence
+##     }
+
+##     ## cat("Evidence - later\n"); print(new.ev)
+
+##     tot.ev <- new.ev # can be changed below
+
+##     if (details>0){
+##         cat("new.ev (nodes):"); print(new.ev$summary$nodes)
+##         cat("old.ev (nodes):"); print(old.ev$summary$nodes)
+##     }
+
+##     if (!object$isCompiled){
+##         object <- compile(object)
+##     }
+    
+##     object$isInitialized  <- FALSE
+##     object$isPropagated   <- FALSE
+
+##     if ( length(old.ev) > 0 ){
+##         ## nodes on which there is already evidence will not be given
+##         ## new evidence
+##         idx <- match( intersect(new.ev$summary$nodes, old.ev$summary$nodes), new.ev$summary$nodes)
+##         if ( length( idx ) > 0 ){
+##             new.ev <- .delete.evidence( new.ev, idx)
+##             if (details>0){
+##                 cat("new.ev (nodes - updated):")
+##                 print(new.ev$summary$nodes)
+##             }
+##         }
+##         tot.ev <- .append.evidence( old.ev, new.ev )
+##     }
+
+##     if ( length( new.ev ) > 0 ){
+##         if (details>0){
+##             cat("tot.ev (nodes):"); print(tot.ev$summary$nodes)
+##             cat("new.ev (to be inserted):"); print(new.ev$summmary$nodes)
+##         }
+##         host  <- .get.host.clique( new.ev$evidence, object$rip )
+##         object$temppot <- .insert.evidence.in.potential( object$temppot, new.ev, host )
+##         object$evidence <- tot.ev
+##     }
+
+##     if (details>0){
+##         cat("after insertion:\n"); print( object$evidence )
+##     }
+
+##     if (propagate) propagate(object) else object
+## }
+
+
+
+
+## .insert.evidence.in.potential <- function( pot, evi.list, hostclique ){
+##     ## if (any(is.na(hostclique))) stop("NAs in hostclique...")
+##     for (i in seq_along( evi.list$evidence ) ){
+##         j <- hostclique[ i ]
+##         p <- evi.list$evidence[[ i ]]
+##         pot[[j]] <- tabMult__( pot[[ j ]], p )
+##     }
+##     pot
+## }
+
+
+
+
+
+## .retractEvidence_internal <- function(object, nodes=NULL, propagate=TRUE){
+##     #cat("++++ retractEvidence_\n")
+##     .resetgrain <- function(x){
+##         x$temppot       <- x$origpot
+##         x$evidence       <- NULL
+##         x$isPropagated  <- FALSE
+##         x
+##     }
+
+##     if ( is.null( nodes ) ){
+##         object <- .resetgrain( object )
+##     } else {
+##         old.ev <- getEvidence(object)
+##         if ( .is.JointEvidence(old.ev) )
+##             stop("JointEvidence (Multivariate evidence) has been set;\n   to retract retractJointEvidence instead...")
+
+##         #cat("old.ev:\n"); print(old.ev)
+##         idx <- match(intersect(old.ev$summary$nodes, nodes), old.ev$summary$nodes)
+##         #print(idx)
+##         if (length(idx)>0){
+##             new.ev <- .delete.evidence( old.ev, idx )
+##             #cat("new.ev:\n"); print(new.ev)
+##             object <- .resetgrain(object)
+##             if ( length(new.ev$summary$nodes) > 0 ){
+##                 object <- setEvidence_(object, evidence=new.ev, propagate=FALSE)
+##             }
+##         }
+##     }
+
+##     if (propagate){
+##         propagate(object)
+##     } else {
+##         object
+##     }
+## }
+
+
+
+
+
+
+
+## ## Check for invalid states
+## .evidenceHasValidStates <- function( evidence, universe ){
+##     out <- TRUE
+##     for (i in 1:length(evidence)){
+##         n <- names(evidence)[ i ]
+##         e <- evidence[[ i ]]
+        
+##         (j <- match( e, universe$levels[[ n ]] ) )
+##         if ( any( is.na( j ) ) ){
+##             out <- FALSE
+##             st <- sprintf("Invalid states; node: %s states: %s\n", n,
+##                           toString( e[ which( is.na(j) ) ] ))
+##             cat(st)
+##         }
+##     }
+##     out
+## }
+
+## ## Check for invalid nodes
+## .evidenceHasValidNodes <- function(evidence, universe){
+##     out <- TRUE
+##     (j <- match( names( evidence ), universe$nodes ))
+##     if ( any( is.na( j ) ) ){
+##         st <- sprintf("Node(s) are not in the network: %s\n",
+##                       toString( names( evidence )[ which( is.na(j) ) ] ))
+##         cat(st)
+##         out <- FALSE
+##     }
+##     out
+## }
+
+
+
+
+## ## ####################################################################
+## ##
+## ## Evidence related utility functions
+## ##
+## ## ####################################################################
+
+
+## .is.Evidence <- function(x){
+##     !is.null(x) && class(x)=="grainEvidence_"
+## }
+
+## .is.JointEvidence <- function(x){
+##     !is.null(x) && class(x)=="grainJointEvidence_"
+## }
+
+
+## .append.evidence <- function(ev1, ev2){
+##     if (is.null(ev1))
+##         return (ev2)
+##     if (is.null(ev2))
+##         return (ev1)
+
+##     #cat(".append.evidence:\n"); cat("ev1:\n"); print(ev1); cat("ev2:\n"); print(ev2)
+##     summary <- lapply(seq_along(ev1$summary),
+##                       function(i) c(ev1$summary[[i]], ev2$summary[[i]]))
+##     names(summary) <- names(ev1$summary)
+##     evidence <- c(ev1$evidence, ev2$evidence)
+##     out <- list(summary=summary, evidence=evidence)
+##     class(out) <- "grainEvidence_"
+##     out
+## }
+
+
+## .delete.evidence <- function(ev, idx){
+##     if (length(idx)>0){
+##         summary <- lapply(ev$summary, function(x) x[-idx])
+##         names(summary) <- names(ev$summary)
+##         ev <- list(summary=summary, evidence=ev$evidence[-idx])
+##         #ev <- lapply(ev, function(x) x[-idx])
+##         class(ev) <- "grainEvidence_"
+##     }
+##     ev
+## }
+
+
+
+
+## ## ####################################################################
+## ##
+## ## Ting der skal omdoebes / et andet sted hen ved lejlighed
+## ##
+##  ## ####################################################################
+
+
+
+
+
+
+
 
 
 
