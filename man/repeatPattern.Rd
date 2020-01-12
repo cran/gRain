@@ -20,46 +20,64 @@ applying \code{unlist()}.}
 }
 \description{
 Repeated patterns is a useful model specification
-    short cut for Bayesian networks
+short cut for Bayesian networks
 }
 \examples{
 
-## Specify hidden markov models. The x[i]'s are unobserved, the
-## y[i]'s can be observed.
-
-yn <- c("yes","no")
+## Example: Markov chain
+yn <- c("yes", "no")
 
 ## Specify p(x0)
-x.0 <- cptable(~x0, values=c(1,1), levels=yn)
+x.0 <- cptable(~x0, values=c(1, 9), levels=yn)
 
 ## Specify transition density
-x.x <- cptable(~x[i]|x[i-1], values=c(1,99,2,98),levels=yn)
+x.x <- cptable(~x[i]|x[i-1], values=c(1, 99, 2, 98), levels=yn)
 
-## Specify emissiob density
-y.x <- cptable(~y[i]|x[i],   values=c(1,99,2,98),levels=yn)
+## Pattern to be repeated
+pat <- list(x.x)
+
+rep.pat <- repeatPattern(pat, instances=1:5)
+cpt <- compileCPT(c(list(x.0), rep.pat))
+mc <- grain(cpt)
+
+if (interactive()) iplot(mc)
+
+## Example: Hidden markov model: The x[i]'s are unobserved, the
+## y[i]'s can be observed.
+
+yn <- c("yes", "no")
+
+## Specify p(x0)
+x.0 <- cptable(~x0, values=c(1, 9), levels=yn)
+
+## Specify transition density
+x.x <- cptable(~x[i]|x[i-1], values=c(1, 99, 2, 98), levels=yn)
+
+## Specify emission density
+y.x <- cptable(~y[i]|x[i],   values=c(10, 90, 20, 80), levels=yn)
 
 ## The pattern to be repeated
-pp <- list(x.x, y.x)
+pat <- list(x.x, y.x)
 
 ## Repeat pattern and create network
-ppp <- repeatPattern(pp, instances=1:10)
-qqq <- compileCPT(c(list(x.0),ppp))
-rrr <- grain(qqq)
+rep.pat <- repeatPattern(pat, instances=1:5)
+cpt <- compileCPT(c(list(x.0), rep.pat))
+hmm <- grain(cpt)
+hmm 
 
+if (interactive()) iplot(hmm)
 
-
-}
-\author{
-Søren Højsgaard, \email{sorenh@math.aau.dk}
 }
 \references{
 Søren Højsgaard (2012). Graphical Independence
-    Networks with the gRain Package for R. Journal of Statistical
-    Software, 46(10), 1-26.
-    \url{http://www.jstatsoft.org/v46/i10/}.
+Networks with the gRain Package for R. Journal of Statistical
+Software, 46(10), 1-26.
+\url{http://www.jstatsoft.org/v46/i10/}.
 }
 \seealso{
 \code{\link{grain}}, \code{\link{compileCPT}}
 }
+\author{
+Søren Højsgaard, \email{sorenh@math.aau.dk}
+}
 \keyword{utils}
-

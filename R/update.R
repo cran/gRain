@@ -2,14 +2,13 @@
 #' 
 #' @description Update a Bayesian network
 #' 
-#' @param object A Bayesian network of class \code{CPTgrain}
+#' @param object A Bayesian network of class \code{cpt_grain}
 #' @param \dots If \code{CPTlist} is a name in the dotted list, then
 #'     the object will be update with this value (which is assumed to
-#'     be a list of conditional probabilities). %% ~~Describe
-#'     \code{\dots} here~~
-#' @return A new Bayesian network.  %% ~Describe the value returned %%
-#'     If it is a LIST, use %% \item{comp1 }{Description of 'comp1'}
-#'     %% \item{comp2 }{Description of 'comp2'} %% ...
+#'     be a list of conditional probabilities).
+#' 
+#' @return A Bayesian network.
+#' 
 #' @note There is NO checking that the input matches the settings in
 #'     the Bayesian network.
 #' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
@@ -18,6 +17,8 @@
 #'     46(10), 1-26.  \url{http://www.jstatsoft.org/v46/i10/}.
 #' @keywords utilities
 #' @examples
+#'
+#' ## FIXME : Improve example; avoid compileCPT
 #' 
 #' ## Network for Bernulli experiment; two nodes: X and thetaX
 #' yn  <- c("yes", "no")    # Values for X
@@ -26,7 +27,6 @@
 #' 
 #' thX <- cptable(~thetaX, values=prX.val, levels=thX.val)
 #' X   <- cptable(~X|thetaX, values=rbind(thX.val,1-thX.val), levels=yn)
-#' 
 #' 
 #' cptlist <- compileCPT( list(thX, X) )
 #' bn  <- compile( grain( cptlist ) )
@@ -39,25 +39,24 @@
 #' bn2 <- update(bn, CPTlist=compileCPT( list(thX2, X)))
 #' querygrain( setEvidence(bn2, nodes="X", states="yes") )
 #' 
-#' 
-#' 
-#' @export update.CPTgrain
-"update.CPTgrain" <- function(object,  ...){
-
-    if(!(object$isCompiled))
+#' @export update.cpt_grain
+"update.cpt_grain" <- function(object,  ...){
+    
+    if (!.isComp(object))
         object <- compile( object )
-
+    
     ##cl <- match.call(expand.dots=TRUE)
     args <- list(...)
     arg.names <- names(args)
-
+    
     if ("CPTlist" %in% arg.names){
         object$cptlist[names(args$CPTlist)] <- args$CPTlist
-        pot.with.1        <- .createPotList( object$rip, object$universe )
+        pot.with.1        <- .mkArrayList( rip(object), uni(object) )
         newpot            <- .insertCPT(object$cptlist, pot.with.1, details=0)
-        object$origpot    <- newpot
-        object$temppot    <- newpot
-        object$equipot    <- .insertNA(pot.with.1)
+        object$potential <-
+            list(pot_orig=newpot,
+                 pot_temp=newpot,
+                 pot_equi=.initArrayList(pot.with.1, NA))
         object$isPropagated <- FALSE
     }
     object

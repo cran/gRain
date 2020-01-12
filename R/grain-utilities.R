@@ -1,8 +1,9 @@
-randomCPT <- function(object, states=c("yes","no")){
 
-    if (class(object) != "graphNEL")
-        stop("'object' must be a graphNEL object\n")
-    if (!is.DAG(object))
+randomCPT <- function(object, states=c("yes", "no")){
+
+    if (!inherits(object, "graphNEL"))
+        stop("'object' must be a graphNEL\n")
+    if (!is_dag(object))
         stop("'object' is not a DAG\n")
 
     vpa <- vpar( object )
@@ -14,15 +15,20 @@ randomCPT <- function(object, states=c("yes","no")){
 }
 
 
-
-.formula2char <- function(f) {
-	unlist(rhsf2list(f))
+.print_probability <- function(vn){
+    if (length(vn) > 1){
+        cat(paste(" P(", vn[1], "|", paste(vn[-1], collapse=' '), ")\n"))
+    } else {
+        cat(paste(" P(", vn, ")\n"))
+    }    
 }
 
+.formula2char <- function(f) {
+    unlist(gRbase::rhsf2list(f))
+}
 
 .namesDimnames <- function(x)
     names(dimnames(x))
-
 
 setSliceValue <- function(x, slice, complement=FALSE, value=0){
     margin <- names(slice)
@@ -33,25 +39,31 @@ setSliceValue <- function(x, slice, complement=FALSE, value=0){
     x
 }
 
-
-
-
-getgrain <- function(object, name=c("universe", "data", "dag", "ug", "cptlist",
-                                 "origpot", "temppot", "equipot", "rip",
-                                 "isCompiled", "isPropagated",
-                                 "evidence", "pEvidence",
-                                 "control", "details")){
+getgrain<- function(object, name=c("universe", "data", "dag", "ug", "cptlist",
+                                   "origpot", "temppot", "equipot",
+                                   "pot_orig", "pot_temp", "pot_equi",
+                                   "rip",
+                                   "isCompiled", "isPropagated",
+                                   "evidence", "pEvidence",
+                                   "control", "details")){
 
     switch(name,
-           universe 		    = object$universe,
-           data 			      = object$data,
-           dag 				      = object$dag,
-           ug 			    	  = object$ug,
+           universe 	    = object$universe,
+           data 	    = object$data,
+           dag 		    = object$dag,
+           ug 		    = object$ug,
            cptlist          = object$cptlist,
+           cpt              = object$cptlist,
 
-           origpot          = object$origpot,
-           temppot          = object$temppot,
-           equipot          = object$equipot,
+           potential        = object$potential,
+           origpot          = object$potential$pot_orig,
+           temppot          = object$potential$pot_temp,
+           equipot          = object$potential$pot_equi,
+
+           pot_orig         = object$potential$pot_orig,
+           pot_temp         = object$potential$pot_temp,
+           pot_equi         = object$potential$pot_equi,
+
            rip              = object$rip,
 
            isCompiled       = object$isCompiled,
@@ -64,7 +76,11 @@ getgrain <- function(object, name=c("universe", "data", "dag", "ug", "cptlist",
            )
 }
 
-## getgin <- getgrain
+getgin <- getgrain
+
+
+
+
 
 
 
@@ -133,7 +149,7 @@ splitVec.list <- function(val, lev){
 ##     UseMethod("as.grain")
 ## }
 
-## as.grain.CPTspec <- function(x, ...){
+## as.grain.cpt_spec <- function(x, ...){
 ##     grain( x )
 ## }
 

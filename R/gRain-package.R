@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 #' Overview - the gRain package for graphical independence networks
 #' 
 #' Probability propagation in graphical independence networks, (also known as
@@ -36,21 +31,6 @@
 
 
 
-
-#' Internal functions for the gRain package
-#' 
-#' These functions should not be called directly by the user
-#' 
-#' 
-#' @aliases summary.grain print.huginNet print.cptable print.CPTspec
-#'     print.grain print.grainFinding print.POTspec randomCPT getgrain
-#'     getgin printlist printlist.default printlist.list splitVec
-#'     splitVec.default splitVec.list valueLabels.cptable
-#'     varNames.cptable valueLabels.table varNames.table setSliceValue
-#'     tableListProd print.grainEvidence_ print.grainJEvidence_
-#'     setJointEvidence retractJointEvidence %>%
-#' 
-#' @keywords internal
 
 
 

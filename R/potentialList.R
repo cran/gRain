@@ -1,63 +1,59 @@
 ## Create potential list (rip, universe)
 ##
-.createPotList <- function(rip.order, universe)
-{
-    cliques     <- rip.order$cliques
-    APlist  <- as.list(rep(NA,length(cliques)))
-    for ( i  in 1:length(cliques))
-        {
-            cq    <- cliques[[ i ]]
-            vlab  <- universe$levels[cq]
-            APlist[[ i ]] <- parray(cq, vlab)
-        }
-    APlist
+.mkArrayList <- function(rip.order, universe, values=1){
+    cliques <- rip.order$cliques
+    
+    potlist  <- as.list(rep(NA, length(cliques)))
+    
+    for ( i in seq_along(cliques)){
+        cq    <- cliques[[ i ]]
+        vlab  <- universe$levels[cq]
+
+        ## september 2019: tab() is gRbase; should be ar_new or something
+        potlist[[ i ]] <- tab(cq, vlab, values)
+    }
+    potlist
+}
+
+.initArrayList <- function(x, values=NA){
+    lapply(x, function(z) {
+        z[] <- values             
+        z
+    } )
 }
 
 ## Insert cpt's into potential list (cptlist, APlist)
 ##
-.insertCPT <- function(cptlist, APlist, details=0)
+.insertCPT <- function(cptlist, potlist, details=0)
 {
     if (details>=1) cat(".Inserting cpt's in potential list [.insertCPT]\n")
 
-    APnames <- lapply(APlist, function(x) names(dimnames(x)))
+    APnames <- lapply(potlist, function(x) names(dimnames(x)))
     CPnames <- unname(lapply(cptlist, function(x) varNames(x)))
 
-    ## FIXME .findHosts can be replaced by gRbase::get_superset_
-    hosts    <- .findHosts( CPnames, APnames )
+    hosts    <- .get_hosts(CPnames, APnames)
 
-    for ( i  in 1:length(cptlist))
-        {
+    for (i in 1:length(cptlist)) {
             cptc <- cptlist[[ i ]]
             j    <- hosts[ i ]
-            APlist[[ j ]] <- tableOp( APlist[[ j ]], cptc, "*" )
+            ##print(potlist[[j]])
+            potlist[[ j ]] <- tableOp( potlist[[ j ]], cptc, "*" )
         }
-    .infoPrint(details, 4, {cat("....APlist (after insertion):\n"); print(APlist) })
-    APlist
-}
-
-.insertNA <- function(list.of.tables)
-{
-    lapply(list.of.tables,
-           function(xxx)
-           {
-               xxx[] <- NA
-               xxx
-           } )
-}
-
-
-## FIXME .findHosts can be replaced by gRbase::get_superset_
-.findHosts <- function( xx, yy ){
-  unlist(lapply(1:length(xx), function( i ) which(isin(yy, xx[[  i  ]], index=T)>0)[1]))
+    .infoPrint(details, 4, {cat("....potlist (after insertion):\n"); print(potlist) })
+    potlist
 }
 
 
 
-
-
-
-
-
+## For each element (vector) x in xx.set, find the element (vector) y in
+## yy.set such that x is contained in y
+.get_hosts <- function(xx.set, yy.set){
+    unlist(lapply(1:length(xx.set), function(i) which(is_inset(xx.set[[i]], yy.set, index=TRUE) > 0)[1]))
+    ## Alternative:
+    ## v <- lapply(xx.set, get_superset, yy.set, all=FALSE)
+    ## v[lapply(v, length) == 0] <- NA
+    ## unlist(v)
+}
 
 
 

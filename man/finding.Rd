@@ -2,14 +2,13 @@
 % Please edit documentation in R/finding.R
 \name{finding}
 \alias{finding}
+\alias{setFinding}
+\alias{retractFinding}
 \alias{getFinding}
 \alias{pFinding}
-\alias{retractFinding}
-\alias{setFinding}
 \title{Set, retrieve, and retract finding in Bayesian network.}
 \usage{
-setFinding(object, nodes = NULL, states = NULL, flist = NULL,
-  propagate = TRUE)
+setFinding(object, nodes = NULL, states = NULL, flist = NULL, propagate = TRUE)
 }
 \arguments{
 \item{object}{A "grain" object}
@@ -25,14 +24,14 @@ examples below.}
 }
 \description{
 Set, retrieve, and retract finding in Bayesian
-    network.  NOTICE: The functions described here are kept only
-    for backward compatibility; please use the corresponding
-    evidence-functions in the future.
+network.  NOTICE: The functions described here are kept only
+for backward compatibility; please use the corresponding
+evidence-functions in the future.
 }
 \note{
 NOTICE: The functions described here are kept only for
-    backward compatibility; please use the corresponding
-    evidence-functions in the future:
+backward compatibility; please use the corresponding
+evidence-functions in the future:
 
 \code{setEvidence()} is an improvement of \code{setFinding()} (and as such
 \code{setFinding} is obsolete). Users are recommended to use
@@ -81,19 +80,18 @@ pFinding(bn2)
 
 
 }
-\author{
-Søren Højsgaard, \email{sorenh@math.aau.dk}
-}
 \references{
 Søren Højsgaard (2012). Graphical Independence Networks
 with the gRain Package for R. Journal of Statistical Software, 46(10), 1-26.
 \url{http://www.jstatsoft.org/v46/i10/}.
 }
 \seealso{
-\code{\link{setEvidence}} \code{\link{getEvidence}}
-\code{\link{retractEvidence}} \code{\link{pEvidence}}
+\code{\link{setEvidence}}, \code{\link{getEvidence}},
+\code{\link{retractEvidence}}, \code{\link{pEvidence}},
 \code{\link{querygrain}}
+}
+\author{
+Søren Højsgaard, \email{sorenh@math.aau.dk}
 }
 \keyword{models}
 \keyword{utilities}
-

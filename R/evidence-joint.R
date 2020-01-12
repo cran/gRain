@@ -92,18 +92,18 @@ setJEvi_<- function(object, evidence=NULL, propagate=TRUE, details=0){
         if ( !inherits( evidence, "grain_jev" ) )
             evidence <- new_jev( evidence, universe( object )$levels )
         
-        if (!getgrain( object, "isCompiled"))
+        if (!.isComp(object))
             object <- compile( object )
         
         vn  <- sapply(evidence, varNames)    
         rp  <- getgrain(object, "rip")    
         hc  <- getHostClique(vn, rp$cliques)
-        pot <- object$temppot
+        pot <- pot(object)$pot_temp
 #        str(evidence, hc)
 #        pot.b <<-pot
         pot2 <- insertJEvi(evidence, pot, hc)
 #        pot.a <<- pot2
-        object$temppot <- pot2
+        object$potential$pot_temp <- pot2
         object$evidence <- evidence
     }
     object <- if (propagate) propagate( object ) else object
@@ -188,7 +188,7 @@ retractJEvi <- function(object, items=NULL, propagate=TRUE, details=0){
 #' evidence( bn3 )
 #' 
 new_jev <- function(ev, levels){
-    if ( inherits( ev, "grain_jev") ) return( ev )
+    if (inherits(ev, "grain_jev")) return( ev )
 
     if (!is.list(ev)) stop("'ev' must be a list")
     if (!is.list(levels)) stop("'levels' must be a list")

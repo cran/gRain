@@ -19,10 +19,10 @@
 #' @param propagate Should the network be propagated?
 #' @param details Debugging information
 #'
-#' @seealso \code{\link{setEvidence}} \code{\link{getEvidence}}
-#'     \code{\link{retractEvidence}} \code{\link{pEvidence}}
-#'     \code{\link{setFinding}} \code{\link{getFinding}}
-#'     \code{\link{retractFinding}} \code{\link{pFinding}}
+#' @seealso \code{\link{setEvidence}}, \code{\link{getEvidence}},
+#'     \code{\link{retractEvidence}}, \code{\link{pEvidence}},
+#'     \code{\link{setFinding}}, \code{\link{getFinding}},
+#'     \code{\link{retractFinding}}, \code{\link{pFinding}},
 #' @references Søren Højsgaard (2012). Graphical Independence Networks
 #'     with the gRain Package for R. Journal of Statistical Software,
 #'     46(10), 1-26.  \url{http://www.jstatsoft.org/v46/i10/}.
@@ -120,16 +120,15 @@ setEvi_ <- function(object, evidence=NULL, propagate=TRUE, details=0){
     if ( is.null_ev( evidence ) ){
         cat("Nothing to do\n")
     } else {
-        if (!object$isCompiled){
+        if (!.isComp(object)){
             object <- compile(object)
-            object$isInitialized  <- FALSE
             object$isPropagated   <- FALSE            
         } 
         
         oe <- getEvidence( object ) # Der er noget med typen (old/new)
-        if (details>0){ print("old.evidence"); print(oe) }
+        if (details > 0){ print("old.evidence"); print(oe) }
         ne <- new_ev( evidence, universe(object)$levels ) 
-        if (details>0){ print("new evidence"); print( ne ) }
+        if (details > 0){ print("new evidence"); print( ne ) }
         
         ## Hvis der er eksisterende evidens, så skal det tages ud af det nye
         if (!is.null_ev( oe ) ){
@@ -137,19 +136,15 @@ setEvi_ <- function(object, evidence=NULL, propagate=TRUE, details=0){
             if (details>0) { print("new evidence - after modif"); print( ne ) }
         }
 
-        if ( length( varNames( ne ) ) > 0 ){
-            # host  <- .get.host.clique( ne$evidence, object$rip )
-            # object$temppot <- .insert.evidence.in.potential( object$temppot, ne, host )
-            # str(list(host=host))
-            ## FIXME: 3 lines: Replaces .get.host.clique
+        if (length(varNames(ne)) > 0){
             rp  <- getgrain(object, "rip")    
-            host  <- getHostClique(varNames( ne ), rp$cliques)
+            host  <- getHostClique(varNames(ne), rp$cliques)
             #str(list(ne, host))
             #pot.b <<- object$temppot
-            object$temppot <- insertEvi( ne, object$temppot, host )
+            object$potential$pot_temp <- insertEvi(ne, pot(object)$pot_temp, host)
             #pot.a <<- object$temppot
             
-            te <- if (is.null_ev( oe )) ne else union_ev( oe, ne )
+            te <- if (is.null_ev(oe)) ne else union_ev(oe, ne)
             ##te <- union_ev( oe, ne )
             if (details>0) {print("total evidence"); print( te )}
             object$evidence <- te
@@ -176,7 +171,8 @@ retractEvi <- function(object, items=NULL, propagate=TRUE){
 retractEvi_ <- function(object, items=NULL, propagate=TRUE){
     ##cat("++++ retractEvidence_\n")
     .resetgrain <- function(x){
-        x$temppot       <- x$origpot
+        ##x$temppot       <- x$pot_orig
+        x$potential$pot_temp       <- pot(x)$pot_orig
         x$evidence       <- NULL
         x$isPropagated  <- FALSE
         x
@@ -220,23 +216,29 @@ absorbEvi <- function(object, propagate=TRUE ){
 #' @name grain-evi
 absorbEvi_<- function(object, propagate=TRUE ){
     ## Update 'object' as
-    ## 1) set origpot <- temppot
+    ## 1) set pot_orig <- pot_temp
     ## 2) ignore any finding
-    object$origpot <- object$temppot
+    object$potential$pot_orig <- pot(object)$pot_temp
     object$evidence <- NULL
     object$isPropagated <- FALSE
 
     if (propagate) propagate(object) else object
 }
 
-
-
 #' @name grain-evi
 pEvidence <- function(object){
     if ( !inherits(object, "grain") )
         stop("'object' is not a 'grain' object")
-    attr(object$equipot,"pEvidence")
+    attr(pot(object)$pot_equi, "pEvidence")
 }
+
+#' @name grain-evi
+pEvi <- function(object)
+    pEvidence(object)
+
+
+
+
 
 #' @name grain-evi
 getEvidence <- function(object){
@@ -343,16 +345,7 @@ insertEvi <- function(evi.list, pot, hostclique){
     }
 }
 
-## Bruges af setEvi; FIXME: lav om så vi bruger synlig funktion
-## .get.host.clique <- function(evidence, rip){
-##     unlist(lapply(evidence,
-##                   function(x){
-##                       n <- names(dimnames(x))
-##                       gRbase::get_superset_(n, rip$cliques, all=FALSE)
-##                   }),
-##                   use.names = FALSE)
-## }
-
+## FIXME: getHostClique : Same as .get_hosts ???
 #' @rdname grain-evi
 #' @param set.list A list of sets (a set is a character vector).
 #' @param cliques A list of sets (a set is a character vector).
