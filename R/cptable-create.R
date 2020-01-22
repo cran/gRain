@@ -2,6 +2,8 @@
 #' 
 #' @description Creates conditional probability tables of the form
 #'     p(v|pa(v)).
+#'
+#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
 #' 
 #' @param vpar Specifications of the names in P(v|pa1,...pak). See
 #'     section 'details' for information about the form of the
@@ -14,11 +16,11 @@
 #'
 #' @details
 #' 
-#' If \code{normalize=TRUE} then for each configuration of the parents
-#' the probabilities are normalized to sum to one.
+#' If \code{normalize=TRUE} then the probabilities are normalized to sum to one
+#' for each configuration of the parents.
 #' 
 #' If \code{smooth} is non--zero then zero entries of \code{values} are
-#' replaced with \code{smooth} before normalization takes place.
+#' replaced with \code{smooth} __before__ normalization takes place.
 #' 
 #' Regarding the form of the argument \code{vpar}: To specify \eqn{P(a|b,c)}
 #' one may write \code{~a|b:c}, \code{~a:b:c}, \code{~a|b+c}, \code{~a+b+c} or
@@ -33,12 +35,12 @@
 #' elements in \code{values} will be the conditional probabilities of \code{a}
 #' given \code{b=b1, c=c1}.
 #' 
-#' @return A \code{cptable} object (a list).
-#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
+#' @return A \code{cptable} object (a numeric vector with various attributes).
+#' 
 #' @seealso \code{\link{andtable}}, \code{\link{ortable}},
-#'     \code{\link{extract_cpt}}, \code{\link{compile_cpt}},
-#'     \code{\link{extract_pot}}, \code{\link{compile_pot}},
-#'     \code{\link{grain}}
+#'     \code{\link{extractCPT}}, \code{\link{compileCPT}},
+#'     \code{\link{extractPOT}}, \code{\link{compilePOT}},
+#'     \code{\link{grain}}, \code{\link[gRbase]{parray}}
 #' @references Søren Højsgaard (2012). Graphical Independence
 #'     Networks with the gRain Package for R. Journal of Statistical
 #'     Software, 46(10), 1-26.
@@ -47,35 +49,59 @@
 #' @examples
 #' 
 #' 
-#' yn   <- c("yes", "no")
-#' ynm  <- c("yes", "no", "maybe")
-#' a    <- cptable(~ asia, values=c(1, 99), levels=yn)
-#' t.a  <- cptable(~ tub : asia, values=c(5, 95, 1, 99, 1, 999),  levels=ynm)
-#' d.a  <- cptable(~ dia : asia, values=c(5, 5, 1, 99, 100, 999), levels=ynm)
-#' cptlist <- compileCPT(list(a, t.a, d.a))
-#' grain(cptlist)
+#' ## See the wet grass example at
+#' ## https://en.wikipedia.org/wiki/Bayesian_network
 #' 
-#' ## Example: Specifying conditional probabilities as a matrix
-#' bayes.levels  <- c('Enzyme', 'Keratine', 'unknown')
-#' root.node     <- cptable(~ R, values=c( 1, 1, 1 ), levels=bayes.levels)
-#' cond.prob.tbl <- t(matrix(c(1, 0, 0, 0, 1, 0, 0.5, 0.5, 0),
-#'    nrow=3, ncol=3, byrow=TRUE, dimnames=list(bayes.levels, bayes.levels)))
-#' cond.prob.tbl
-#' 
-#' ## Notice above: Columns represent parent states; rows represent child states
-#' query.node    <- cptable(~ Q | R, values=cond.prob.tbl, levels=bayes.levels)
-#' sister.node   <- cptable(~ S | R, values=cond.prob.tbl, levels=bayes.levels)
+#' yn <- c("yes", "no")
+#' p.R    <- cptable(~R, values=c(.2, .8), levels=yn)
+#' p.S_R  <- cptable(~S:R, values=c(.01, .99, .4, .6), levels=yn)
+#' p.G_SR <- cptable(~G:S:R, values=c(.99, .01, .8, .2, .9, .1, 0, 1), levels=yn)
 #'
-#' ## Testing 
-#' compile(grain(compileCPT(list(root.node, query.node, sister.node))), propagate=TRUE)
-#' 
-#' @export cptable
+#' # or
+#' ssp <- list(R=yn, S=yn, G=yn) # state space
+#' p.R    <- cptable(~R, values=c(.2, .8), levels=ssp)
+#' p.S_R  <- cptable(~S:R, values=c(.01, .99, .4, .6), levels=ssp)
+#' p.G_SR <- cptable(~G:S:R, values=c(.99, .01, .8, .2, .9, .1, 0, 1), levels=ssp)
 #'
+#' # components above are "intermediate representations" and are turned into arrays with
+#' wet.cpt <- compileCPT(p.R, p.S_R, p.G_SR)
+#' wet.cpt
+#' wet.cpt$S # etc
+#'
+#' # A Bayesian network is created with:
+#' wet.bn <- grain(wet.cpt)
+#' 
+#' # Can also create arrays directly
+#' \dontrun{
+#' ssp <- list(R=yn, S=yn, G=yn) # state space
+#' p.R    <- c(.2, .8)
+#' p.S_R  <- c(.01, .99, .4, .6)
+#' p.G_SR <- c(.99, .01, .8, .2, .9, .1, 0, 1)
+#' dim(p.R) <- 2
+#' dimnames(p.R) <- ssp["R"]
+#' dim(p.S_R) <- c(2, 2)
+#' dimnames(p.S_R) <- ssp[c("S", "R")]
+#' dim(p.G_SR) <- c(2, 2, 2)
+#' dimnames(p.G_SR) <- ssp[c("G", "S", "R")]
+#'
+#' # Arrays can be created (easier?) with parray() from gRbase
+#' p.R    <- parray("R", levels=ssp, values=c(.2, .8))
+#' p.S_R  <- parray(c("S", "R"), levels = ssp, values=c(.01, .99, .4, .6))
+#' p.G_SR <- parray(~ G:S:R, levels = ssp, values=c(.99, .01, .8, .2, .9, .1, 0, 1))
+#' }
 
+
+
+#' @export
 cptable <- function(vpar, levels=NULL, values=NULL, normalize=TRUE,  smooth=0 ){
     vpa  <- c(.formula2char(vpar))        
-    if (is.list(levels))
-        levels <- levels[[vpa[1]]]
+    if (is.list(levels)){
+        v <- vpa[1]
+        if (!(v %in% names(levels)))
+            stop(paste0("Name ", v, " is not in the 'levels' list\n"))
+        levels <- levels[[v]]
+    }
+    ##str(list(vpa=vpa, xlevels=levels))
     ## if (is.null(values))
     ##     values <- rep(1.0, length(levels))
     out  <- values
@@ -87,8 +113,8 @@ cptable <- function(vpar, levels=NULL, values=NULL, normalize=TRUE,  smooth=0 ){
 }
 
 
-#' @rdname cptable
-cptab <- cptable
+## #' @rdname cptable
+## cptab <- cptable
 
 
 ## NORMAL
@@ -103,7 +129,7 @@ cdist <- function(vpar, parm=list()){
 }
 
 
-
+#' @export
 print.cptable_class <- function(x, ...){
     ## "print.cptable\n" %>% cat
     v <- c(x)

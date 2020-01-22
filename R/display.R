@@ -2,6 +2,9 @@
 ## plot (gRain)
 ##
 
+
+#' @method plot grain
+#' @export
 plot.grain <- function(x, type, ...){
     
    if (!requireNamespace("Rgraphviz", quietly = TRUE)) {
@@ -10,7 +13,7 @@ plot.grain <- function(x, type, ...){
    }
 
    if (missing(type)){
-       if (.isComp(x)){
+       if (isCompiled(x)){
            Rgraphviz::plot(x$ug)
        } else {
            if ("pot_grain" %in% class(x)){
@@ -30,11 +33,12 @@ plot.grain <- function(x, type, ...){
    }
 }
 
+#' @export
 iplot.grain <- function(x,type, ...){
   #.primiplot(x$dag)
 
   if (missing(type)){
-    if (.isComp(x)){
+    if (isCompiled(x)){
       .primiplot(x$ug)
     } else {
       if ("pot_grain" %in% class(x)){

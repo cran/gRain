@@ -1,37 +1,39 @@
+## ######################################################################
 #' @title Extract conditional probabilities and clique potentials from
 #'     data.
-#' 
 #' @description Extract list of conditional probability tables and
 #'     list of clique potentials from data.
+#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
+#' @name components_extract
+## ######################################################################
 #'
-#' @name extract_components
-#' 
 #' @details If \code{smooth} is non-zero then \code{smooth} is added
 #'     to all cell counts before normalization takes place.
 #' 
-#' @aliases extractCPT extractPOT extractMARG
+## #' @aliases extractCPT extractPOT extractMARG
 #' 
 #' @param data_ A named array or a dataframe.
 #'
 #' @param graph A \code{graphNEL} object or a list or formula which can be
 #'     turned into a \code{graphNEL} object by calling \code{ug} or
-#'     \code{dag}. For \code{extract_cpt}, graph must be/define a DAG while for
-#'     \code{extract_pot}, graph must be/define undirected triangulated graph.
+#'     \code{dag}. For \code{extractCPT}, graph must be/define a DAG while for
+#'     \code{extractPOT}, graph must be/define undirected triangulated graph.
 #' 
 #' @param smooth See 'details' below.
 #' 
 #' @return
-#'   * \code{extract_cpt}: A list of conditional probability tables.
-#'   * \code{extract_pot}: A list of clique potentials.
+#'   * \code{extractCPT}: A list of conditional probability tables.
+#'   * \code{extractPOT}: A list of clique potentials.
+#'   * \code{extractMARG}: A list of clique marginals. 
 #'
-#' @details \code{extractCPT} is alias for \code{extract_cpt}
-#'     \code{extractPOT} is alias for \code{extract_pot} and
-#'     \code{extractMARG} is alias for \code{extract_marg}; retained
-#'     for backward compatibility.
-#' 
-#' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
+## #' @details \code{extractCPT} is alias for \code{extractCPT}
+## #'     \code{extractPOT} is alias for \code{extractPOT} and
+## #'     \code{extractMARG} is alias for \code{extract_marg}; retained
+## #'     for backward compatibility.
+## #' 
+
 #'
-#' @seealso \code{\link{compile_cpt}}, \code{\link{compile_pot}},
+#' @seealso \code{\link{compileCPT}}, \code{\link{compilePOT}},
 #'     \code{\link{grain}}
 #'
 #' @references Søren Højsgaard (2012). Graphical Independence Networks
@@ -40,185 +42,89 @@
 #' @keywords utilities
 #' @examples
 #' 
-#' ## FIXME: Review example 
-#' ## Asia (chest clinic) example:
-#' 
-#' ## Version 1) Specify conditional probability tables.
-#' yn <- c("yes","no")
-#' a    <- cptable(~asia, values=c(1,99), levels=yn)
-#' t.a  <- cptable(~tub+asia, values=c(5,95,1,99), levels=yn)
-#' s    <- cptable(~smoke, values=c(5,5), levels=yn)
-#' l.s  <- cptable(~lung+smoke, values=c(1,9,1,99), levels=yn)
-#' b.s  <- cptable(~bronc+smoke, values=c(6,4,3,7), levels=yn)
-#' e.lt <- cptable(~either+lung+tub,values=c(1,0,1,0,1,0,0,1), levels=yn)
-#' x.e  <- cptable(~xray+either, values=c(98,2,5,95), levels=yn)
-#' d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-#' plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-#' pn1 <- grain(plist)
-#' q1 <- querygrain(pn1)
-#' 
-#' ## Version 2) Specify DAG and data
-#' data(chestSim100000, package="gRbase")
-#' dgf   <- ~asia + tub * asia + smoke + lung * smoke +
-#'          bronc * smoke + either * tub * lung +
-#'          xray * either + dysp * bronc * either
-#' dg    <- dag(dgf)
-#' pp    <- extract_cpt(chestSim100000, dg)
+#' ## Extract cpts / clique potentials from data and graph
+#' # specification and create network. There are different ways:
 #'
-#' pn2   <- grain(pp)
-#' ## Same as:
-#' cpp2  <- compileCPT(pp)
-#' pn2   <- grain(cpp2)
-#' 
-#' q2    <- querygrain(pn2)
-#' 
-#' ## Version 2) Specify triangulated undirected graph and data
-#' ugf <- list(c("either", "lung", "tub"), c("either", "lung", "bronc"), 
-#'     c("either", "xray"), c("either", "dysp", "bronc"), c("smoke", 
-#'     "lung", "bronc"), c("asia", "tub"))
-#' gg    <- ug(ugf)
-#' pp    <- extract_pot(chestSim100000, gg)
+#' data(lizard, package="gRbase")
 #'
-#' pn3   <- grain(pp)
-#' ## Same as:
-#' cpp3  <- compilePOT(pp)
-#' pn3   <- grain(cpp3)
+#' # DAG: height <- species -> diam
+#' daG <- dag(~species + height:species + diam:species)
 #'
-#' q3    <- querygrain(pn3)
+#' # UG : [height:species][diam:species]
+#' uG  <- ug(~height:species + diam:species)
 #' 
-#' ## Compare results:
-#' str(q1)
-#' str(q2[names(q1)])
-#' str(q3[names(q1)])
-#' 
-#' @rdname extract_components
+#' pt <- extractPOT(lizard, ~height:species + diam:species) 
+#' cp <- extractCPT(lizard, ~species + height:species + diam:species)
+#'
+#' pt
+#' cp
+#'
+#' # Both specify the same probability distribution
+#' tabListMult(pt) %>% as.data.frame.table
+#' tabListMult(cp) %>% as.data.frame.table
+#'
+#' \dontrun{
+#' # Bayesian networks can be created as
+#' bn.uG   <- grain(pt)
+#' bn.daG  <- grain(cp)
+#'
+#' # The steps above are wrapped into a convenience method which
+#' # builds a network from at graph and data.
+#' bn.uG   <- grain(uG, data=lizard)
+#' bn.daG  <- grain(daG, data=lizard)
+#' }
 
-
-
-extract_cpt <- function(data_, graph, smooth=0){
-
-    .extract_cpt_primitive <- function(data_, vpa, smooth=0){
-        
-        is.df <- is.data.frame(data_)
-        out <- lapply(vpa, function(ss){.dataMarg(data_, ss, is.df)})
-        
-        ## FIXME : Get rid of this parray stuff (at least as a class)
-        ## NOTE: Normalization takes place here
-        out <- lapply(out, as.parray, normalize="first", smooth=smooth)
-        
-        chk <- unlist(lapply(out, function(zz) any(is.na(zz))))
-        nnn <- names(chk)[which(chk)]
-        if (length(nnn) > 0){
-            cat(sprintf("NAs found in conditional probability table(s) for nodes: %s\n",
-                        toString(nnn)))
-            cat(sprintf("  ... consider using the smooth argument\n"))
-        }
-        out
-    }
-    
+#' @rdname components_extract
+#' @export 
+extractCPT <- function(data_, graph, smooth=0){
 
     .is.valid.data(data_)
-
-    if (inherits(graph, c("formula", "list")))
-        graph <- dag(graph)
-
+    if (inherits(graph, c("formula", "list"))) graph <- dag(graph)
     if (!is_dag(graph)) stop("'graph' not a DAG")
-
+    
     vpa <- vpar(graph)
-    out <- .extract_cpt_primitive(data_, vpa=vpa, smooth=smooth)
-    ##FIXME: Should any info be stored in the output? vpa for example?
-    class(out) <- "cpt_rep"
+    out <- .extractCPT_primitive(data_, vpa=vpa, smooth=smooth)
+    attr(out, "graph") <- graph
+    class(out)         <- "cpt_rep"
     out
 }
 
 
-
-#' @rdname extract_components
-extract_pot <- function(data_, graph, smooth=0){
-
-    .extract_pot_primitive <- function(data_, cliq, seps=NULL, smooth=0){        
-        
-        .normalize <- function(tt, sp){
-            if (length(sp) > 0) tabDiv0(tt, tabMarg(tt, sp))
-            else tt / sum(tt)        
-        }
-        
-        out <- vector("list", length(cliq))
-        is.df <- is.data.frame(data_)
-        for ( i  in seq_along(cliq)){
-            cq   <- cliq[[ i ]]
-            sp   <- seps[[ i ]]
-            t.cq <- .dataMarg(data_, cq, is.df) + smooth       
-            ##str(list(cq=cq, sp=sp))
-            out[[i]] <- .normalize(t.cq, sp)
-        }
-        out
-    }
+#' @export
+#' @rdname components_extract
+extractPOT <- function(data_, graph, smooth=0){
     
     .is.valid.data(data_)
-
-    if (inherits(graph, c("formula", "list")))
-        graph <- ug(graph)
-    
+    if (inherits(graph, c("formula", "list"))) graph <- ug(graph)    
     if (!is_tug(graph)) stop("'graph' not undirected and triangulated")
-    rip_  <- rip( graph )
-    
-    out <- .extract_pot_primitive(data_, rip_$cliques, rip_$sep, smooth=smooth)
-    attr(out, "rip")     <- rip_
-    class(out) <- "pot_rep"
+
+    rip_  <- rip(graph)
+    out   <- .extractPOT_primitive(data_, rip_$cliques, rip_$sep, smooth=smooth)
+    attr(out, "rip")   <- rip_
+    attr(out, "graph") <- graph    
+    class(out)         <- "pot_rep"
     out
 }
 
-
-
-
-#' @rdname extract_components
-extract_marg <- function(data_, graph, smooth=0){
-
-    .extractMARG_primitive <- function(data_, cliq, seps=NULL, smooth=0){        
-        out <- vector("list", length(cliq))
-        is.df <- is.data.frame(data_)
-        
-        for (i in seq_along(cliq)){
-            cq   <- cliq[[ i ]]
-            t.cq <- .dataMarg(data_, cq, is.df) + smooth       
-            out[[i]] <- t.cq / sum(t.cq)
-        }
-        out
-    }
+#' @export 
+#' @rdname components_extract
+extractMARG <- function(data_, graph, smooth=0){
 
     .is.valid.data(data_)
-    if (!is_tug(graph))
-        stop("'graph' not undirected and triangulated")
+    if (inherits(graph, c("formula", "list"))) graph <- ug(graph)    
+    if (!is_tug(graph)) stop("'graph' not undirected and triangulated")
     
     rip_  <- rip(graph)
-
-    out <- .extractMARG_primitive(data_, rip_$cliques, rip_$sep, smooth=smooth)
-    attr(out, "rip")     <- rip_      
-    class(out) <- "marg_rep"
+    out   <- .extractMARG_primitive(data_, rip_$cliques, rip_$sep, smooth=smooth)
+    attr(out, "rip")   <- rip_
+    attr(out, "graph") <- graph    
+    class(out)         <- "marg_rep"
     out
 }
 
 
-
-#' @rdname extract_components
-data2cpt <- extract_cpt
-
-#' @rdname extract_components
-data2pot <- extract_pot
-
-#' @rdname extract_components
-data2marg <- extract_marg
-
-
-## OLD NAMES - KEEP THESE 
-
-extractCPT <- extract_cpt
-extractPOT <- extract_pot
-extractMARG <- extract_marg
-
-
-#' @rdname extract_components
+#' @export 
+#' @rdname components_extract
 #' @param mg An object of class \code{marg_rep}
 marg2pot <- function(mg){
     if (!inherits(mg, "marg_rep")) stop("'mg' not a marg_rep object\n")
@@ -236,7 +142,8 @@ marg2pot <- function(mg){
     pt
 }
 
-#' @rdname extract_components 
+#' @export 
+#' @rdname components_extract 
 #' @param pt An object of class \code{pot_rep}
 pot2marg <- function(pt){
     if (!inherits(pt, "pot_rep")) stop("'pt' not a pot_rep object\n")    
@@ -255,6 +162,82 @@ pot2marg <- function(pt){
 }
 
 
+## ##################################################################
+##
+## dot functions below here
+##
+## ##################################################################
+
+
+.extractCPT_primitive <- function(data_, vpa, smooth=0){
+        
+    is.df <- is.data.frame(data_)
+    out <- lapply(vpa, function(ss){.dataMarg(data_, ss, is.df)})
+    
+    ## FIXME : Get rid of this parray stuff (at least as a class)
+    ## NOTE: Normalization takes place here
+    out <- lapply(out, as.parray, normalize="first", smooth=smooth)
+    
+    
+    chk <- unlist(lapply(out, function(zz) any(is.na(zz))))
+    nnn <- names(chk)[which(chk)]
+    if (length(nnn) > 0){
+        cat(sprintf("NAs found in conditional probability table(s) for nodes: %s\n",
+                    toString(nnn)))
+        cat(sprintf("  ... consider using the smooth argument\n"))
+    }
+    out
+}
+
+
+
+.extractPOT_primitive <- function(data_, cliq, seps=NULL, smooth=0){        
+    
+    .normalize <- function(tt, sp){
+        if (length(sp) > 0) tabDiv0(tt, tabMarg(tt, sp))
+        else tt / sum(tt)        
+    }
+    
+    out <- vector("list", length(cliq))
+    is.df <- is.data.frame(data_)
+    for ( i  in seq_along(cliq)){
+        cq   <- cliq[[ i ]]
+        sp   <- seps[[ i ]]
+        t.cq <- .dataMarg(data_, cq, is.df) + smooth       
+        ##str(list(cq=cq, sp=sp))
+        out[[i]] <- .normalize(t.cq, sp)
+    }
+    out
+}
+
+
+
+    .extractMARG_primitive <- function(data_, cliq, seps=NULL, smooth=0){        
+        out <- vector("list", length(cliq))
+        is.df <- is.data.frame(data_)
+        
+        for (i in seq_along(cliq)){
+            cq   <- cliq[[ i ]]
+            t.cq <- .dataMarg(data_, cq, is.df) + smooth       
+            out[[i]] <- t.cq / sum(t.cq)
+        }
+        out
+    }
+
+
+## #' @rdname components_extract
+## data2cpt <- extractCPT
+
+## #' @rdname components_extract
+## data2pot <- extractPOT
+
+## #' @rdname components_extract
+## data2marg <- extractMARG
+
+
+
+
+
 ## helper function; can possibly be made faster
 .dataMarg <- function(data_, cq, is.df=NULL){
 
@@ -271,9 +254,34 @@ pot2marg <- function(pt){
         
 }
 
+
+
 .is.valid.data <- function(data_){
     if (!(is.data.frame(data_) || is.named.array(data_)))
         stop("'data_' must be dataframe or array.")
 }
 
 
+## #' 
+## #' plot(bn.uG)
+## #' plot(bn.daG)
+## #' 
+## #' querygrain(bn.uG)
+## #' querygrain(bn.daG)
+## #' 
+## #' # Sanity: Are the distributions identical?
+## #' t1 <- querygrain(bn.uG, type="joint")
+## #' t2 <- querygrain(bn.daG, type="joint")
+## #' t1 %a/% t2
+## #' 
+## #' # At a lower level
+## #' bn2.uG <- extractPOT(lizard, ~height:species + diam:species)  %>% grain
+## #' bn2.daG <- extractCPT(lizard, ~species + height:species + diam:species)  %>% grain
+## #' 
+## #' plot(bn2.uG)
+## #' plot(bn2.daG)
+## #' 
+## #' t1 <- querygrain(bn2.uG, type="joint")
+## #' t2 <- querygrain(bn2.daG, type="joint")
+## #' t1 %a/% t2
+## #' 

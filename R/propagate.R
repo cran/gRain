@@ -2,20 +2,15 @@
 #' 
 #' @description Propagation refers to calibrating the cliques of the
 #'     junction tree so that the clique potentials are consistent on
-#'     their intersections
+#'     their intersections; refer to the reference below for details.
 #'
-#' @name grain-propagate
+#' @name grain_propagate
 #' 
 #' @details The \code{propagate} method invokes \code{propagateLS}
 #'     which is a pure R implementation of the Lauritzen-Spiegelhalter
-#'     algorithm.
-#' 
-#' The function \code{propagate__} invokes \code{propagateLS__} which
-#' is a c++ implementation of the Lauritzen-Spiegelhalter algorithm.
-#' 
-#' The c++ based version is several times faster than the purely R
-#' based version, and after some additional testing the c++ based
-#' version will become the default.
+#'     algorithm. The c++ based version is several times faster than
+#'     the purely R based version.
+#'
 #' 
 #' @aliases propagate.grain propagateLS propagateLS__
 #' @param object A grain object
@@ -32,7 +27,6 @@
 #' @keywords utilities models
 #' @examples
 #' 
-#' 
 #' yn   <- c("yes","no")
 #' a    <- cptable(~asia,              values=c(1,99), levels=yn)
 #' t.a  <- cptable(~tub+asia,          values=c(5,95,1,99), levels=yn)
@@ -42,16 +36,12 @@
 #' e.lt <- cptable(~either+lung+tub,   values=c(1,0,1,0,1,0,0,1), levels=yn)
 #' x.e  <- cptable(~xray+either,       values=c(98,2,5,95), levels=yn)
 #' d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-#' plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-#' pn    <- grain(plist)
-#' pnc  <- compile(pn, propagate=FALSE)
-#'
-#' \dontrun{
-#' if (require(microbenchmark))
-#'     microbenchmark(
-#'         propagate(pnc, engine="R"),
-#'         propagate(pnc, engine="cpp") )}
-#' 
+#' chest.cpt <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+#' chest.bn  <- grain(chest.cpt)
+#' bn1  <- compile(chest.bn, propagate=FALSE)
+#' bn2  <- propagate(bn1)
+#' bn3  <- compile(chest.bn, propagate=TRUE)
+#'  
 #' @export propagate.grain
 
 ## propagate.grain: equipot is updated after propagation on temppot
@@ -59,22 +49,23 @@
 ## object$equipot <- propagateLS(object$temppot,
 ##                               rip=object$rip, initialize=TRUE, details=details)
 
+#' @export 
 propagate.grain <- function(object, details=object$details, engine="cpp", ...){
 
     t0 <- proc.time()
     engine <- match.arg(tolower(engine), c("r", "cpp"))
+    
+    propfun <- switch(engine,
+                   "r"   = {propagateLS},
+                   "cpp" = {propagateLS__})
 
-    pfun <- switch(engine,
-                   "r"={propagateLS},
-                   "cpp"={propagateLS__})
+    object$potential$pot_equi <- ## FRAGILE assignment
+        propfun(getgrain(object, "pot_temp"), rip=rip(object))
 
-    object$potential$pot_equi <-
-        pfun(pot(object)$pot_temp, rip=rip(object))
-           
-    object$isPropagated  <- TRUE
+    isPropagated(object) <- TRUE
     
     ## FIXME: propagate.grain : Looks strange
-    if ( !is.null((ev <- getEvidence(object))) ){
+    if (!is.null((ev <- getEvidence(object)))){
         attr(ev, "pEvidence") <- pEvidence(object)
         object$evidence <- ev
     }
@@ -83,15 +74,17 @@ propagate.grain <- function(object, details=object$details, engine="cpp", ...){
     object
 }
 
-
 ## Lauritzen Spiegelhalter propagation
 ##
 
 ## Don't remember the idea behind the 'initialize' argument; should always be true
-#' @rdname grain-propagate
+
+
+#' @rdname grain_propagate
 #' @param cqpotList Clique potential list
 #' @param rip A rip ordering
 #' @param initialize Always true
+#' @export
 propagateLS <- function(cqpotList, rip, initialize=TRUE, details=0){
     #details=20
     #cat(".Propagating BN: [propagateLS]\n")
@@ -132,9 +125,15 @@ propagateLS <- function(cqpotList, rip, initialize=TRUE, details=0){
             }
         }
     }
+
+    tmpd <- cqpotList[[1]]
+    ##print(tmpd)
+    normConst      <- sum(tmpd)
+    tmpd <- tmpd / normConst
+    cqpotList[[1]] <- tmpd
+    ##print(tmpd)
     
-    normConst      <- sum(cqpotList[[1]])
-    cqpotList[[1]] <- cqpotList[[1]] / normConst
+
     
     ## Forward propagation (distribute evidence) away from root of junction tree
     ##
@@ -165,53 +164,5 @@ propagateLS <- function(cqpotList, rip, initialize=TRUE, details=0){
 }
 
 
-
-
-
-
-
-
-## #' @rdname grain-propagate
-## propagate__ <- function(object, details=object$details, ...){
-    
-##     t0 <- proc.time()
-    
-##     object$potential$pot_equi<-
-##         propagateLS__(pot(object)$pot_temp, rip=rip(object))
-    
-##     object$isPropagated  <- TRUE
-    
-#####     ## FIXME: propagate.grain : Looks strange
-##     if ( !is.null(getEvidence(object)) ){
-##         ev <- getEvidence(object)
-##         attr(ev, "pEvidence") <- pEvidence(object)
-##         object$evidence <- ev
-##     }
-    
-##     .timing(" Time: propagation:", object$control, t0)
-##     object
-## }
-
-
-
-## propagate.grain <- function(object, details=object$details, ...){
-
-##     t0 <- proc.time()
-    
-##     object$potential$pot_equi <-
-##         propagateLS(pot(object)$pot_temp, rip=rip(object))
-    
-##     object$isPropagated  <- TRUE
-    
-##     ## FIXME: propagate.grain : Looks strange
-##     if ( !is.null(getEvidence(object)) ){
-##         ev <- getEvidence(object)
-##         attr(ev, "pEvidence") <- pEvidence(object)
-##         object$evidence <- ev
-##     }
-    
-##     .timing(" Time: propagation:", object$control, t0)
-##     object
-## }
 
 

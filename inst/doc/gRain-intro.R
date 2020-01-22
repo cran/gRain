@@ -1,7 +1,7 @@
 ## ----include=FALSE,echo=FALSE,warning=FALSE----------------------------------------
 library(knitr)
 dir.create("figures")
-opts_chunk$set(fig.height=3,
+opts_chunk$set(fig.height=2.5,
                fig.path='figures/grain-',
                warning=FALSE, message=FALSE
 )
@@ -27,12 +27,11 @@ x.e  <- cptable(~xray|either, values=c(98,2,5,95), levels=yn)
 d.be <- cptable(~dysp|bronc:either, values=c(9,1,7,3,8,2,1,9), levels=yn)
 plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
 plist
-net1 <- grain(plist)
-net1
+chest_bn <- grain(plist)
+chest_bn
 
 ## ----chest-LS, echo=F, fig.cap="Chest clinic example from Lauritzen and Spiegelhalter (1988)."----
-require(Rgraphviz)
-plot(net1)
+plot(chest_bn)
 
 ## ----------------------------------------------------------------------------------
 yn <- c("yes", "no")
@@ -46,11 +45,15 @@ x.e  <- cptable(~xray|either, values=c(98, 2, 5, 95), levels=yn)
 d.be <- cptable(~dysp|bronc:either, values=c(9, 1, 7, 3, 8, 2, 1, 9), levels=yn)
 
 ## ----------------------------------------------------------------------------------
-chest_cpt <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+chest_cpt <- compileCPT(a, t.a, s, l.s, b.s, e.lt, x.e, d.be)
 summary(chest_cpt)
 
+## ----------------------------------------------------------------------------------
 chest_cpt$tub
-chest_cpt$either  %>% ftable(row.vars="either") ## Notice: a logical node
+chest_cpt$tub  %>% as.data.frame.table
+
+## ----------------------------------------------------------------------------------
+chest_cpt$either  %>% as.data.frame.table
 
 ## ----------------------------------------------------------------------------------
 chest_bn <- grain(chest_cpt)

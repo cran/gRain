@@ -2,48 +2,12 @@
 % Please edit documentation in R/grain-compile.R
 \name{grain_compile}
 \alias{grain_compile}
-\alias{add_jtree}
 \alias{compile.grain}
 \alias{compile.cpt_grain}
 \alias{compile.pot_grain}
-\alias{add_jtree.cpt_grain}
-\alias{add_jtree.pot_grain}
-\alias{add_potential}
-\alias{add_potential.cpt_grain}
-\alias{add_potential.pot_grain}
 \title{Compile a graphical independence network (a Bayesian network)}
 \usage{
-add_jtree(object, root = NULL)
-
-\method{add_jtree}{cpt_grain}(object, root = NULL)
-
-\method{add_jtree}{pot_grain}(object, root = NULL)
-
-add_potential(object)
-
-\method{add_potential}{cpt_grain}(object)
-
-\method{add_potential}{pot_grain}(object)
-
 \method{compile}{grain}(
-  object,
-  propagate = FALSE,
-  root = NULL,
-  control = object$control,
-  details = 0,
-  ...
-)
-
-\method{compile}{cpt_grain}(
-  object,
-  propagate = FALSE,
-  root = NULL,
-  control = object$control,
-  details = 0,
-  ...
-)
-
-\method{compile}{pot_grain}(
   object,
   propagate = FALSE,
   root = NULL,
@@ -55,12 +19,12 @@ add_potential(object)
 \arguments{
 \item{object}{A grain object.}
 
-\item{root}{A set of variables which must be in the root of the
-junction tree}
-
 \item{propagate}{If TRUE the network is also propagated meaning
 that the cliques of the junction tree are calibrated to each
 other.}
+
+\item{root}{A set of variables which must be in the root of the
+junction tree}
 
 \item{control}{Controlling the compilation process.}
 
@@ -74,11 +38,8 @@ A compiled Bayesian network; an object of class
 }
 \description{
 Compiles a Bayesian network. This means creating a
-junction tree and establishing clique potentials.
-}
-\examples{
-## To be written
-
+junction tree and establishing clique potentials; ; refer to
+the reference below for details.
 }
 \references{
 Søren Højsgaard (2012). Graphical Independence
@@ -88,6 +49,7 @@ Software, 46(10), 1-26.
 }
 \seealso{
 \code{\link{grain}}, \code{\link[gRbase]{propagate}},
+\code{\link{propagate.grain}},
 \code{\link[gRbase]{triangulate}}, \code{\link[gRbase]{rip}},
 \code{\link[gRbase]{junctionTree}}
 }

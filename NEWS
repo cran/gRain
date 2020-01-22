@@ -1,0 +1,17 @@
+gRain v1.3-3 (Release date: 2020-01-24)
+=======================================
+
+Bug fixes:
+
+  * Bug in propagateLS (cpp version) fixed
+
+Other changes:
+
+  * grain objects are now compiled after creation
+
+  * NAMESPACE file is now generated automatically
+
+  * Cleaning up experimental features
+
+  * Added testthat (not very comprehensive tests, though)
+

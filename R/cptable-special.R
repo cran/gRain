@@ -57,10 +57,12 @@
 #'
 ## ## We use our own operator, for example "exclusive or" which is
 ## ## TRUE only if one but not both arguments are TRUE.
+
 ## xor <- function(e1,e2){!mapply(all, e1, e2) & mapply(any, e1, e2)}
 ## booltab(c("v", "pa1", "pa2"), op=xor) %>% ftable(row.vars="v") ## XOR
 ## 
 
+#' @export
 booltab <- function(vpa, levels=c(TRUE, FALSE), op=`&`){
     pa=c(TRUE,FALSE)
     vpa <- c(.formula2char(vpa))
@@ -78,20 +80,24 @@ booltab <- function(vpa, levels=c(TRUE, FALSE), op=`&`){
     out  
 }
 
+#' @export
 #' @rdname logical 
 andtab <- function(vpa, levels=c(TRUE,FALSE) ){
     booltab(vpa, levels, op=`&`)
 }
 
+#' @export
 #' @rdname logical
 ortab <- function(vpa, levels=c(TRUE,FALSE) ){
     booltab(vpa, levels, op=`|`)
 }
 
 ## For backward compatibility
+
+#' @export
 #' @rdname logical
 andtable <- andtab
-
+#' @export
 #' @rdname logical
 ortable <- ortab
 
@@ -105,9 +111,10 @@ ortable <- ortab
 #' @examples
 #' ## Inheritance of the alleles "y" and "g"
 #' 
-#' men <- mendel( c("y","g"), names = c("ch", "fa", "mo") )
+#' men <- mendel(c("y","g"), names=c("ch", "fa", "mo"))
 #' men
 #' 
+#' @export
 mendel <- function(allele, names=c("child", "father", "mother")){
     fa   <- unique(lapply(unlist(
         lapply(allele, function(s) {lapply(allele, c, s)}), recursive=FALSE),

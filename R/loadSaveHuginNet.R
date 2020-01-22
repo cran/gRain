@@ -17,7 +17,7 @@
 #' @param description A text describing the network, defaults to
 #'     \code{file}
 #' @param details Debugging information
-#' @return An object (a list) of class "huginNet".
+#' @return An object of class `grain`.
 #' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
 #' @seealso \code{\link{grain}}
 #' @references Søren Højsgaard (2012). Graphical Independence
@@ -337,6 +337,8 @@ loadHuginNet <- function(file, description=NULL, details=0){
 }
 
 
+
+#' @export
 #' @rdname load-save-hugin
 saveHuginNet <- function(gin, file, details=0){
 
@@ -348,7 +350,7 @@ saveHuginNet <- function(gin, file, details=0){
 
     if (is.null(cptlist <- getgin(gin, "cptlist"))){
         cat("Object does not have 'cptlist' component; creating one for you...\n")
-        cptlist <- mkcptlist(gin)
+        cptlist <- make_cptlist(gin)
     }
         
     vlab <- gmd$levels

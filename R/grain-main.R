@@ -53,14 +53,11 @@
 ## -- for pot_spec: ikke lovligt
 ##
 
-
-
-
 ## ###################################################################
 ##
 #' @title Graphical Independence Network
 #' @description Creating grain objects (graphical independence network).
-#' @name grain-main
+#' @name grain_main
 #' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
 ##
 ## ###################################################################
@@ -70,7 +67,7 @@
 #'     normalization takes place.
 #' 
 #' @aliases grain grain.cpt_spec grain.pot_spec grain.graphNEL
-#'     grain.dModel plot.grain iplot.grain
+#'     grain.dModel 
 #' @param x An argument to build an independence network
 #'     from. Typically a list of conditional probability tables, a DAG
 #'     or an undirected graph. In the two latter cases, data must also
@@ -79,13 +76,20 @@
 #' @param control A list defining controls, see 'details' below.
 #' @param smooth A (usually small) number to add to the counts of a
 #'     table if the grain is built from a graph plus a dataset.
+#' @param compile Should network be compiled.
 #' @param details Debugging information.
 #' @param ... Additional arguments, currently not used.
 #' @return An object of class "grain"
+#'
+#' @note A change from earlier versions of this package is that grain
+#'     objects are now compiled upon creation.
 #' @seealso \code{\link{cptable}}, \code{\link{compile.grain}},
 #'     \code{\link{propagate.grain}}, \code{\link{setFinding}},
 #'     \code{\link{setEvidence}}, \code{\link{getFinding}},
-#'     \code{\link{pFinding}}, \code{\link{retractFinding}}
+#'     \code{\link{pFinding}}, \code{\link{retractFinding}},
+#'     \code{\link{extractCPT}}, \code{\link{extractPOT}},
+#'     \code{\link{compileCPT}}, \code{\link{compilePOT}}
+#' 
 #' @references Søren Højsgaard (2012). Graphical Independence
 #'     Networks with the gRain Package for R. Journal of Statistical
 #'     Software, 46(10), 1-26.
@@ -93,8 +97,10 @@
 #' @keywords models
 #' 
 #' @examples
-#' ## Asia (chest clinic) example:
-#' yn   <- c("yes","no")
+#' 
+#' ## Asia (chest clinic) network created from conditional probability tables
+#' 
+#' yn   <- c("yes", "no")
 #' a    <- cptable(~asia,              values=c(1,99), levels=yn)
 #' t.a  <- cptable(~tub+asia,          values=c(5,95,1,99), levels=yn)
 #' s    <- cptable(~smoke,             values=c(5,5), levels=yn)
@@ -103,152 +109,107 @@
 #' e.lt <- cptable(~either+lung+tub,   values=c(1,0,1,0,1,0,0,1), levels=yn)
 #' x.e  <- cptable(~xray+either,       values=c(98,2,5,95), levels=yn)
 #' d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-#' plist <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-#' bn    <- grain(plist)
-#' bn
-#' summary(bn)
-#' plot(bn)
-#' bnc <- compile(bn, propagate=TRUE)
-#' 
-#' ## If we want to query the joint distribution of the disease nodes,
-#' ## computations can be speeded up by forcing these nodes to be in
-#' ## the same clique of the junction tree:
-#' 
-#' bnc2 <- compile(bn, root=c("lung", "bronc", "tub"), propagate=TRUE)
+#' chest.cpt <- compileCPT(a, t.a, s, l.s, b.s, e.lt, x.e, d.be)
+#' chest.bn  <- grain(chest.cpt)
 #'
-#' \dontrun{
-#' if (require(microbenchmark)){
-#' microbenchmark(
-#'   querygrain(bnc, nodes=c("lung","bronc", "tub"), type="joint"),
-#'   querygrain(bnc2, nodes=c("lung","bronc", "tub"), type="joint")
-#' )}}
-#' 
-#'
-#' ## Simple example - one clique only in triangulated graph:
-#' plist.s <- compileCPT(list(a, t.a))
-#' bn.s <- grain(plist.s)
-#' querygrain(bn.s)
-#' 
-#' ## Simple example - disconnected network:
-#' plist.d <- compileCPT(list(a, t.a, s))
-#' bn.d <- grain(plist.d)
-#' querygrain(bn.d)
-#' 
 #' ## Create network from data and graph specification.
-#' ## There are different ways:
+#'
+#' ## There are different ways; see documentation in the "See all"
+#' ## links.
+#'
+#' data(lizard, package="gRbase")
+#' # DAG: height <- species -> diam
+#' daG <- dag(~species + height:species + diam:species)
+#'
+#' # UG : [height:species][diam:species]
+#' uG  <- ug(~height:species + diam:species)
 #' 
-#' data(HairEyeColor)
-#' hec <- HairEyeColor
-#' daG <- dag(~Hair + Eye:Hair + Sex:Hair)
-#' class(daG)
-#' uG <- ug( ~Eye:Hair + Sex:Hair)
-#' class(uG)
-#' 
-#' ## Create directly from dag:
-#' bn.dag  <- grain(daG, data=hec)
-#' class(bn.dag)
-#' compile(bn.dag)
-#' 
-#' ## Build model from undirected (decomposable) graph
-#' bn.ug  <- grain(uG, data=hec)
-#' class(bn.ug)
-#' compile(bn.ug)
-#' 
+#' bn.uG   <- grain(uG, data=lizard)
+#' bn.daG  <- grain(daG, data=lizard)
+
 #' @export grain
-grain <- function(x, control=list(), smooth=0, details=0, data=NULL, ...){
+##grain <- function(x, control=list(), smooth=0, compile=TRUE, details=0, data=NULL, ...){
+grain <- function(x, ...){
   UseMethod("grain")
 }
 
-
-#' @rdname grain-main
-grain.cpt_spec <- function(x, control=list(), smooth=0, details=0, ...){
-
-        
+#' @rdname grain_main
+#' @export
+grain.cpt_spec <- function(x, control=list(), smooth=0, compile=TRUE, details=0, ...){
     ##cat("grain.cpt_spec\n")
     control  <- .setControl(control)
     out  <- c(list(universe    = attr(x, "universe"),
                    cptlist     = as_cpt_spec_simple(x), ## Strips unnecessary stuff                   
-                   dag         = attr(x, "dag") ## FIXME Needed to save network in Hugin format                   
-                   ),
+                   dag         = attr(x, "dag")), ## FIXME Needed to save network in Hugin format                   
               .setExtraComponents(control, details))
-    ## FIXME: Generate dag if does not exist??
     class(out) <- c("cpt_grain", "grain")
-    out
+    if (compile) compile(out) else out
 }
 
-#' @rdname grain-main
-grain.pot_spec <- function(x, control=list(), smooth=0, details=0,...){
+#' @export
+#' @rdname grain_main
+grain.pot_spec <- function(x, control=list(), smooth=0, compile=TRUE, details=0,...){
     
     control  <- .setControl(control)
     out  <- c(list(universe    = attr(x, "universe"),              
                    cqpot       = x, ## FIXME: was c(x)...                  
                    ug          = attr(x, "ug"),
-                   rip         = attr(x, "rip")
-                   ),
+                   rip         = attr(x, "rip")),
               .setExtraComponents(control, details))
     ## FIXME: Generate dag if does not exist??
     class(out) <- c("pot_grain", "grain")
-    out
+    if (compile) compile(out) else out
 }
 
-#' @rdname grain-main
-grain.pot_rep <- function(x, ...){grain(compile(x))}
-
-#' @rdname grain-main
-grain.cpt_rep <- function(x, ...){grain(compile(x))}
-
-
 ## A graph + data (wrappers for calling grain.pot_spec and grain.cpt_spec)
-#' @rdname grain-main
-grain.graphNEL <- function(x, control=list(), smooth=0, details=0, data=NULL, ...){
+#' @export
+#' @rdname grain_main
+grain.graphNEL <- function(x, control=list(), smooth=0, compile=TRUE, details=0, data=NULL, ...){
     if (is.null(data))
         stop("Data must be given to create grain from graph\n")
     if (!(is.named.array(data) || is.data.frame(data)))
         stop("Data must be an array or a dataframe\n")
 
-    if (is_dag(x))
-        zz <- extract_cpt(data, x, smooth=smooth)
-    else if (is_tug(x))
-        zz <- extract_pot(data, x, smooth=smooth)
+    if (is_dag(x)){
+        zz <- extractCPT(data, x, smooth=smooth)
+        zz <- compileCPT(zz)
+    } else if (is_tug(x)){
+        zz <- extractPOT(data, x, smooth=smooth)
+        zz <- compilePOT(zz)
+    }
     else
         stop("graph 'x' is neither a directed acyclic graph or a triangulated undirected graph")
 
-    ## zz is either cpt_spec or pot_spec
-    zz <- compile(zz)
-    grain(zz, data=data, control=control, details=details)
+    grain(zz, data=data, control=control, compile=compile, details=details)
 }
 
-#' @rdname grain-main
-grain.dModel <- function(x, control=list(), smooth=0, details=0, data=NULL, ...){
+#' @export
+#' @rdname grain_main
+grain.dModel <- function(x, control=list(), smooth=0, compile=TRUE, details=0, data=NULL, ...){
     if (!x$isDecomposable)
         stop("Model must be decompsable\n")
     if (is.null(data)) ## FIXME grain.dModel: Need to check data
         data <- x$datainfo$data
 
-    gg <- ugList(terms(x))
-    grain(gg, data=data, smooth=smooth, details=details, ...)
+    graph_ <- ugList(terms(x))
+    grain(graph_, data=data, smooth=smooth, compile=compile, details=details, ...)
 }
 
+#' @export
+#' @rdname grain_main
+grain.pot_rep <- function(x, ...){grain(compilePOT(x))}
 
-## Printing grain
-##
-print.grain <- function(x, ...){
-    cat("Independence network: Compiled:", .isComp(x),
-        "Propagated:", .isProp(x), "\n")
-    cat("  Nodes:"); str(unname(nodeNames(x)))
-    if ( !is.null(x$evidence) ){
-        cat("  Evidence:\n");
-        print(as.data.frame( getEvidence(x)$summary) )
-        if (!is.null((p <- pEvidence(x))))
-            cat(sprintf("  pEvidence: %f\n", p))
-    }
-    invisible(x)
-}
+#' @export
+#' @rdname grain_main
+grain.cpt_rep <- function(x, ...){grain(compileCPT(x))}
 
-## FIXME: this print.grain is for new type of evidence...
+## #' @rdname grain_main
+## grain.marg_rep <- function(x, ...){grain(compileCPT(x))} FIXME to implement
+
+#' @export
 print.grain <- function(x,...){
-    cat("Independence network: Compiled:", .isComp(x),
-        "Propagated:", .isProp(x), "\n")
+    cat("Independence network: Compiled:", isCompiled(x),
+        "Propagated:", isPropagated(x), "\n")
     cat("  Nodes:"); str(unname(nodeNames(x)))
     if ( !is.null((ev <- evidence(x))) ){
         cat("  Evidence:\n");
@@ -259,6 +220,7 @@ print.grain <- function(x,...){
     }
     invisible(x)
 }
+
 
 
 .setExtraComponents <- function(control, details){
@@ -279,3 +241,27 @@ print.grain <- function(x,...){
 
 
 
+
+## #' 
+## #' plot(bn.uG)
+## #' plot(bn.daG)
+## #' 
+## #' querygrain(bn.uG)
+## #' querygrain(bn.daG)
+## #' 
+## #' # Sanity: Are the distributions identical?
+## #' t1 <- querygrain(bn.uG, type="joint")
+## #' t2 <- querygrain(bn.daG, type="joint")
+## #' t1 %a/% t2
+## #' 
+## #' # At a lower level
+## #' bn2.uG <- extractPOT(lizard, ~height:species + diam:species)  %>% grain
+## #' bn2.daG <- extractCPT(lizard, ~species + height:species + diam:species)  %>% grain
+## #' 
+## #' plot(bn2.uG)
+## #' plot(bn2.daG)
+## #' 
+## #' t1 <- querygrain(bn2.uG, type="joint")
+## #' t2 <- querygrain(bn2.daG, type="joint")
+## #' t1 %a/% t2
+## #' 

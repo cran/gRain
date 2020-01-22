@@ -8,7 +8,7 @@
 #' @title Simulate from an independence network
 #' @description Simulate data from an independence network.
 #' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
-#' @name grain-simulate
+#' @name grain_simulate
 ##
 ## ##################################################################
 #'
@@ -35,19 +35,22 @@
 #' simulate(chest2, n=10)
 #' 
 #' @export simulate.grain
+
+#' @export 
 simulate.grain <- function(object, nsim=1, seed=NULL, ...){
 
-    if (!.isComp(object)){
+    if (!isCompiled(object)){
         ##cat("Compiling (and propagating) model ...\n")
         object <- compile(object, propagate=TRUE)
     } else {
-        if (!.isProp(object)){
+        if (!isPropagated(object)){
             ## cat("Propagating model...\n")
             object <- propagate(object)
         }
     }
     
-    plist  <- pot(object)$pot_equi
+    ##plist  <- pot(object)$pot_equi
+    plist  <- getgrain(object, "pot_equi")
     cqlist <- rip(object)$cliques
     splist <- rip(object)$separators
     
