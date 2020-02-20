@@ -135,8 +135,7 @@ insertJEvidence <- function(evi.list, pot, hostclique){
     for (i in seq_along( evi.list ) ){
         p <- evi.list[[ i ]]
         j <- hostclique[ i ]
-        #print(j)
-        pot[[j]] <- tabMult__( pot[[ j ]], p )
+        pot[[j]] <- tabMult( pot[[ j ]], p )
     }
     pot
 }

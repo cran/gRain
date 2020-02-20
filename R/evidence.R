@@ -318,7 +318,7 @@ insertEvi <- function(evi.list, pot, hostclique){
         #print(p)
         j <- hostclique[ i ]
         #print( j )
-        pot[[j]] <- tabMult__( pot[[ j ]], p )
+        pot[[j]] <- tabMult( pot[[ j ]], p )
     }
     pot
 }
@@ -337,7 +337,7 @@ insertEvi <- function(evi.list, pot, hostclique){
 getHostClique <- function(set.list, cliques){
     out <- lapply(set.list,
                   function(x){
-                      gRbase::get_superset_( x, cliques, all=FALSE)
+                      get_superset_(x, cliques, all=FALSE)
                   })
     len <- sapply(out, length)
     if (any( len == 0)){
