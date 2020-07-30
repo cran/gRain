@@ -115,28 +115,28 @@ ftable(tt)
 querygrain(setEvidence(bn, evidence=list(a="no", c="yes")))
 
 ## ----------------------------------------------------------------------------------
-joint <- ar_prod_list(chest_cpt)
+joint <- tabListMult(chest_cpt)
 dim(joint)
 joint  %>% as.data.frame.table %>% head
 
 ## ----------------------------------------------------------------------------------
-ar_marg(joint, "lung")
-ar_marg(joint, "bronc")
+tabMarg(joint, "lung")
+tabMarg(joint, "bronc")
 
 ## ----------------------------------------------------------------------------------
 ev <- list(asia="yes", dysp="yes")
-cond1 <- ar_slice(joint, slice=ev)
+cond1 <- tabSlice(joint, slice=ev)
 cond1 <- cond1 / sum(cond1)
 dim(cond1)
-ar_marg(cond1, "lung")
-ar_marg(cond1, "bronc")
+tabMarg(cond1, "lung")
+tabMarg(cond1, "bronc")
 
 ## ----------------------------------------------------------------------------------
-cond2 <- ar_slice_mult(joint, slice=ev)
+cond2 <- tabSliceMult(joint, slice=ev)
 cond2 <- cond2 / sum(cond2)
 dim(cond2)
-ar_marg(cond2, "lung")
-ar_marg(cond2, "bronc")
+tabMarg(cond2, "lung")
+tabMarg(cond2, "bronc")
 
 ## ----------------------------------------------------------------------------------
 yn <- c("yes","no")
@@ -181,7 +181,7 @@ uG  <- ug(~A:B + B:C)
 par(mfrow=c(1,2)); plot( dG ); plot( uG )
 
 ## ----------------------------------------------------------------------------------
-dat <- ar_new(c("A", "B", "C"), levels=c(2, 2, 2), values=c(0, 0, 2, 3, 1, 2, 1, 4))
+dat <- tabNew(c("A", "B", "C"), levels=c(2, 2, 2), values=c(0, 0, 2, 3, 1, 2, 1, 4))
 class(dat)
 
 ## ----------------------------------------------------------------------------------
