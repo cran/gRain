@@ -51,7 +51,7 @@
 #'     \code{\link{retractFinding}}, \code{\link{pFinding}}
 #' @references Søren Højsgaard (2012). Graphical Independence Networks
 #'     with the gRain Package for R. Journal of Statistical Software,
-#'     46(10), 1-26.  \url{http://www.jstatsoft.org/v46/i10/}.
+#'     46(10), 1-26.  \url{https://www.jstatsoft.org/v46/i10/}.
 #' @keywords models utilities
 #' @examples
 #' 
@@ -129,8 +129,8 @@ setEvi <- function(object, nodes=NULL, states=NULL, evidence=NULL,
 }
 
 setEvi_ <- function(object, evidence=NULL, propagate=TRUE, details=0){
-#    details=0
-#    cat("++++ setEvi_ input evidence: \n"); str(evidence)
+    ##    details=0
+    ##    cat("++++ setEvi_ input evidence: \n"); str(evidence)
 
     ## If object is not compiled then do so
     

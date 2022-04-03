@@ -34,7 +34,7 @@
 #' @references Søren Højsgaard (2012). Graphical Independence
 #'     Networks with the gRain Package for R. Journal of Statistical
 #'     Software, 46(10), 1-26.
-#'     \url{http://www.jstatsoft.org/v46/i10/}.
+#'     \url{https://www.jstatsoft.org/v46/i10/}.
 #' @keywords utilities models
 
 #' @rdname grain_compile
@@ -53,14 +53,6 @@ compile.grain <- function(object, propagate=FALSE, root=NULL,
     if (propagate) propagate(object) else object
 }
 
-## #' @rdname grain_compile
-## fit.grain <- function(object, propagate=TRUE, root=NULL,
-##            control=object$control, details=0, ...) {    
-##     cl <- match.call(expand.dots = TRUE)
-##     cl[[1]] <- as.name("compile.grain")
-##     eval(cl)
-## }
-
 
 
 ## #############################################
@@ -72,7 +64,7 @@ compile.grain <- function(object, propagate=FALSE, root=NULL,
 .createJTreeGraph <- function(rip){
     if (length(rip$cliques) > 1){
         ft <- cbind(rip$parents, 1:length(rip$parents))
-        ft <- ft[ft[, 1] != 0, ,drop=FALSE]
+        ft <- ft[ft[, 1] != 0, , drop=FALSE]
         V <- seq_along(rip$parents)
         if (nrow(ft) == 0){
             jt <- new("graphNEL", nodes = as.character(V), edgemode = "undirected")
@@ -176,3 +168,11 @@ compile.grain <- function(object, propagate=FALSE, root=NULL,
 
 
 
+
+## #' @rdname grain_compile
+## fit.grain <- function(object, propagate=TRUE, root=NULL,
+##            control=object$control, details=0, ...) {    
+##     cl <- match.call(expand.dots = TRUE)
+##     cl[[1]] <- as.name("compile.grain")
+##     eval(cl)
+## }
