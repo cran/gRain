@@ -1,7 +1,7 @@
 a25ea38144ef11b561ca8ad8c95717a2 *ChangeLog
-141044b8a3f698f14a37f8c1a3a37008 *DESCRIPTION
+0506a176acd5fb719d60d367ca1be85e *DESCRIPTION
 a148d2aa6a1bc0889a4bd961f2000e0e *NAMESPACE
-18c168483f27231f490308c28f729863 *NEWS
+e6cf777b13cce915595ba7f33b79ef5d *NEWS
 ed4e512458e0baa6a046a657a4b57032 *R/NAMESPACE.R
 9df51de58463544983900ec8416dc2c8 *R/RcppExports.R
 acb4017262d8cfd800f37a242413d4a6 *R/cpt-pot-extract.R
@@ -18,7 +18,7 @@ a6b3a7db3690c94e618480dc3203abe0 *R/gRain-package.R
 bb801e40e54b21cb08ec889935e0941a *R/generics.R
 8b324a85153fe2b108dd5954d6e2762d *R/grain-compile.R
 aa209fd41a06a199fe3954f4e8b24527 *R/grain-internal.R
-cdab528359db74175563dc569f683d59 *R/grain-main.R
+cf5ba5a3bd5c280e860a1b9178d96b9a *R/grain-main.R
 acf1d7256123d9cf907cb125e0d1df7b *R/grain-recent.R
 fc3603507fa3f70a0b13e88ee1e2e895 *R/grain-setcpt.R
 2048bb0db9cabd38c22661c719893549 *R/grain-simulate.R
@@ -28,12 +28,12 @@ cf52b1609f783ebd7f89e018b5bc23d8 *R/grain-utilities.R
 8cfb9395e003451ffc562dfee25f39a1 *R/predict.R
 d362f1a01edcc250c0bcc1dd7ed46103 *R/propagate.R
 e82f8089fc9147ad64bf9c2583dff17d *R/querygrain.R
-3734dd579e155070ea33cf7479919497 *R/repeat_pattern.R
+ffc4de1f6fe3a6a472da6b0c6c141544 *R/repeat_pattern.R
 82b4b195ca444cc42d309d3cac970771 *R/summary.R
 492833f472ec2751d0124a4e03e4d9b1 *R/zzz.R
 c9cafa9bd4fbf9796b824754e0e38ee8 *README.md
 297353b6c46271b763ec655689daf9fe *TODO
-5a120f52f88eba1b668390913e1f27a3 *build/vignette.rds
+acec78ccdf01818d84f269d7638770d0 *build/vignette.rds
 159c1deeea94cfa0c10348ccc1789fe2 *data/chest_cpt.RData
 1a1ca8a0edafae3e20e8c675ba7768b9 *data/grass_cpt.RData
 4bb3a6fe6be9b68db2ff6b7b51ee8c57 *demo/00Index
@@ -41,7 +41,7 @@ c9cafa9bd4fbf9796b824754e0e38ee8 *README.md
 d9d6508ea14c6b082bbbd2ec3a1643e6 *inst/CITATION
 e69daa81e42f9a62cb174fac2ebf5f6e *inst/doc/grain-intro.R
 ec8063512e70f31fed951b2c0b2ab3a1 *inst/doc/grain-intro.Rnw
-00a5d9e50b0154333627abc65b4dffa3 *inst/doc/grain-intro.pdf
+ac9c7fca622cc73bebd41e372884a17c *inst/doc/grain-intro.pdf
 b81f8dbf4d422dca45f39a4012f3ac11 *inst/huginex/chest_clinic.hlg
 9080a021559c0da015e18692a78b7c05 *inst/huginex/chest_clinic.net
 10042c9404809d7feec002b655a7b821 *inst/huginex/chest_clinic_short.net
@@ -67,7 +67,7 @@ bd459d61622f414db1519b65bc94e9ad *man/grain_propagate.Rd
 2f159ae31c8fc4eba173cf9aed4acb06 *man/logical.Rd
 35299b4dd353a53cc5fc37148cad2a77 *man/mendel.Rd
 e4d2653fd13b7e51fb7651b61edc7026 *man/querygrain.Rd
-1d0367724c2c0b9b0216dbc4eafda273 *man/repeatPattern.Rd
+589bc7b9c834b94873c68f354d7db14a *man/repeatPattern.Rd
 489b262d4f81136a32f0bb09936fe53e *src/Makevars
 a73031cbe7d6aaf0bd22e20f6526977d *src/Makevars.win
 8c77342642d623d63efe9416f79078f5 *src/RcppExports.cpp
