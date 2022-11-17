@@ -25,30 +25,24 @@
 #'     with the gRain Package for R. Journal of Statistical Software,
 #'     46(10), 1-26.  \url{https://www.jstatsoft.org/v46/i10/}.
 #' @keywords utilities models
+#'
 #' @examples
-#' 
-#' yn   <- c("yes","no")
-#' a    <- cptable(~asia,              values=c(1,99), levels=yn)
-#' t.a  <- cptable(~tub+asia,          values=c(5,95,1,99), levels=yn)
-#' s    <- cptable(~smoke,             values=c(5,5), levels=yn)
-#' l.s  <- cptable(~lung+smoke,        values=c(1,9,1,99), levels=yn)
-#' b.s  <- cptable(~bronc+smoke,       values=c(6,4,3,7), levels=yn)
-#' e.lt <- cptable(~either+lung+tub,   values=c(1,0,1,0,1,0,0,1), levels=yn)
-#' x.e  <- cptable(~xray+either,       values=c(98,2,5,95), levels=yn)
-#' d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-#' chest.cpt <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-#' chest.bn  <- grain(chest.cpt)
-#' bn1  <- compile(chest.bn, propagate=FALSE)
+#'
+#' example("grain")
+#'
+#' ## Uncompiled and unpropageted network:
+#' bn0  <- grain(chest_cpt, compile=FALSE)
+#' bn0
+#' ## Compiled but unpropageted network:
+#' bn1  <- compile(bn0, propagate=FALSE)
+#' ## Compiled and propagated network
 #' bn2  <- propagate(bn1)
-#' bn3  <- compile(chest.bn, propagate=TRUE)
-#'  
-#' @export propagate.grain
+#' bn2
+#' ## Default is that networks are compiled but not propagated at creation time:
+#' bn3  <- grain(chest_cpt) 
+#' bn3 
 
-## propagate.grain: equipot is updated after propagation on temppot
-## such that equipot will contain the updated potentials.
-## object$equipot <- propagateLS(object$temppot,
-##                               rip=object$rip, initialize=TRUE, details=details)
-
+#' @rdname grain_propagate
 #' @export 
 propagate.grain <- function(object, details=object$details, engine="cpp", ...){
 
@@ -56,23 +50,21 @@ propagate.grain <- function(object, details=object$details, engine="cpp", ...){
     engine <- match.arg(tolower(engine), c("r", "cpp"))
     
     propfun <- switch(engine,
-                   "r"   = {propagateLS},
-                   "cpp" = {propagateLS__})
-
+                      "r"   = {propagateLS},
+                      "cpp" = {propagateLS__})
+    
     object$potential$pot_equi <- ## FRAGILE assignment
         propfun(getgrain(object, "pot_temp"), rip=rip(object))
-
+    
     isPropagated(object) <- TRUE
-    
-    ## FIXME: propagate.grain : Looks strange
-    if (!is.null((ev <- getEvidence(object)))){
-        attr(ev, "pEvidence") <- pEvidence(object)
-        object$evidence <- ev
-    }
-    
     .timing(" Time: propagation:", object$control, t0)
     object
 }
+
+
+
+
+
 
 ## Lauritzen Spiegelhalter propagation
 ##
@@ -80,88 +72,156 @@ propagate.grain <- function(object, details=object$details, engine="cpp", ...){
 ## Don't remember the idea behind the 'initialize' argument; should always be true
 
 #' @rdname grain_propagate
-#' @param cqpotList List of clique potentials
+#' @param cq_pot_list List of clique potentials
 #' @param rip A rip ordering
 #' @param initialize Always true.
 #' 
 #' @export
-propagateLS <- function(cqpotList, rip, initialize=TRUE, details=0){
-    #details=20
-    ## cat(".Propagating BN: [propagateLS]\n")
+propagateLS <- function(cq_pot_list, rip, initialize=TRUE, details=0){
+    cat(".Propagating BN: [propagateLS]\n")
     ## .infoPrint(details, 1, cat(".Propagating BN: [propagateLS]\n"))
     
     cliq       <- rip$cliques
     seps       <- rip$separators
     pa         <- rip$parent
-    childList  <- rip$childList
+    child_list <- rip$childList
     ncliq      <- length(cliq)
 
-    ## Needed because RIP now returns 0 as the parent index for the
-    ## first clique
+    ## Needed because RIP returns 0 as parent index for clique 1:
     pa[pa == 0] <- NA
     
-    ## str(list(cliq=cliq, seps=seps))
-    
-    ## Backward propagation (collect evidence) towards root of junction tree
+    ## Backward propagation (collectEvidence) towards root of junction tree
     ##
-    .infoPrint(details, 2, cat("..BACKWARD:\n"))
     t0 <- proc.time()
     if (ncliq > 1){
         for (i in ncliq:2){
-            cq   <- cliq[[ i ]]
             sp   <- seps[[ i ]]
-            .infoPrint2(details, 2, "Clique %d: {%s}\n",  i , .colstr( cq ))
-            cq.pot   <- cqpotList[[ i ]]
-            pa.pot   <- cqpotList[[pa[ i ]]]
+            cq.pot   <- cq_pot_list[[ i ]]
+            pa.pot   <- cq_pot_list[[pa[ i ]]]
 
-            ## str(list(ncliq=ncliq, sp=sp, cq=cq))
-            ## if ((length(sp) >= 1) && !is.na(sp)){ ## Changed on May 9, 2022
             if (length(sp) > 0){
-                .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(sp))
                 sp.pot               <- tableMargin(cq.pot, sp)
-                cqpotList[[ i ]]     <- tableOp2(cq.pot, sp.pot, `/`)
-                cqpotList[[pa[ i ]]] <- tableOp2(pa.pot, sp.pot, `*`)
+                cq_pot_list[[ i ]]     <- tableOp2(cq.pot, sp.pot, `/`)
+                cq_pot_list[[pa[ i ]]] <- tableOp2(pa.pot, sp.pot, `*`)
             } else{
                 zzz               <- sum(cq.pot)
-                cqpotList[[1]]    <- cqpotList[[1]] * zzz
-                cqpotList[[ i ]]  <- cq.pot / zzz
+                cq_pot_list[[1]]    <- cq_pot_list[[1]] * zzz
+                cq_pot_list[[ i ]]  <- cq.pot / zzz
             }
         }
     }
 
-    tmpd           <- cqpotList[[1]]
-    normConst      <- sum(tmpd)
-    tmpd           <- tmpd / normConst
-    cqpotList[[1]] <- tmpd
+    tmpd           <- cq_pot_list[[1]]
+    norm_const     <- sum(tmpd)
+    tmpd           <- tmpd / norm_const
+    cq_pot_list[[1]] <- tmpd
         
-    ## Forward propagation (distribute evidence) away from root of junction tree
+    ## Forward propagation (distributeEvidence) away from root of junction tree
     ##
-    .infoPrint(details, 2, cat("..FORWARD:\n"))
+
     t0 <- proc.time()
-    for ( i  in 1:ncliq){
-        .infoPrint2(details, 2, "Clique %d: {%s}\n",  i , .colstr(cliq[[ i ]]))
-        ch <- childList[[ i ]]
+    for (i in 1:ncliq){
+        ch <- child_list[[ i ]]
         if (length(ch) > 0)
         {
-            .infoPrint2(details,2, "..Children: %s\n", .colstr(ch))
             for (j in 1:length(ch))
             {
                 if (length(seps[[ch[ j ]]]) > 0)
                 {
-                    .infoPrint2(details, 2, "Marg onto sep %i: {%s}\n", ch[ j ], .colstr(seps[[ch[ j ]]]))
-                    sp.pot            <- tableMargin(cqpotList[[ i ]], seps[[ch[ j ]]])
-                    ##cat(sprintf("......is.na: sp.pot=%i\n", any(is.na(sp.pot))))
-                    cqpotList[[ch[ j ]]]  <- tableOp2(cqpotList[[ch[ j ]]], sp.pot, `*`)
-                    .infoPrint(details, 4, { cat("Marginal:\n"); print (sp.pot) })
+                    sp.pot            <- tableMargin(cq_pot_list[[ i ]], seps[[ch[ j ]]])
+                    cq_pot_list[[ch[ j ]]]  <- tableOp2(cq_pot_list[[ch[ j ]]], sp.pot, `*`)
                 }
             }
         }
     }
     
-    attr(cqpotList, "pEvidence") <- normConst
-    cqpotList
+    attr(cq_pot_list, "pEvidence") <- norm_const
+    cq_pot_list
+}
+
+#' @rdname grain_propagate
+#' @export 
+compute_p_evidence <- function(object, details=object$details, engine="cpp", ...){
+
+    engine="r" ## FIXME
+    t0 <- proc.time()
+    engine <- match.arg(tolower(engine), c("r", "cpp"))
+    
+    compute_fun <- switch(engine,
+                      "r"   = {compute_p_evidence_worker},
+                      "cpp" = {compute_p_evidence_worker})
+    
+    out <- compute_fun(getgrain(object, "pot_temp"), rip=rip(object))
+    .timing(" Time: propagation:", object$control, t0)
+    out
+}
+
+
+## #' @export
+compute_p_evidence_worker <- function(cq_pot_list, rip, initialize=TRUE, details=0){
+    ## cat("[compute_p_evidence_worker]\n")
+    
+    cliq       <- rip$cliques
+    seps       <- rip$separators
+    pa         <- rip$parent
+    child_list <- rip$childList
+    ncliq      <- length(cliq)
+
+    ## Needed because RIP returns 0 as parent index for clique 1:
+    pa[pa == 0] <- NA
+    
+    ## Backward propagation (collectEvidence) towards root of junction tree
+    ##
+    t0 <- proc.time()
+    if (ncliq > 1){
+        for (i in ncliq:2){
+            sp   <- seps[[ i ]]
+            cq.pot   <- cq_pot_list[[ i ]]
+            pa.pot   <- cq_pot_list[[pa[ i ]]]
+
+            if (length(sp) > 0){
+                sp.pot               <- tableMargin(cq.pot, sp)
+                cq_pot_list[[ i ]]     <- tableOp2(cq.pot, sp.pot, `/`)
+                cq_pot_list[[pa[ i ]]] <- tableOp2(pa.pot, sp.pot, `*`)
+            } else{
+                zzz               <- sum(cq.pot)
+                cq_pot_list[[1]]    <- cq_pot_list[[1]] * zzz
+                cq_pot_list[[ i ]]  <- cq.pot / zzz
+            }
+        }
+    }
+
+    tmpd           <- cq_pot_list[[1]]
+    norm_const     <- sum(tmpd)
+    return(norm_const)
 }
 
 
 
 
+
+
+    ## .infoPrint(details, 2, cat("..BACKWARD:\n"))
+
+## cq   <- cliq[[ i ]]
+
+    ## .infoPrint(details, 2, cat("..FORWARD:\n"))
+            ## .infoPrint2(details, 2, "Clique %d: {%s}\n",  i , .colstr( cq ))
+            ## .infoPrint2(details, 2, "Marg onto sep {%s}\n", .colstr(sp))
+        ## .infoPrint2(details, 2, "Clique %d: {%s}\n",  i , .colstr(cliq[[ i ]]))
+            ## .infoPrint2(details,2, "..Children: %s\n", .colstr(ch))
+                    ## .infoPrint2(details, 2, "Marg onto sep %i: {%s}\n", ch[ j ], .colstr(seps[[ch[ j ]]]))
+                    ## .infoPrint(details, 4, { cat("Marginal:\n"); print (sp.pot) })
+
+
+                    ##cat(sprintf("......is.na: sp.pot=%i\n", any(is.na(sp.pot))))
+
+            ## str(list(ncliq=ncliq, sp=sp, cq=cq))
+            ## if ((length(sp) >= 1) && !is.na(sp)){ ## Changed on May 9, 2022
+    
+    ## FIXME: propagate.grain : Looks strange
+    ## if (!is.null((ev <- getEvidence(object)))){
+        ## attr(ev, "pEvidence") <- pEvidence(object)
+        ## object$evidence <- ev
+    ## }
+    

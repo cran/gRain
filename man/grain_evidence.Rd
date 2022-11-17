@@ -18,7 +18,6 @@ setEvidence(
   nodes = NULL,
   states = NULL,
   evidence = NULL,
-  nslist = NULL,
   propagate = TRUE,
   details = 0
 )
@@ -27,13 +26,13 @@ retractEvidence(object, nodes = NULL, propagate = TRUE)
 
 absorbEvidence(object, propagate = TRUE)
 
-pEvidence(object)
+pEvidence(object, evidence = NULL)
 
-getEvidence(object)
+getEvidence(object, short = TRUE)
 
-evidence(object)
+evidence(object, short = TRUE)
 
-\method{evidence}{grain}(object)
+\method{evidence}{grain}(object, short = TRUE)
 
 evidence(object) <- value
 
@@ -50,11 +49,12 @@ evidence(object) <- value
 \item{evidence}{An alternative way of specifying findings
 (evidence), see examples below.}
 
-\item{nslist}{deprecated}
-
 \item{propagate}{Should the network be propagated?}
 
 \item{details}{Debugging information}
+
+\item{short}{If TRUE a dataframe with a summary is returned;
+otherwise a list with all details.}
 
 \item{value}{The evidence in the form of a named list or an evidence-object.}
 }

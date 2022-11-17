@@ -41,35 +41,37 @@
 #' 
 #' @examples
 #' 
-#' ## Asia (chest clinic) network created from conditional probability tables
+#' ## Create network from conditional probability tables CPTs:
 #' 
 #' yn   <- c("yes", "no")
-#' a    <- cptable(~asia,              values=c(1,99), levels=yn)
-#' t.a  <- cptable(~tub+asia,          values=c(5,95,1,99), levels=yn)
-#' s    <- cptable(~smoke,             values=c(5,5), levels=yn)
-#' l.s  <- cptable(~lung+smoke,        values=c(1,9,1,99), levels=yn)
-#' b.s  <- cptable(~bronc+smoke,       values=c(6,4,3,7), levels=yn)
-#' e.lt <- cptable(~either+lung+tub,   values=c(1,0,1,0,1,0,0,1), levels=yn)
-#' x.e  <- cptable(~xray+either,       values=c(98,2,5,95), levels=yn)
-#' d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-#' chest.cpt <- compileCPT(a, t.a, s, l.s, b.s, e.lt, x.e, d.be)
-#' chest.bn  <- grain(chest.cpt)
+#' a    <- cpt(~asia,              values=c(1,99), levels=yn)
+#' t.a  <- cpt(~tub+asia,          values=c(5,95,1,99), levels=yn)
+#' s    <- cpt(~smoke,             values=c(5,5), levels=yn)
+#' l.s  <- cpt(~lung+smoke,        values=c(1,9,1,99), levels=yn)
+#' b.s  <- cpt(~bronc+smoke,       values=c(6,4,3,7), levels=yn)
+#' e.lt <- cpt(~either+lung+tub,   values=c(1,0,1,0,1,0,0,1), levels=yn)
+#' x.e  <- cpt(~xray+either,       values=c(98,2,5,95), levels=yn)
+#' d.be <- cpt(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
+#' cpt_list  <- list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be)
+#' chest_cpt <- compileCPT(cpt_list)
+#' ## Alternative: chest_cpt <- compileCPT(a, t.a, s, l.s, b.s, e.lt, x.e, d.be)
+#' 
+#' chest_bn  <- grain(chest_cpt)
 #'
 #' ## Create network from data and graph specification.
 #'
-#' ## There are different ways; see documentation in the "See all"
-#' ## links.
-#'
 #' data(lizard, package="gRbase")
-#' # DAG: height <- species -> diam
+#'
+#' ## From a DAG: height <- species -> diam
 #' daG <- dag(~species + height:species + diam:species)
 #'
-#' # UG : [height:species][diam:species]
+#' ## From an undirected graph UG : [height:species][diam:species]
 #' uG  <- ug(~height:species + diam:species)
 #' 
-#' bn.uG   <- grain(uG, data=lizard)
-#' bn.daG  <- grain(daG, data=lizard)
+#' liz.ug   <- grain(uG, data=lizard)
+#' liz.dag  <- grain(daG, data=lizard)
 
+#' @rdname grain-main
 #' @export 
 grain <- function(x, ...){
   UseMethod("grain")
@@ -118,7 +120,7 @@ grain.pot_spec <- function(x, control=list(), smooth=0, compile=TRUE, details=0,
 #' @export
 #' @rdname grain-main
 grain.graphNEL <- function(x, control=list(), smooth=0, compile=TRUE, details=0, data=NULL, ...){
-    cat("grain.graphNEL\n")
+    ## cat("grain.graphNEL\n")
     if (is.null(data))
         stop("Data must be given to create grain from graph\n")
     if (!(is.named.array(data) || is.data.frame(data)))
@@ -151,30 +153,73 @@ grain.dModel <- function(x, control=list(), smooth=0, compile=TRUE, details=0, d
 
 #' @export
 ## #' @rdname grain-main
-grain.pot_rep <- function(x, ...){grain(compilePOT(x))}
+grain.pot_representation <- function(x, ...){
+    grain(compilePOT(x))
+}
 
 #' @export
 ## #' @rdname grain-main
-grain.cpt_rep <- function(x, ...){grain(compileCPT(x))}
-
-## #' @rdname grain-main    
-## grain.marg_rep <- function(x, ...){grain(compileCPT(x))} FIXME to implement
+grain.cpt_representation <- function(x, ...){
+    grain(compileCPT(x))
+}
 
 #' @export
-print.grain <- function(x,...){
+print.grain <- function(x, ...){
+
+    hasEvidence <- !is.null(evidence(x))
     cat("Independence network: Compiled:", isCompiled(x),
-        "Propagated:", isPropagated(x), "\n")
-    cat("  Nodes:"); str(unname(nodeNames(x)))
-    if ( !is.null((ev <- evidence(x))) ){
-        cat("  Evidence:\n");
-        ##½        print(as.data.frame( ev ) )
-        print( ev )
-        if (!is.null((p <- pEvidence(x))))
-            cat(sprintf("  pEvidence: %f\n", p))
-    }
+        "Propagated:", isPropagated(x), "Evidence:", hasEvidence, "\n")
+    ## cat("  Nodes:"); str(unname(nodeNames(x)))
     invisible(x)
 }
 
+#' @export
+summary.grain <- function(object, type='std', ...){
+
+    type <- match.arg(type, c("std", "cliques", "rip", "configurations"))
+    
+    cat("Independence network: Compiled:", isCompiled(object),
+        "Propagated:", isPropagated(object), "\n")
+    
+    if (length(object$evidence)) getEvidence(object)
+    
+    cat(" Nodes :")
+    utils::str(nodeNames(object)) ## $universe$nodes)
+    
+    if (isCompiled(object)){
+        
+        cq.length <- sapply(rip(object)$cliques, length)
+        
+        cat(sprintf(" Number of cliques:              %4d \n",  length(cq.length)))
+        cat(sprintf(" Maximal clique size:            %4d \n",  max(cq.length)))
+        cat(sprintf(" Maximal state space in cliques: %4d \n",
+                    max(unlist(lapply(getgrain(object, "pot_equi"), length)) )))
+        ##                    max(unlist(lapply(pot(object)$pot_equi, length)) )))
+      
+        if(length(e <- getEvidence(object))){
+            print(e)
+        }
+        
+        switch(type,
+               "rip"={
+                   cat("\nRIP ordering:\n")
+                   print(rip(object))
+               },
+               "cliques"={
+                   cat("\nCliques:\n")
+                   .printList(rip(object)$cliques)
+               },
+               "configurations"={
+                   cat("\nConfigurations:\n")
+                   nc <- seq_along(rip(object)$cliques)
+                   for (i in nc){
+                       ##cat(" clique ", i, ":", length(getgrain(object, "pot_equi")[[i]]), "\n")
+                       ##cat(" clique ", i, ":", length(pot(object)$pot_equi[[i]]), "\n")
+                   }
+               })
+    }
+    invisible(object)
+}
 
 
 .setExtraComponents <- function(control, details){
@@ -276,3 +321,12 @@ print.grain <- function(x,...){
 ## #' t2 <- querygrain(bn2.daG, type="joint")
 ## #' t1 %a/% t2
 ## #' 
+
+
+
+
+## #' @rdname grain-main    
+## grain.marg_rep <- function(x, ...){grain(compileCPT(x))} FIXME to implement
+
+
+## FIXME Rethink print.grain

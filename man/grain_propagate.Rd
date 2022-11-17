@@ -5,11 +5,14 @@
 \alias{propagate.grain}
 \alias{propagateLS}
 \alias{propagateLS__}
+\alias{compute_p_evidence}
 \title{Propagate a graphical independence network (a Bayesian network)}
 \usage{
 \method{propagate}{grain}(object, details = object$details, engine = "cpp", ...)
 
-propagateLS(cqpotList, rip, initialize = TRUE, details = 0)
+propagateLS(cq_pot_list, rip, initialize = TRUE, details = 0)
+
+compute_p_evidence(object, details = object$details, engine = "cpp", ...)
 }
 \arguments{
 \item{object}{A grain object}
@@ -21,7 +24,7 @@ fastest.}
 
 \item{...}{Currently not used}
 
-\item{cqpotList}{List of clique potentials}
+\item{cq_pot_list}{List of clique potentials}
 
 \item{rip}{A rip ordering}
 
@@ -43,21 +46,19 @@ the purely R based version.
 }
 \examples{
 
-yn   <- c("yes","no")
-a    <- cptable(~asia,              values=c(1,99), levels=yn)
-t.a  <- cptable(~tub+asia,          values=c(5,95,1,99), levels=yn)
-s    <- cptable(~smoke,             values=c(5,5), levels=yn)
-l.s  <- cptable(~lung+smoke,        values=c(1,9,1,99), levels=yn)
-b.s  <- cptable(~bronc+smoke,       values=c(6,4,3,7), levels=yn)
-e.lt <- cptable(~either+lung+tub,   values=c(1,0,1,0,1,0,0,1), levels=yn)
-x.e  <- cptable(~xray+either,       values=c(98,2,5,95), levels=yn)
-d.be <- cptable(~dysp+bronc+either, values=c(9,1,7,3,8,2,1,9), levels=yn)
-chest.cpt <- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
-chest.bn  <- grain(chest.cpt)
-bn1  <- compile(chest.bn, propagate=FALSE)
+example("grain")
+
+## Uncompiled and unpropageted network:
+bn0  <- grain(chest_cpt, compile=FALSE)
+bn0
+## Compiled but unpropageted network:
+bn1  <- compile(bn0, propagate=FALSE)
+## Compiled and propagated network
 bn2  <- propagate(bn1)
-bn3  <- compile(chest.bn, propagate=TRUE)
- 
+bn2
+## Default is that networks are compiled but not propagated at creation time:
+bn3  <- grain(chest_cpt) 
+bn3 
 }
 \references{
 Søren Højsgaard (2012). Graphical Independence Networks
