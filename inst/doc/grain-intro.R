@@ -12,9 +12,6 @@ require(gRain)
 prettyVersion <- packageDescription("gRain")$Version
 prettyDate <- format(Sys.Date())
 
-## ----------------------------------------------------------------------------------
-citation("gRain")
-
 ## ----echo=F, results='hide'--------------------------------------------------------
 yn <- c("yes","no")
 a    <- cpt(~asia, values=c(1,99),levels=yn)
