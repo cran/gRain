@@ -227,8 +227,8 @@ y2sim |> hist(prob=T, ylim=c(0, .4), breaks=10)
 y22sim |> hist(prob=T, ylim=c(0, .4), breaks=10)
 
 ## ----------------------------------------------------------------------------------
-dG  <- dag(~A:B + B:C)
-uG  <- ug(~A:B + B:C)
+dG  <- dag(~A:B + B:C, result="igraph")
+uG  <- ug(~A:B + B:C, result="igraph")
 par(mfrow=c(1,2)); plot( dG ); plot( uG )
 
 ## ----------------------------------------------------------------------------------
