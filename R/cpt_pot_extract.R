@@ -182,22 +182,44 @@ pot2marg <- function(pot_rep) {
 extract_cpt_worker <- function(data_, vpa, smooth=0) {
     
     is.df <- is.data.frame(data_)
-    
+
     out <- lapply(vpa, function(ss){
         marginal_data(data_, ss, is.df)
     })
     
-    out <- lapply(out, function(o){
-        tabNormalize(o, type="first")
-    })
+
+    ## FIXME : Get rid of this parray stuff (at least as a class)
+    ## out <- lapply(out, as.parray, normalize="first", smooth=smooth)
+
+    out <- lapply(out,
+                    function(oo){
+                        tabNormalize(oo + smooth, type="first")
+                    })
+
+    chk <- unlist(lapply(out,
+                         function(zz) {
+
+                             any(is.na(zz))
+                         }
+                         ))
     
-    chk <- unlist(lapply(out, function(zz){
-        any(is.na(zz))
-    }))
+
+
+
     
+    ## out <- lapply(out, function(o){
+    ##     tabNormalize(o, type="first")
+    ## })
+    
+    ## chk <- unlist(lapply(out, function(zz){
+    ##     any(is.na(zz))
+    ## }))
+
+
     nas <- names(chk)[which(chk)]
     
     if (length(nas) > 0) {
+
         cat(sprintf("NAs found in conditional probability table(s) for nodes: %s\n",
                     toString(nas)))
         cat(sprintf("  ... consider using the smooth argument\n"))
