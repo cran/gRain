@@ -24,7 +24,6 @@
 #'   * \code{extract_pot}: A list of clique potentials.
 #'   * \code{extract_marg}: A list of clique marginals. 
 #'
-#'
 #' @seealso \code{\link{compileCPT}}, \code{\link{compilePOT}},
 #'     \code{\link{grain}}
 #'
@@ -32,6 +31,7 @@
 #'     with the gRain Package for R. Journal of Statistical Software,
 #'     46(10), 1-26.  \url{https://www.jstatsoft.org/v46/i10/}.
 #' @keywords utilities
+#'
 #' @examples
 #' 
 #' ## Extract cpts / clique potentials from data and graph
@@ -52,8 +52,8 @@
 #' cp
 #'
 #' # Both specify the same probability distribution
-#' tabListMult(pt) %>% as.data.frame.table
-#' tabListMult(cp) %>% as.data.frame.table
+#' tabListMult(pt) |> as.data.frame.table()
+#' tabListMult(cp) |> as.data.frame.table()
 #'
 #' \dontrun{
 #' # Bayesian networks can be created as
@@ -65,7 +65,7 @@
 #' bn.uG   <- grain(uG, data=lizard)
 #' bn.daG  <- grain(daG, data=lizard)
 #' }
-
+#' 
 #' @rdname components_extract
 #' @export 
 extract_cpt <- function(data_, graph, smooth=0) {
@@ -77,7 +77,7 @@ extract_cpt <- function(data_, graph, smooth=0) {
         stop("'graph' not a DAG")
     
     vpa <- vpar(graph)
-    out <- extract_cpt_worker(data_, vpa=vpa, smooth=smooth)
+    out <- extract_cpt_worker(data_, vpa_=vpa, smooth=smooth)
     attr(out, "graph") <- graph
     class(out)         <- "cpt_representation"
     out
@@ -95,13 +95,13 @@ extract_pot <- function(data_, graph, smooth=0) {
 
     rip_  <- rip(graph)
     out   <- extract_pot_worker(data_, rip_$cliques, rip_$sep, smooth=smooth)
+
+    ## FIXME These attributes should be moved elsewhere
     attr(out, "rip")   <- rip_
     attr(out, "graph") <- graph    
     class(out)         <- "pot_representation"
     out
 }
-
-
 
 #' @export 
 #' @rdname components_extract
@@ -121,7 +121,6 @@ extract_marg <- function(data_, graph, smooth=0) {
     class(out)         <- "marg_representation"
     out
 }
-
 
 
 #' @export 
@@ -179,49 +178,35 @@ pot2marg <- function(pot_rep) {
 ## ##################################################################
 
 
-extract_cpt_worker <- function(data_, vpa, smooth=0) {
+extract_cpt_worker <- function(data_, vpa_, smooth=0) {
     
     is.df <- is.data.frame(data_)
 
-    out <- lapply(vpa, function(ss){
+    out <- lapply(vpa_, function(ss){
         marginal_data(data_, ss, is.df)
     })
     
-
-    ## FIXME : Get rid of this parray stuff (at least as a class)
-    ## out <- lapply(out, as.parray, normalize="first", smooth=smooth)
-
-    out <- lapply(out,
-                    function(oo){
-                        tabNormalize(oo + smooth, type="first")
-                    })
-
+    out <- vector("list", length(vpa_))
+    for (i in seq_along(vpa_)){
+        cq   <- vpa_[[ i ]]
+        t.cq <- marginal_data(data_, cq, is.df) + smooth       
+#        print(t.cq)
+        out[[i]] <- tabNormalize(t.cq + smooth, type="first")
+    }
+    
+#    out <<- out
+    
     chk <- unlist(lapply(out,
                          function(zz) {
-
                              any(is.na(zz))
-                         }
-                         ))
-    
+                         }))
 
+    # nas <- names(chk)[which(chk)]
+    # nas <- names(chk)[which(names(vpa_))]
+    nas <- names(vpa_)[chk]
 
-
-    
-    ## out <- lapply(out, function(o){
-    ##     tabNormalize(o, type="first")
-    ## })
-    
-    ## chk <- unlist(lapply(out, function(zz){
-    ##     any(is.na(zz))
-    ## }))
-
-
-    nas <- names(chk)[which(chk)]
-    
     if (length(nas) > 0) {
-
-        cat(sprintf("NAs found in conditional probability table(s) for nodes: %s\n",
-                    toString(nas)))
+        cat(sprintf("NAs found in cpt(s) for node(s): %s\n", toString(nas)))
         cat(sprintf("  ... consider using the smooth argument\n"))
     }
     out
@@ -231,19 +216,36 @@ extract_cpt_worker <- function(data_, vpa, smooth=0) {
 extract_pot_worker <- function(data_, cliq, seps=NULL, smooth=0) {        
     
     .normalize <- function(tt, sp) {
-        if (length(sp) > 0) tabDiv0(tt, tabMarg(tt, sp))
-        else tt / sum(tt)        
+        if (length(sp) > 0){ 
+          mm <- tabMarg(tt, sp)
+          ##print(mm)
+#          tabDiv0(tt, mm)
+          tabDiv(tt, mm)
+        } else {
+          mm <- sum(tt)
+          tt / mm        
+        }
     }
+
+    is.df <- is.data.frame(data_)
     
     out <- vector("list", length(cliq))
-    is.df <- is.data.frame(data_)
-    for ( i  in seq_along(cliq)){
+    for (i in seq_along(cliq)){
         cq   <- cliq[[ i ]]
         sp   <- seps[[ i ]]
         t.cq <- marginal_data(data_, cq, is.df) + smooth       
-        ##str(list(cq=cq, sp=sp))
         out[[i]] <- .normalize(t.cq, sp)
     }
+    
+    chk <- sapply(out, function(z) any(is.na(z)))
+    nms <- lapply(out, function(z) names(dimnames(z)))
+    
+    if (any(chk)) {
+        cat(sprintf("NAs found in clique potential(s) for clique(s): \n"))
+        cat(toString(nms[chk]), "\n")
+        cat(sprintf("  ... consider using the smooth argument\n"))
+    }
+    
     out
 }
 
@@ -261,6 +263,8 @@ extract_marg_worker <- function(data_, marg, seps=NULL, smooth=0) {
 }
 
 
+
+
 ## helper function; can possibly be made faster
 marginal_data <- function(data_, set, is.df=NULL) {
 
@@ -272,8 +276,10 @@ marginal_data <- function(data_, set, is.df=NULL) {
     if (is.null(is.df))
         is.df <- is.data.frame(data_)
 
-    if (is.df) .dfMarg(data_, set)
-    else tabMarg(data_, set)
+    if (is.df)
+        .dfMarg(data_, set)
+    else
+        tabMarg(data_, set)
         
 }
 
@@ -283,31 +289,24 @@ is_valid_data <- function(data_) {
 }
 
 
-
-
 ## ---------------------------------------------------------------
 ## FIXME for backward compatibility; deprecate in future release
 ## ---------------------------------------------------------------
 
-#' @rdname components_extract
+
+
+#' @name old_components_extract
+#' @inherit components_extract
+#' @concept old_names
 #' @export 
 extractCPT <- extract_cpt
 
-#' @rdname components_extract
+#' @rdname old_components_extract
 #' @export 
 extractPOT <- extract_pot
 
-#' @rdname components_extract
+#' @rdname old_components_extract
 #' @export 
 extractMARG <- extract_marg
 
 
-
-## #' @rdname components_extract
-## data2cpt <- extract_cpt
-
-## #' @rdname components_extract
-## data2pot <- extract_pot
-
-## #' @rdname components_extract
-## data2marg <- extract_marg

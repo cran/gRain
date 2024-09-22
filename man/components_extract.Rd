@@ -7,9 +7,6 @@
 \alias{extract_marg}
 \alias{marg2pot}
 \alias{pot2marg}
-\alias{extractCPT}
-\alias{extractPOT}
-\alias{extractMARG}
 \title{Extract conditional probabilities and clique potentials from
 data.}
 \usage{
@@ -22,12 +19,6 @@ extract_marg(data_, graph, smooth = 0)
 marg2pot(marg_rep)
 
 pot2marg(pot_rep)
-
-extractCPT(data_, graph, smooth = 0)
-
-extractPOT(data_, graph, smooth = 0)
-
-extractMARG(data_, graph, smooth = 0)
 }
 \arguments{
 \item{data_}{A named array or a dataframe.}
@@ -78,8 +69,8 @@ pt
 cp
 
 # Both specify the same probability distribution
-tabListMult(pt) \%>\% as.data.frame.table
-tabListMult(cp) \%>\% as.data.frame.table
+tabListMult(pt) |> as.data.frame.table()
+tabListMult(cp) |> as.data.frame.table()
 
 \dontrun{
 # Bayesian networks can be created as
@@ -91,6 +82,7 @@ bn.daG  <- grain(cp)
 bn.uG   <- grain(uG, data=lizard)
 bn.daG  <- grain(daG, data=lizard)
 }
+
 }
 \references{
 Søren Højsgaard (2012). Graphical Independence Networks

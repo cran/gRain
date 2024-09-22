@@ -1,4 +1,4 @@
-#' @title Query a network
+#' @title Query a Bayesian network
 #' 
 #' @description Query an independence network, i.e. obtain the
 #'     conditional distribution of a set of variables - possibly (and
@@ -6,7 +6,7 @@
 #' 
 #' @name querygrain
 #' 
-#' @aliases querygrain querygrain.grain qgrain
+#' @aliases querygrain querygrain.grain qgrain ask ask.grain
 #'
 #' @param object A `grain` object.
 #' @param nodes A vector of nodes; those nodes for which the
@@ -63,6 +63,26 @@ querygrain <- function(object, nodes=nodeNames(object), type="marginal",
   UseMethod("querygrain")
 }
 
+## #' @export
+## ask <- function(object, nodes=nodeNames(object), type="marginal",
+##                        evidence=NULL, exclude=TRUE, normalize=TRUE,
+##                        simplify=FALSE, result="array", details=0)
+## {
+##   UseMethod("ask")
+## }
+
+
+## #' @export
+## ask.grain <- function(object, nodes = nodeNames(object), type = "marginal",
+##                       evidence=NULL, exclude=TRUE, normalize=TRUE,
+##                       simplify=FALSE,
+##                       result="array", details=0){
+##     cl <- match.call()
+##     cl[[1]] <- as.name("querygrain.grain")
+##     eval(cl)
+## }
+
+
 #' @export 
 qgrain <- querygrain
 
@@ -70,10 +90,10 @@ qgrain <- querygrain
 querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal",
                              evidence=NULL, exclude=TRUE, normalize=TRUE,
                              simplify=FALSE,
-                             result="array", details=0){
+                             result="array", details=0) {
 
     if (!is.null(evidence)){
-        if (details>=1) cat(" Inserting (additional) evidence\n")
+        if (details >= 1) cat(" Inserting (additional) evidence\n")
         object <- setEvidence(object, evidence=evidence)
     }
     
@@ -81,9 +101,14 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
     result <- match.arg(result, c("array","data.frame"))
     t0 <- proc.time()
 
-    if (is.null(nodes)) return(invisible(NULL))
-    else if (inherits(nodes, "formula")) nodes <- unlist(rhsf2list(nodes))
-
+    if (is.null(nodes)){
+        return(invisible(NULL))
+    }
+    else {
+        if (inherits(nodes, "formula"))
+            nodes <- unlist(rhsf2list(nodes))
+    }
+    
     if (!isCompiled(object)){ 
         if (details >= 1) cat("  Compiling (and propagating) model ...\n")
         object <- compile(object, propagate=TRUE)
@@ -113,11 +138,17 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
                    out <- qobject
            })
 
+    ## cat("uuuuuuuuuuuuuuu\n")
+    ## print(out)
+    ## print(nodes)
     if (simplify){
-        out <- simplify_query(out)
-    } else {
-        if (result == "data.frame")
-            out <- lapply(out, as.data.frame.table)
+        if (identical(type, "marginal")){
+            out <- simplify_query(out)
+            ## print(out)
+            ## out <- out[nodes, ]
+        } else {
+            out <- as.data.frame.table(out)
+        }
     }
     
     if (object$control$timing)
@@ -126,10 +157,13 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
 }
 
 .nodeJoint <- function(object, nodes=NULL, exclude=TRUE,
-                       normalize=TRUE, details=1){
-
-    nodes <- if (is.null(nodes)){rip(object)$nodes}
-             else intersect(rip(object)$nodes, nodes)
+                       normalize=TRUE, details=1) {
+    ## cat(".nodeJoint\n ")
+    nodes <- if (is.null(nodes)){
+                 rip(object)$nodes
+             } else {
+                 intersect(rip(object)$nodes, nodes)
+             }
     
 
     if (exclude)
@@ -140,7 +174,7 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
     idxb <- sapply(cliq, function(cq) is_subsetof(nodes, cq)) 
 
     if (any(idxb)){
-        ##cat(".Calculating joint directly from clique\n")
+        ## cat(".Calculating joint directly from clique\n")
         pt2   <- getgrain(object, "pot_equi")[[ which(idxb)[1] ]]
         value <- tableMargin(pt2, nodes)  ## FIXME tableMargin
 
@@ -150,7 +184,8 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
         }
 
     } else {
-        ##cat(".Calculating marginal brute force\n")
+        ## cat(".Calculating marginal brute force\n")
+        ## print(nodes)
         nnodes <- length(nodes)
         dn     <- universe(object)$levels[nodes]
         value  <- tabNew(names(dn), dn) 
@@ -160,8 +195,11 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
         gr2    <- as.matrix( expand.grid( dn2 ) )
 
         object  <- absorbEvidence( object )
-        zz <- lapply(1:nrow(gr2), function(i){
-            tmp <- setFinding(object, nodes=nodes2, states=gr2[i,])
+        zz <- lapply(1:nrow(gr2), function(i) {
+            
+            ev <- setNames(as.list(gr2[i,]), nodes2)
+            tmp <- setEvidence(object, evidence=ev)
+            
             r   <- .nodeMarginal(tmp, nodes[1])
             v   <- r[[1]] * pEvidence(tmp)
             v
@@ -175,23 +213,27 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
     value
 }
 
-.nodeMarginal <- function(object, nodes=NULL, exclude=TRUE, details=1){
-    ##cat(".nodeMarginal\n")
+.nodeMarginal <- function(object, nodes=NULL, exclude=TRUE, details=1) {
+    ## cat(".nodeMarginal\n")
 
-    nodes <- if (is.null(nodes)){rip(object)$nodes}
-             else intersect(rip(object)$nodes, nodes)
-    
+    nodes <- if (is.null(nodes)){
+                 rip(object)$nodes
+             } else {
+                 intersect(rip(object)$nodes, nodes)
+             }
+    ## print(nodes)
+    ## print(getEvidence(object))
     if (exclude)
         nodes <- setdiff(nodes, getEvidence(object)$nodes)
-
+    ## print(nodes)
     idx <- match(nodes, rip(object)$nodes)
     host.cq <- rip(object)$host[idx]
 
-    if (length(nodes) > 0){
+    if (length(nodes) > 0) {
         out <- vector("list", length(nodes))
         names(out) <- nodes
 
-        for (i in 1:length(nodes)){
+        for (i in 1:length(nodes)) {
             cvert  <- nodes[i]
             idx    <- host.cq[i]
             cpot   <- getgrain(object, "pot_equi")[[ idx ]]
@@ -199,15 +241,8 @@ querygrain.grain <- function(object, nodes = nodeNames(object), type = "marginal
             mtab   <- mtab / sum( mtab )
             out[[ i ]] <- mtab
         }
+        ## print(out)
         return( out )
     }
 }
-
-##mtab   <- tableMargin( cpot, cvert ) ## FIX tableMargin replaced
-
-## querygrain - .nodeMarginal: Calculations based on equipot
-##cpot   <- pot(object)$pot_equi[[ idx ]]
-
-##idxb <- sapply(cliq, function(cq) subsetof(nodes, cq))
-##tab   <- pot(object)$pot_equi[[ which(idxb)[1] ]]
 

@@ -3,7 +3,6 @@
 ## FIXME: summary.marg_spec missing
 
 #' @title Compile conditional probability tables / cliques potentials.
-#' 
 #' @description Compile conditional probability tables / cliques
 #'     potentials as a preprocessing step for creating a graphical
 #'     independence network
@@ -51,11 +50,14 @@
 #'
 #' @examples
 #'
-#' data(chest_cpt)
+#' example("example_chest_cpt")
 #' x <- compile_cpt(chest_cpt)
 #' class(x)
 #' grain(x)
 #' 
+
+
+## FIXME: This listify stuff caused trouble as the class attribute was lost. For potentials got rid of it all. 
 
 #' @rdname components_gather
 #' @export
@@ -63,15 +65,19 @@ compile_cpt <- function(x, ..., forceCheck=TRUE) {
     args <- c(list(x), list(...))
     args <- listify_dots(args)
     compile_cpt_worker(args, forceCheck=forceCheck)
+    ## compile_cpt_worker(x, forceCheck=forceCheck)
 }
 
 
 #' @rdname components_gather
 #' @export
 compile_pot <- function(x, ..., forceCheck=TRUE){
-    args <- c(list(x), list(...))
-    args <- listify_dots(args)
-    compile_pot_worker(args, forceCheck=forceCheck)   
+  # doit(lapply(x, .namesDimnames))
+  #   dots <- list(...)
+  #   args <- c(list(x), dots)
+  #   args <- listify_dots(args)
+  #   args100 <<- args
+    compile_pot_worker(x, forceCheck=forceCheck)   
 }
 
 
@@ -80,11 +86,13 @@ compile_pot <- function(x, ..., forceCheck=TRUE){
 ## For backward compatibility; deprecate in future release
 ## -------------------------------------------------------------
 
-#' @rdname components_gather
+#' @rdname old_components_gather
+#' @inherit components_gather
+#' @concept old_names
 #' @export
 compileCPT <- compile_cpt
 
-#' @rdname components_gather
+#' @rdname old_components_gather
 #' @export
 compilePOT <- compile_pot
 
@@ -204,21 +212,26 @@ compile_pot_worker <- function(x, ...){
 
     universe  <- .make.universe(x)
     
-    if (inherits(x, "pot_representation")){ ## Result of extract_pot
-        graph <- attr(x, "graph")
-        rp    <- attr(x, "rip")
-    } else {
-        graph <- lapply(x, .namesDimnames)
-        graph <- ug(graph)
-        rp    <- rip(graph)
-    }
     
     attr(x, "universe") <- universe
-    attr(x, "ug")    <- graph 
-    attr(x, "rip")   <- rp
+    attr(x, "ug")    <- attr(x, "graph") 
+    attr(x, "graph") <- NULL
+#    attr(x, "rip")   <- rp
     class(x) <- "pot_spec"
     x
 }
+
+# if (inherits(x, "pot_representation")){ 
+#   cat("Result of extract_pot\n")
+#     graph <- attr(x, "graph")
+#     rp    <- attr(x, "rip")
+# } else {
+#   cat("Not Result of extract_pot\n")
+#   graph <- lapply(x, .namesDimnames)
+#   graph <- ug(graph)
+#   rp    <- rip(graph)
+# }
+
 
 .create_universe <- function(zz){
     vn <- unlist(lapply(zz, "[[", "vnam"))

@@ -4,9 +4,9 @@
 #'
 #' @name generics
 #' 
-#' @param x,object A relevant object.
+#' @param object A relevant object.
 #' @param nodes Some nodes of the object.
-#' @param value Value to be set for slot in object.
+## #' @param value Value to be set for slot in object.
 #' @param ... Additional arguments; currently not used.
 #' 
 
@@ -64,16 +64,16 @@ isPropagated <- function(object) {
     getgin(object, "isPropagated")
 }
 
-#' @rdname generics
-#' @export
+## ' @rdname generics
+## ' @export
 "isCompiled<-" <- function(object, value)
 {
     object$isCompiled <- value
     object
 }
 
-#' @rdname generics
-#' @export
+## ' @rdname generics
+## ' @export
 "isPropagated<-" <- function(object, value)
 {
     object$isPropagated <- value
@@ -108,12 +108,13 @@ rip.grain <- function(object, ...)
     getgin(object, "rip")
 }
 
-#' @export
-#' @rdname generics
-varNames.grainEvidence_ <- function(x)
-{
-    getgrain(x, "summary")$nodes
-}
+## #' @export
+## #' @rdname generics
+
+## varNames.grainEvidence_ <- function(x)
+## {
+##     getgrain(x, "summary")$nodes
+## }
 
 
 

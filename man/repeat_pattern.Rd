@@ -2,12 +2,9 @@
 % Please edit documentation in R/repeat_pattern.R
 \name{repeat_pattern}
 \alias{repeat_pattern}
-\alias{repeatPattern}
 \title{Create repeated patterns in Bayesian networks}
 \usage{
 repeat_pattern(plist, instances, unlist = TRUE, data = NULL)
-
-repeatPattern(plist, instances, unlist = TRUE, data = NULL)
 }
 \arguments{
 \item{plist}{A list of conditional probability tables. The variable

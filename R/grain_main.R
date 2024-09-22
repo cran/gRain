@@ -1,7 +1,7 @@
 ## ###################################################################
 ##
-#' @title Graphical Independence Network
-#' @description Creating grain objects (graphical independence network).
+#' @title Create Bayesian network
+#' @description Create Bayesian network  (grain objects (graphical independence network)).
 #' @name grain-main
 #' @author Søren Højsgaard, \email{sorenh@@math.aau.dk}
 ##
@@ -104,10 +104,10 @@ grain.CPTspec <- grain.cpt_spec
 #' @export
 #' @rdname grain-main
 grain.pot_spec <- function(x, control=list(), smooth=0, compile=TRUE, details=0,...) {
-    
+    ## cat("grain.pot_spec\n")
     control  <- .setControl(control)
-    out  <- c(list(universe    = attr(x, "universe"),              
-                   cqpot       = x, ## FIXME: was c(x)...                  
+    out  <- c(list(cqpot       = c(x), ## FIXME: was c(x)...
+                   universe    = attr(x, "universe"),                                 
                    ug          = attr(x, "ug"),
                    rip         = attr(x, "rip")),
               .setExtraComponents(control, details))
@@ -117,8 +117,8 @@ grain.pot_spec <- function(x, control=list(), smooth=0, compile=TRUE, details=0,
 }
 
 
-
 ## A graph + data (wrappers for calling grain.pot_spec and grain.cpt_spec)
+
 #' @export
 #' @rdname grain-main
 grain.igraph <- function(x, control=list(), smooth=0, compile=TRUE, details=0, data=NULL, ...) {
@@ -131,8 +131,11 @@ grain.igraph <- function(x, control=list(), smooth=0, compile=TRUE, details=0, d
         zz <- extract_cpt(data, x, smooth=smooth)
         zz <- compileCPT(zz)
     } else if (is_tug(x)) {
+        ## cat("x is undirected\n")
         zz <- extract_pot(data, x, smooth=smooth)
-        zz <- compilePOT(zz)
+        ## ripit2 <<- attr(zz, "rip") 
+        zz <- compile_pot(zz)
+        ## ripit3 <<- attr(zz, "rip") 
     }
     else
         stop("graph 'x' is neither a directed acyclic graph or a triangulated undirected graph")
@@ -168,7 +171,7 @@ grain.cpt_representation <- function(x, ...) {
 #' @export
 print.grain <- function(x, ...) {
 
-    hasEvidence <- !is.null(evidence(x))
+    hasEvidence <- !is.null(getEvidence(x))
     cat("Independence network: Compiled:", isCompiled(x),
         "Propagated:", isPropagated(x), "Evidence:", hasEvidence, "\n")
     ## cat("  Nodes:"); str(unname(nodeNames(x)))
@@ -185,8 +188,8 @@ summary.grain <- function(object, type='std', ...) {
     
     if (length(object$evidence)) getEvidence(object)
     
-    cat(" Nodes :")
-    utils::str(nodeNames(object)) ## $universe$nodes)
+    ## cat(" Nodes :")
+    ## utils::str(nodeNames(object)) ## $universe$nodes)
     
     if (isCompiled(object)){
         

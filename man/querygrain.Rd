@@ -4,7 +4,9 @@
 \alias{querygrain}
 \alias{querygrain.grain}
 \alias{qgrain}
-\title{Query a network}
+\alias{ask}
+\alias{ask.grain}
+\title{Query a Bayesian network}
 \usage{
 querygrain(
   object,

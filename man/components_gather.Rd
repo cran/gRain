@@ -7,18 +7,12 @@
 \alias{parse_cpt.xtabs,}
 \alias{parse_cpt.default}
 \alias{compile_pot}
-\alias{compileCPT}
-\alias{compilePOT}
 \alias{parse_cpt}
 \title{Compile conditional probability tables / cliques potentials.}
 \usage{
 compile_cpt(x, ..., forceCheck = TRUE)
 
 compile_pot(x, ..., forceCheck = TRUE)
-
-compileCPT(x, ..., forceCheck = TRUE)
-
-compilePOT(x, ..., forceCheck = TRUE)
 
 parse_cpt(xi)
 }
@@ -59,7 +53,7 @@ arrays should, if multiplied, form a valid probability density.
 }
 \examples{
 
-data(chest_cpt)
+example("example_chest_cpt")
 x <- compile_cpt(chest_cpt)
 class(x)
 grain(x)

@@ -2,52 +2,24 @@
 % Please edit documentation in R/evidence.R
 \name{grain_evidence}
 \alias{grain_evidence}
-\alias{setEvidence}
-\alias{retractEvidence}
-\alias{absorbEvidence}
-\alias{pEvidence}
-\alias{getEvidence}
-\alias{evidence}
-\alias{evidence.grain}
-\alias{evidence<-}
-\alias{evidence<-.grain}
+\alias{evidence_get}
+\alias{evidence_add}
+\alias{evidence_drop}
+\alias{evidence_prob}
 \title{Set, update and remove evidence.}
 \usage{
-setEvidence(
-  object,
-  nodes = NULL,
-  states = NULL,
-  evidence = NULL,
-  propagate = TRUE,
-  details = 0
-)
+evidence_add(object, evidence, propagate = TRUE, details = 0)
 
-retractEvidence(object, nodes = NULL, propagate = TRUE)
+evidence_get(object, short = TRUE)
 
-absorbEvidence(object, propagate = TRUE)
+evidence_drop(object, nodes = NULL, propagate = TRUE)
 
-pEvidence(object, evidence = NULL)
-
-getEvidence(object, short = TRUE)
-
-evidence(object, short = TRUE)
-
-\method{evidence}{grain}(object, short = TRUE)
-
-evidence(object) <- value
-
-\method{evidence}{grain}(object) <- value
+evidence_prob(object, evidence = NULL)
 }
 \arguments{
 \item{object}{A "grain" object}
 
-\item{nodes}{A vector of nodes; those nodes for which the
-(conditional) distribution is requested.}
-
-\item{states}{A vector of states (of the nodes given by 'nodes')}
-
-\item{evidence}{An alternative way of specifying findings
-(evidence), see examples below.}
+\item{evidence}{A list of name=value. See examples below.}
 
 \item{propagate}{Should the network be propagated?}
 
@@ -56,7 +28,7 @@ evidence(object) <- value
 \item{short}{If TRUE a dataframe with a summary is returned;
 otherwise a list with all details.}
 
-\item{value}{The evidence in the form of a named list or an evidence-object.}
+\item{nodes}{A vector of nodes.}
 }
 \value{
 A list of tables with potentials.
@@ -77,31 +49,41 @@ The syntax of \code{setEvidence()} may change in the future.
 }
 \examples{
 
-data(chest_cpt)
+example("example_chest_cpt")
 chest.bn <- grain(compileCPT(chest_cpt))
-chest.bn <- compile(chest.bn)
 
-## 1) These two forms are identical
-setEvidence(chest.bn, c("asia", "xray"), c("yes", "yes"))
-setFinding(chest.bn, c("asia", "xray"), c("yes", "yes"))
+bn2 <- chest.bn |> evidence_add(list(asia="yes", xray="yes"))
+bn3 <- chest.bn |> evidence_add(list(asia=c(0.8, 0.1), xray="yes"))
 
-## 2) Suppose we do not know with certainty whether a patient has
-## recently been to Asia. We can then introduce a new variable
-## "guess.asia" with "asia" as its only parent. Suppose
-## p(guess.asia=yes|asia=yes)=.8 and p(guess.asia=yes|asia=no)=.1
-## If the patient is e.g. unusually tanned we may set
-## guess.asia=yes and propagate.
-##
-## This corresponds to modifying the model by the likelihood (0.8,
-## 0.1) as
+bn2 |> evidence_get()
+bn3 |> evidence_get()
 
-setEvidence(chest.bn, c("asia", "xray"), list(c(0.8, 0.1), "yes"))
+bn2 |> evidence_prob()
+bn3 |> evidence_prob()
 
-## 3) Hence, the same result as in 1) can be obtained with
-setEvidence(chest.bn, c("asia", "xray"), list(c(1, 0), "yes"))
+bn2 |> evidence_drop("xray")
+bn3 |> evidence_drop("xray")
 
-## 4) An alternative specification using evidence is
-setEvidence(chest.bn, evidence=list(asia=c(1, 0), xray="yes"))
+bn2 |> evidence_drop("xray") |> evidence_get()
+bn3 |> evidence_drop("xray") |> evidence_get()
+
+## For backward compatibility these functions are available now but
+#may be deprecated later.
+bb2 <- setEvidence(chest.bn, c("asia", "xray"), c("yes", "yes"))
+bb3 <- setEvidence(chest.bn, c("asia", "xray"), list(c(0.8, 0.2), "yes"))
+bb4 <- setFinding(chest.bn, c("asia", "xray"), c("yes", "yes"))
+
+bb2 |> getEvidence()
+bb3 |> getEvidence()
+
+bb2 |> retractEvidence("xray")
+bb3 |> retractEvidence("xray")
+
+bb2 |> pEvidence()
+bb3 |> pEvidence()
+
+bb2 |> retractEvidence("xray") |> getEvidence()
+bb3 |> retractEvidence("xray") |> getEvidence()
 
 }
 \references{

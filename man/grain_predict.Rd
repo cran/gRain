@@ -3,7 +3,7 @@
 \name{grain_predict}
 \alias{grain_predict}
 \alias{predict.grain}
-\title{Make predictions from a probabilistic network}
+\title{Make predictions from Bayesian network}
 \usage{
 \method{predict}{grain}(
   object,
@@ -43,7 +43,7 @@ finding (evidence) on other variables in an independence
 network.
 }
 \examples{
-data(chest_cpt)
+example("example_chest_cpt")
 data(chestSim500)
 
 chest.bn <- grain(compileCPT(chest_cpt))

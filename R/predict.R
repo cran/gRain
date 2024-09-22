@@ -1,4 +1,4 @@
-#' @title Make predictions from a probabilistic network
+#' @title Make predictions from Bayesian network
 #' 
 #' @description Makes predictions (either as the most likely state or
 #'     as the conditional distributions) of variables conditional on
@@ -28,7 +28,7 @@
 #' @keywords models
 #'
 #' @examples
-#' data(chest_cpt)
+#' example("example_chest_cpt")
 #' data(chestSim500)
 #'
 #' chest.bn <- grain(compileCPT(chest_cpt))
@@ -73,7 +73,8 @@ predict.grain <- function(object, response, predictors=setdiff(names(newdata), r
         ## objecttmp1    <- setFinding(object, nodes=names(case), states=case)
 
     for (i in 1:nrow(nd)){
-        objecttmp1    <- setFinding(object, nodes=vn, states=nd[i,,drop=FALSE])
+        
+        objecttmp1 <- setFinding(object, nodes=vn, states=nd[i,,drop=FALSE])
         p.e       <- pEvidence(objecttmp1)
         ##cat(sprintf("pEvidence=%20.18f\n", p.e))
         if (p.e < .Machine$double.xmin){
