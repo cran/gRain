@@ -1,5 +1,5 @@
 Package: gRain
-Version: 1.4.2
+Version: 1.4.3
 Title: Graphical Independence Networks
 Authors@R: person(given = "Søren",
                     family = "Højsgaard",
@@ -23,7 +23,7 @@ LinkingTo: Rcpp (>= 0.11.1), RcppArmadillo, RcppEigen, gRbase
 ByteCompile: Yes
 RoxygenNote: 7.3.2
 NeedsCompilation: yes
-Packaged: 2024-09-20 12:56:39 UTC; sorenh
+Packaged: 2024-10-08 12:17:05 UTC; sorenh
 Author: Søren Højsgaard [aut, cre]
 Repository: CRAN
-Date/Publication: 2024-09-22 08:40:02 UTC
+Date/Publication: 2024-10-08 20:20:02 UTC
