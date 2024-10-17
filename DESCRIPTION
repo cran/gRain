@@ -1,6 +1,6 @@
 Package: gRain
-Version: 1.4.4
-Title: Graphical Independence Networks
+Version: 1.4.5
+Title: Bayesian Networks
 Authors@R: person(given = "Søren",
                     family = "Højsgaard",
                     role = c("aut", "cre"),
@@ -23,7 +23,7 @@ LinkingTo: Rcpp (>= 0.11.1), RcppArmadillo, RcppEigen, gRbase
 ByteCompile: Yes
 RoxygenNote: 7.3.2
 NeedsCompilation: yes
-Packaged: 2024-10-10 12:34:51 UTC; sorenh
+Packaged: 2024-10-17 20:38:00 UTC; sorenh
 Author: Søren Højsgaard [aut, cre]
 Repository: CRAN
-Date/Publication: 2024-10-10 16:10:02 UTC
+Date/Publication: 2024-10-17 21:00:06 UTC
